@@ -2,7 +2,6 @@
 
 import { useId, useState, type FormEvent } from "react";
 
-export type CadFormat = "step" | "iges" | "solidworks";
 type SubmitStatus = "idle" | "submitting" | "success" | "error";
 
 export interface CadRequestModalProps {
@@ -13,34 +12,34 @@ export interface CadRequestModalProps {
 }
 
 const SUBJECT_PREFIX: Record<"en" | "fr", string> = {
-  en: "3D CAD File Request",
-  fr: "Demande de fichier 3D",
+  en: "3D CAD Request",
+  fr: "Demande CAD 3D",
 };
 
 const TEXT = {
   en: {
-    title: "Request the 3D CAD File",
-    description: "Tell us where to send it — our engineering office replies within 2 business hours.",
-    fields: { email: "Professional Email", company: "Company", format: "Desired Format" },
-    placeholders: { email: "jane.smith@company.com", company: "Your company" },
-    formatOptions: { placeholder: "Select…", step: "STEP", iges: "IGES", solidworks: "SolidWorks" },
+    title: "Request the 3D Model (STEP)",
+    description:
+      "Our 3D models (STEP/IGES) are adjusted to your project's dimensions and mounting options. Fill in the form below — our engineering office will send you the CAD file within 24 business hours.",
+    fields: { email: "Professional Email", company: "Company", reference: "Desired Dimensions / Length or Product Reference" },
+    placeholders: { email: "jane.smith@company.com", company: "Your company", reference: "e.g. 300mm length, or ref. BAR-LED-300-W" },
     submit: "Request the File",
     submitting: "Sending…",
-    success: "Thank you. Your CAD file will be sent by our engineering department within 2 hours.",
+    success: "Thank you — your request has been recorded. Our engineering office will send you the CAD file within 24 business hours.",
     error: "Something went wrong. Please try again, or contact us directly.",
     close: "Close",
     requiredField: "This field is required.",
     invalidEmail: "Please enter a valid professional email address.",
   },
   fr: {
-    title: "Demander le Fichier CAD 3D",
-    description: "Indiquez-nous où l'envoyer — notre bureau d'études répond sous 2h ouvrées.",
-    fields: { email: "Email Professionnel", company: "Société", format: "Format Souhaité" },
-    placeholders: { email: "jean.dupont@entreprise.com", company: "Votre entreprise" },
-    formatOptions: { placeholder: "Sélectionner…", step: "STEP", iges: "IGES", solidworks: "SolidWorks" },
+    title: "Demander le Modèle 3D (STEP)",
+    description:
+      "Nos modèles 3D (STEP/IGES) sont ajustés aux dimensions et options de fixation de votre projet. Complétez le formulaire ci-dessous, notre bureau d'études vous transmettra le fichier CAD sous 24h ouvrées.",
+    fields: { email: "Email Professionnel", company: "Société", reference: "Dimensions / Longueur Souhaitée ou Référence Produit" },
+    placeholders: { email: "jean.dupont@entreprise.com", company: "Votre entreprise", reference: "ex : longueur 300mm, ou réf. BAR-LED-300-B" },
     submit: "Demander le Fichier",
     submitting: "Envoi en cours…",
-    success: "Merci. Le fichier CAD à vos côtes vous sera transmis par notre bureau d'études sous 2 heures.",
+    success: "Merci — votre demande a été enregistrée. Notre bureau d'études vous transmettra le fichier CAD sous 24h ouvrées.",
     error: "Une erreur est survenue. Réessayez, ou contactez-nous directement.",
     close: "Fermer",
     requiredField: "Ce champ est requis.",
@@ -53,12 +52,12 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 interface FormState {
   email: string;
   company: string;
-  format: CadFormat | "";
+  reference: string;
   /** Honeypot — real users never fill this. */
   website: string;
 }
 
-const INITIAL_STATE: FormState = { email: "", company: "", format: "", website: "" };
+const INITIAL_STATE: FormState = { email: "", company: "", reference: "", website: "" };
 
 export function CadRequestModal({ locale, productName, isOpen, onClose }: CadRequestModalProps) {
   const t = TEXT[locale];
@@ -85,7 +84,6 @@ export function CadRequestModal({ locale, productName, isOpen, onClose }: CadReq
     if (!state.email.trim()) errors.email = t.requiredField;
     else if (!EMAIL_REGEX.test(state.email.trim())) errors.email = t.invalidEmail;
     if (!state.company.trim()) errors.company = t.requiredField;
-    if (!state.format) errors.format = t.requiredField;
     return errors;
   }
 
@@ -95,6 +93,8 @@ export function CadRequestModal({ locale, productName, isOpen, onClose }: CadReq
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) return;
 
+    // Immediate, non-blocking confirmation — the request is fired and the modal
+    // switches to the success view without waiting on further user action.
     setStatus("submitting");
     try {
       const res = await fetch("/api/contact", {
@@ -103,7 +103,8 @@ export function CadRequestModal({ locale, productName, isOpen, onClose }: CadReq
         body: JSON.stringify({
           email: state.email,
           company: state.company,
-          cadFormat: state.format,
+          dimensionsOrReference: state.reference,
+          cadFormat: "step",
           website: state.website,
           contextType: "cad_request",
           subjectContext: `${SUBJECT_PREFIX[locale]} - ${productName}`,
@@ -213,22 +214,17 @@ export function CadRequestModal({ locale, productName, isOpen, onClose }: CadReq
               </div>
 
               <div>
-                <label htmlFor={`${idPrefix}-format`} className={labelClasses}>
-                  {t.fields.format} <span className="text-red-500">*</span>
+                <label htmlFor={`${idPrefix}-reference`} className={labelClasses}>
+                  {t.fields.reference}
                 </label>
-                <select
-                  id={`${idPrefix}-format`}
-                  value={state.format}
-                  onChange={(e) => setField("format", e.target.value as CadFormat | "")}
+                <input
+                  id={`${idPrefix}-reference`}
+                  type="text"
+                  value={state.reference}
+                  onChange={(e) => setField("reference", e.target.value)}
+                  placeholder={t.placeholders.reference}
                   className={inputClasses}
-                  aria-invalid={Boolean(fieldErrors.format)}
-                >
-                  <option value="">{t.formatOptions.placeholder}</option>
-                  <option value="step">{t.formatOptions.step}</option>
-                  <option value="iges">{t.formatOptions.iges}</option>
-                  <option value="solidworks">{t.formatOptions.solidworks}</option>
-                </select>
-                {fieldErrors.format && <p className={errorClasses}>{fieldErrors.format}</p>}
+                />
               </div>
 
               {status === "error" && (

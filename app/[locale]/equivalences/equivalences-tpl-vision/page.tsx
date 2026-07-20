@@ -4,7 +4,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleJsonLd } from "@/lib/jsonld";
+import { buildEquivalenceItemPageJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
   LIGHT_TYPES,
@@ -26,12 +26,12 @@ const COMPETITOR_RANGE_LABEL = "TPL Vision — Essential / Expert";
 
 const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
   en: {
-    metaTitle: "TPL Vision Equivalents & Dual Sourcing | Vision Lighting Solutions",
+    metaTitle: "TPL Vision Equivalents & Dual Sourcing | Vision Lighting",
     metaDescription:
-      "Interoperability guide: compatible alternatives to TPL Vision lighting ranges for dual sourcing and supply chain continuity.",
+      "Interoperability guide: compatible alternatives to TPL Vision lighting ranges for dual sourcing and supply chain continuity — request a quote.",
   },
   fr: {
-    metaTitle: "Équivalences TPL Vision & Dual Sourcing | Vision Lighting Solutions",
+    metaTitle: "Équivalences TPL Vision & Dual Sourcing | Vision Lighting",
     metaDescription:
       "Guide d'interopérabilité : alternatives compatibles aux gammes d'éclairage TPL Vision pour le dual sourcing et la continuité d'approvisionnement.",
   },
@@ -87,14 +87,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     return {
       title: { absolute: m.metaTitle },
       description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY),
+      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
     };
   }
   const fallback = findCatalogSegment()?.content[locale];
   return {
     title: fallback ? { absolute: fallback.metaTitle } : undefined,
     description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -111,16 +111,14 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   const fallback = findCatalogSegment()?.content[locale];
 
   const jsonLd = rich
-    ? buildTechArticleJsonLd({
+    ? buildEquivalenceItemPageJsonLd({
         path: `/${locale}${ROUTE_KEY}`,
         locale,
-        headline: rich.h1,
+        name: rich.h1,
         description: META[locale as RichLocale].metaDescription,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
-        datePublished: PUBLISHED_DATE,
-        dateModified: MODIFIED_DATE,
-        mentions: ["TPL Vision"],
-        keywords: ["dual sourcing", "TPL Vision", "machine vision lighting", "cross-reference"],
+        competitorBrand: "TPL Vision",
+        competitorRanges: [COMPETITOR_RANGE_LABEL],
       })
     : null;
 

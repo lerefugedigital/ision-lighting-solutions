@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleJsonLd } from "@/lib/jsonld";
+import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
 
@@ -19,12 +19,12 @@ const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> =
   en: {
     metaTitle: "Automotive Machine Vision Lighting | Guide & Applications",
     metaDescription:
-      "Why metallic and painted automotive parts defeat generic lighting, and how to match lighting geometry to weld, surface and panel defects.",
+      "Why metallic and painted automotive parts defeat generic lighting, and how to match lighting geometry to weld and surface defects — full guide.",
   },
   fr: {
-    metaTitle: "Vision Industrielle Automobile | Guide et Applications Éclairage",
+    metaTitle: "Vision Industrielle Automobile | Guide d'Éclairage",
     metaDescription:
-      "Pourquoi les pièces automobiles métalliques et peintes mettent en échec un éclairage générique, et comment adapter la géométrie de l'éclairage aux défauts.",
+      "Pourquoi les pièces automobiles métalliques et peintes mettent en échec un éclairage générique, et comment adapter la géométrie aux défauts.",
   },
 };
 
@@ -105,14 +105,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     return {
       title: { absolute: m.metaTitle },
       description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY),
+      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
     };
   }
   const fallback = findCatalogSegment()?.content[locale];
   return {
     title: fallback ? { absolute: fallback.metaTitle } : undefined,
     description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -144,9 +144,27 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       })
     : null;
 
+  const faqJsonLd = rich
+    ? buildFaqPageJsonLd({
+        path: `/${locale}${ROUTE_KEY}`,
+        locale,
+        faqs:
+          locale === "fr"
+            ? [
+          { question: "Pourquoi un \u00e9clairage g\u00e9n\u00e9rique donne-t-il des r\u00e9sultats incoh\u00e9rents sur pi\u00e8ces automobiles ?", answer: "La plupart des composants automobiles sont sp\u00e9culaires ou semi-sp\u00e9culaires \u2014 m\u00e9tal nu, soudures et panneaux peints r\u00e9fl\u00e9chissent la lumi\u00e8re dans un c\u00f4ne \u00e9troit type miroir. Sous \u00e9clairage diffus g\u00e9n\u00e9rique, le reflet exact d\u00e9pend fortement de l'angle pr\u00e9cis de la pi\u00e8ce, un l\u00e9ger d\u00e9calage d'un cycle \u00e0 l'autre pouvant saturer ou assombrir l'image." },
+          { question: "Comment adapter l'\u00e9clairage aux types de d\u00e9fauts automobiles ?", answer: "Un cordon de soudure ou une rayure est une discontinuit\u00e9 locale de l'angle de surface \u2014 un \u00e9clairage coaxial ou directionnel la r\u00e9v\u00e8le car ce changement d'angle r\u00e9fl\u00e9chit diff\u00e9remment de la surface environnante. Un panneau peint courbe b\u00e9n\u00e9ficie au contraire d'un d\u00f4me diffus, qui supprime les points chauds d\u00e9pendants de la position." },
+              ]
+            : [
+          { question: "Why does generic lighting give inconsistent results on automotive parts?", answer: "Most automotive components are specular or semi-specular \u2014 bare metal, welds and painted panels reflect light in a narrow, mirror-like cone. Under generic diffuse lighting, the exact reflection depends heavily on the part's precise angle, so a slight shift between cycles can turn a usable signal into a saturated hot spot or dark dropout." },
+          { question: "How do you match lighting to automotive defect types?", answer: "A weld seam or scratch is a local discontinuity in surface angle \u2014 coaxial or directional lighting reveals it because the angle change reflects differently from the surrounding surface. A curved painted panel instead benefits from diffuse dome lighting, which removes position-dependent hot spots." },
+              ],
+      })
+    : null;
+
   return (
     <>
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
       <GuidePageContent
         rich={rich}
         placeholderH1={fallback?.h1 ?? "Automotive Machine Vision"}

@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleJsonLd } from "@/lib/jsonld";
+import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
 
@@ -19,12 +19,12 @@ const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> =
   en: {
     metaTitle: "IP69K Stainless Lighting | Food & Beverage Machine Vision",
     metaDescription:
-      "Why standard aluminum lighting fails in food and beverage washdown environments, and what an IP69K rating actually certifies.",
+      "Why standard aluminum lighting fails in food and beverage washdown environments, and what an IP69K rating actually certifies — full guide inside.",
   },
   fr: {
     metaTitle: "Éclairage Inox IP69K | Vision Industrielle Agroalimentaire",
     metaDescription:
-      "Pourquoi un éclairage aluminium standard échoue en environnement de lavage agroalimentaire, et ce que certifie réellement un indice IP69K.",
+      "Pourquoi un éclairage aluminium standard échoue en environnement de lavage agroalimentaire, et ce que certifie réellement un indice IP69K — le guide.",
   },
 };
 
@@ -97,14 +97,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     return {
       title: { absolute: m.metaTitle },
       description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY),
+      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
     };
   }
   const fallback = findCatalogSegment()?.content[locale];
   return {
     title: fallback ? { absolute: fallback.metaTitle } : undefined,
     description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -136,9 +136,27 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       })
     : null;
 
+  const faqJsonLd = rich
+    ? buildFaqPageJsonLd({
+        path: `/${locale}${ROUTE_KEY}`,
+        locale,
+        faqs:
+          locale === "fr"
+            ? [
+          { question: "Pourquoi un \u00e9clairage aluminium standard \u00e9choue-t-il en lavage agroalimentaire ?", answer: "Un bo\u00eetier aluminium class\u00e9 pour la poussi\u00e8re et les projections l\u00e9g\u00e8res n'est pas valid\u00e9 face \u00e0 un jet haute pression et haute temp\u00e9rature \u00e0 courte distance \u2014 les lavages r\u00e9p\u00e9t\u00e9s forcent l'eau \u00e0 travers les joints, corrodent l'aluminium et finissent par atteindre l'\u00e9lectronique interne." },
+          { question: "Que certifie r\u00e9ellement un indice IP69K ?", answer: "IP69K certifie que le bo\u00eetier est totalement \u00e9tanche \u00e0 la poussi\u00e8re et a \u00e9t\u00e9 test\u00e9 contre des jets d'eau haute pression et haute temp\u00e9rature \u00e0 courte distance sous plusieurs angles \u2014 le profil exact d'un lavage industriel, g\u00e9n\u00e9ralement associ\u00e9 \u00e0 un corps en inox 316L." },
+              ]
+            : [
+          { question: "Why does standard aluminum lighting fail in food washdown environments?", answer: "A standard aluminum enclosure rated for dust and light splashing is not validated against a close-range, high-pressure, high-temperature jet \u2014 repeated washdown cycles force water past seals, corrode the aluminum body, and eventually reach the electronics inside." },
+          { question: "What does an IP69K rating actually certify?", answer: "IP69K certifies the enclosure is fully dust-tight and has been tested against high-pressure, high-temperature water jets from close range at multiple angles \u2014 the exact stress profile of an industrial washdown hose, typically paired with a 316L stainless steel body." },
+              ],
+      })
+    : null;
+
   return (
     <>
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
       <GuidePageContent
         rich={rich}
         placeholderH1={fallback?.h1 ?? "IP69K Stainless Lighting"}

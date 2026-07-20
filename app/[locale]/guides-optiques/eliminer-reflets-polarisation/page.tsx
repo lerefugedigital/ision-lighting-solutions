@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleJsonLd } from "@/lib/jsonld";
+import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
 import { PolarizationDiagram } from "@/components/diagrams/PolarizationDiagram";
@@ -20,12 +20,12 @@ const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> =
   en: {
     metaTitle: "Polarized Lighting | Eliminating Glare in Machine Vision",
     metaDescription:
-      "Why a saturated glare hot spot destroys image data no exposure setting can recover, and how crossed polarizing filters remove it.",
+      "Why a saturated glare hot spot destroys image data no exposure setting can recover, and how crossed polarizing filters remove it — full guide.",
   },
   fr: {
-    metaTitle: "Éclairage Polarisé | Éliminer les Reflets en Vision Industrielle",
+    metaTitle: "Éclairage Polarisé | Éliminer les Reflets en Vision",
     metaDescription:
-      "Pourquoi un point de reflet saturé détruit une donnée image qu'aucun réglage d'exposition ne peut récupérer, et comment des filtres polarisants croisés l'éliminent.",
+      "Pourquoi un reflet saturé détruit une donnée image qu'aucun réglage d'exposition ne récupère, et comment des filtres polarisants croisés le retirent.",
   },
 };
 
@@ -128,14 +128,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     return {
       title: { absolute: m.metaTitle },
       description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY),
+      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
     };
   }
   const fallback = findCatalogSegment()?.content[locale];
   return {
     title: fallback ? { absolute: fallback.metaTitle } : undefined,
     description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -167,9 +167,27 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       })
     : null;
 
+  const faqJsonLd = rich
+    ? buildFaqPageJsonLd({
+        path: `/${locale}${ROUTE_KEY}`,
+        locale,
+        faqs:
+          locale === "fr"
+            ? [
+          { question: "Pourquoi la surexposition ou le traitement d'image ne corrigent-ils pas un reflet satur\u00e9 ?", answer: "Un pixel satur\u00e9 ne porte plus aucune information \u2014 le reflet sp\u00e9culaire pointant directement vers l'objectif appara\u00eet blanc pur quel que soit ce qu'il y a dessous. Aucun r\u00e9ajustement d'exposition ou de traitement a posteriori ne peut r\u00e9cup\u00e9rer une donn\u00e9e que le capteur n'a jamais mesur\u00e9e." },
+          { question: "Comment des filtres polarisants crois\u00e9s suppriment-ils les reflets ?", answer: "La r\u00e9flexion sp\u00e9culaire sur une surface non m\u00e9tallique devient partiellement polaris\u00e9e lin\u00e9airement, alors que la lumi\u00e8re diffuse reste polaris\u00e9e de fa\u00e7on al\u00e9atoire. Un filtre polarisant sur la source et un second sur l'objectif, tourn\u00e9 \u00e0 90\u00b0 par rapport au premier, bloque l'essentiel du reflet polaris\u00e9 tout en laissant passer la lumi\u00e8re diffuse." },
+              ]
+            : [
+          { question: "Why can't overexposure or image processing fix a glare hot spot?", answer: "A clipped, saturated pixel carries no information \u2014 because a specular reflection points straight into the lens, it reads as pure white regardless of what's underneath. No amount of re-exposing or re-processing afterward can recover data the sensor never actually measured." },
+          { question: "How do crossed polarizing filters remove glare?", answer: "Specular reflection off a non-metallic surface becomes partially linearly polarized, while diffuse light stays randomly polarized. A linear polarizer on the light and a second one on the camera lens, rotated 90\u00b0 relative to the first, blocks most of the polarized glare while still passing the diffuse light." },
+              ],
+      })
+    : null;
+
   return (
     <>
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
       <GuidePageContent
         rich={rich}
         placeholderH1={fallback?.h1 ?? "Eliminating Reflections with Polarization"}

@@ -4,7 +4,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleJsonLd } from "@/lib/jsonld";
+import { buildEquivalenceItemPageJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
   LIGHT_TYPES,
@@ -26,14 +26,14 @@ const COMPETITOR_RANGE_LABEL = "Smart Vision Lights — L Series / RM Series";
 
 const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
   en: {
-    metaTitle: "Smart Vision Lights Equivalents & Dual Sourcing | Vision Lighting Solutions",
+    metaTitle: "Smart Vision Lights LED Equivalents | Vision Lighting",
     metaDescription:
-      "Interoperability guide: compatible alternatives to Smart Vision Lights ranges for dual sourcing and supply chain continuity.",
+      "Interoperability guide: compatible alternatives to Smart Vision Lights ranges for dual sourcing and supply chain continuity — get a quote today.",
   },
   fr: {
-    metaTitle: "Équivalences Smart Vision Lights & Dual Sourcing | Vision Lighting Solutions",
+    metaTitle: "Équivalences Smart Vision Lights | Vision Lighting",
     metaDescription:
-      "Guide d'interopérabilité : alternatives compatibles aux gammes d'éclairage Smart Vision Lights pour le dual sourcing et la continuité d'approvisionnement.",
+      "Guide d'interopérabilité : alternatives compatibles aux gammes Smart Vision Lights pour le dual sourcing — demandez votre étude de correspondance.",
   },
 };
 
@@ -87,14 +87,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     return {
       title: { absolute: m.metaTitle },
       description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY),
+      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
     };
   }
   const fallback = findCatalogSegment()?.content[locale];
   return {
     title: fallback ? { absolute: fallback.metaTitle } : undefined,
     description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -111,16 +111,14 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   const fallback = findCatalogSegment()?.content[locale];
 
   const jsonLd = rich
-    ? buildTechArticleJsonLd({
+    ? buildEquivalenceItemPageJsonLd({
         path: `/${locale}${ROUTE_KEY}`,
         locale,
-        headline: rich.h1,
+        name: rich.h1,
         description: META[locale as RichLocale].metaDescription,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
-        datePublished: PUBLISHED_DATE,
-        dateModified: MODIFIED_DATE,
-        mentions: ["Smart Vision Lights"],
-        keywords: ["dual sourcing", "Smart Vision Lights", "machine vision lighting", "cross-reference"],
+        competitorBrand: "Smart Vision Lights",
+        competitorRanges: [COMPETITOR_RANGE_LABEL],
       })
     : null;
 

@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleWithHowToJsonLd, type HowToStepInput } from "@/lib/jsonld";
+import { buildTechArticleWithHowToJsonLd, buildFaqPageJsonLd, type HowToStepInput } from "@/lib/jsonld";
 import { ContactForm } from "@/components/ContactForm";
 import { M12Interactive, type M12PinInfo, type M12InteractiveLabels } from "@/components/M12Interactive";
 
@@ -250,8 +250,8 @@ const LABELS: Record<Locale, M12InteractiveLabels> = {
 
 export const ARTICLE = {
   en: {
-    metaTitle: "M12 5-Pin A-Coded Pinout & Wiring Diagram | Vision Lighting Solutions",
-    metaDescription: "Standard M12 5-pin A-coded pinout for industrial machine vision lighting.",
+    metaTitle: "M12 5-Pin Wiring Diagram | Vision Lighting Solutions",
+    metaDescription: "Standard M12 5-pin A-coded pinout for industrial machine vision lighting — wire colors, roles and common wiring mistakes explained pin by pin.",
     h1: "M12 5-Pin (A-Coded) Wiring Diagram for Machine Vision Lighting",
     lead: "Standard M12 5-pin A-coded pinout for industrial machine vision lighting: click a pin below — or a row in the table — to see its exact role, wire color, and the wiring mistakes automation engineers make most often.",
     expertTitle: "PNP vs NPN & Strobe Mode",
@@ -265,8 +265,8 @@ export const ARTICLE = {
     relatedTitle: "Related wiring guides",
   },
   fr: {
-    metaTitle: "Brochage M12 5 Broches (Codage A) | Vision Lighting Solutions",
-    metaDescription: "Brochage M12 5 broches (Codage A) pour éclairage de vision industrielle.",
+    metaTitle: "Brochage M12 5 Broches | Vision Lighting Solutions",
+    metaDescription: "Brochage M12 5 broches (codage A) pour éclairage vision industrielle : couleurs de fils, rôles et erreurs courantes expliqués broche par broche.",
     h1: "Brochage M12 5 Broches (Codage A) pour Éclairage de Vision Industrielle",
     lead: "Brochage M12 5 broches (codage A) pour éclairage de vision industrielle : cliquez sur un pin ci-dessous — ou sur une ligne du tableau — pour voir son rôle exact, la couleur du fil, et les erreurs de câblage les plus fréquentes chez les automaticiens.",
     expertTitle: "PNP vs NPN & Mode Stroboscopique",
@@ -360,7 +360,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   return {
     title: { absolute: t.metaTitle },
     description: t.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -386,9 +386,28 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
     steps: buildHowToSteps(locale),
   });
 
+  const faqJsonLd =
+    locale === "en" || locale === "fr"
+      ? buildFaqPageJsonLd({
+          path: `/${locale}${ROUTE_KEY}`,
+          locale,
+          faqs:
+            locale === "fr"
+              ? [
+          { question: "Quel est le brochage M12 5 broches standard pour l'\u00e9clairage vision industrielle ?", answer: "Le connecteur M12 5 broches codage A assigne l'alimentation, la masse et le signal de trigger/strobe \u00e0 des positions de broches fixes \u2014 le r\u00f4le exact, la couleur de fil et les erreurs de c\u00e2blage courantes de chaque broche sont d\u00e9taill\u00e9s dans le sch\u00e9ma interactif et le tableau de cette page." },
+          { question: "Quelles sont les erreurs de c\u00e2blage M12 les plus fr\u00e9quentes ?", answer: "Les erreurs les plus fr\u00e9quentes sont l'inversion des broches trigger et masse, une convention de couleur de fil diff\u00e9rente selon le fabricant, et une polarit\u00e9 PNP/NPN mal c\u00e2bl\u00e9e sur le Pin 4 \u2014 chacune est d\u00e9taill\u00e9e par broche sur cette page." },
+                ]
+              : [
+          { question: "What is the standard M12 5-pin pinout for machine vision lighting?", answer: "The standard M12 5-pin A-coded connector assigns power, ground, and trigger/strobe signal to fixed pin positions \u2014 the exact role, wire color and common wiring mistakes for each pin are detailed in the interactive diagram and table on this page." },
+          { question: "What are the most common M12 wiring mistakes?", answer: "The most frequent errors are swapping the trigger and ground pins, using the wrong wire color convention between manufacturers, and miswiring PNP vs NPN signal polarity on Pin 4 \u2014 each is covered in detail per pin on this page." },
+                ],
+        })
+      : null;
+
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
 
       <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
         {t.h1}

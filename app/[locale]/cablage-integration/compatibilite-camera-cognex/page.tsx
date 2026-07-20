@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleWithHowToJsonLd, type HowToStepInput } from "@/lib/jsonld";
+import { buildTechArticleWithHowToJsonLd, buildFaqPageJsonLd, type HowToStepInput } from "@/lib/jsonld";
 import { ContactForm } from "@/components/ContactForm";
 import { CameraCompatibility, type CameraCompatInfo, type CameraCompatibilityLabels } from "@/components/CameraCompatibility";
 
@@ -314,7 +314,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   return {
     title: { absolute: t.metaTitle },
     description: t.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -342,9 +342,28 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
     steps,
   });
 
+  const faqJsonLd =
+    locale === "en" || locale === "fr"
+      ? buildFaqPageJsonLd({
+          path: `/${locale}${ROUTE_KEY}`,
+          locale,
+          faqs:
+            locale === "fr"
+              ? [
+          { question: "Comment les cam\u00e9ras Cognex pilotent-elles le trigger et le strobe de l'\u00e9clairage ?", answer: "Les cam\u00e9ras Cognex In-Sight et DataMan pilotent leurs signaux de trigger et de strobe via des E/S num\u00e9riques optocoupl\u00e9es configurables par logiciel \u2014 le type d'E/S, la tension et le c\u00e2blage exact d\u00e9pendent de la s\u00e9rie de cam\u00e9ra." },
+          { question: "Que faut-il pour c\u00e2bler une cam\u00e9ra Cognex \u00e0 un \u00e9clairage Vision Lighting Solutions ?", answer: "S\u00e9lectionnez votre s\u00e9rie de cam\u00e9ra Cognex sur cette page pour voir son type d'E/S, sa tension, et le c\u00e2blage exact permettant de connecter sa sortie trigger/strobe au connecteur M12 de notre \u00e9clairage." },
+                ]
+              : [
+          { question: "How do Cognex cameras control lighting trigger and strobe signals?", answer: "Cognex In-Sight and DataMan cameras drive their trigger and strobe signals through software-configurable, opto-isolated digital I/O \u2014 the exact I/O type, voltage and wiring depend on the camera series." },
+          { question: "What do I need to wire a Cognex camera to Vision Lighting Solutions lighting?", answer: "Select your Cognex camera series on this page to see its I/O type, voltage, and the exact wiring needed to connect its trigger/strobe output to our lighting's M12 connector." },
+                ],
+        })
+      : null;
+
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
 
       <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
         {t.h1}

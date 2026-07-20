@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleWithHowToJsonLd, type HowToStepInput } from "@/lib/jsonld";
+import { buildTechArticleWithHowToJsonLd, buildFaqPageJsonLd, type HowToStepInput } from "@/lib/jsonld";
 import { ContactForm } from "@/components/ContactForm";
 import { PnpNpnConverter, type PnpNpnModeInfo, type PnpNpnConverterLabels } from "@/components/PnpNpnConverter";
 
@@ -124,9 +124,9 @@ const LABELS: Record<Locale, PnpNpnConverterLabels> = {
 
 export const ARTICLE = {
   en: {
-    metaTitle: "PNP/NPN Converter | Vision Lighting Solutions",
+    metaTitle: "PNP/NPN Signal Converter | Vision Lighting Solutions",
     metaDescription:
-      "How to convert between PNP (sourcing) and NPN (sinking) trigger signals to integrate vision lighting with any PLC or camera I/O.",
+      "How to convert PNP (sourcing) and NPN (sinking) trigger signals to wire vision lighting to any PLC or camera I/O — request a free quote today.",
     h1: "PNP/NPN Signal Converter for Vision Lighting Integration",
     lead: "Toggle your camera or PLC output's signal type below to see how a PNP/NPN converter changes what reaches the light's Pin 4 — and whether you actually need one.",
     recapTitle: "PNP vs NPN, Briefly",
@@ -141,7 +141,7 @@ export const ARTICLE = {
     relatedTitle: "Related wiring guides",
   },
   fr: {
-    metaTitle: "Convertisseur PNP/NPN | Vision Lighting Solutions",
+    metaTitle: "Convertisseur de Signal PNP/NPN | Vision Lighting Solutions",
     metaDescription:
       "Comment convertir un signal trigger PNP (source) en NPN (drain) et inversement pour intégrer l'éclairage vision à n'importe quel automate ou caméra.",
     h1: "Convertisseur de Signal PNP/NPN pour l'Intégration Éclairage Vision",
@@ -249,7 +249,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   return {
     title: { absolute: t.metaTitle },
     description: t.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -277,9 +277,28 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
     steps,
   });
 
+  const faqJsonLd =
+    locale === "en" || locale === "fr"
+      ? buildFaqPageJsonLd({
+          path: `/${locale}${ROUTE_KEY}`,
+          locale,
+          faqs:
+            locale === "fr"
+              ? [
+          { question: "Quelle est la diff\u00e9rence entre un signal trigger PNP et NPN ?", answer: "Une sortie PNP (source) commute la ligne de signal au potentiel positif quand elle est active, tandis qu'une sortie NPN (drain) la commute \u00e0 la masse \u2014 le Pin 4 de l'\u00e9clairage doit correspondre \u00e0 la polarit\u00e9 r\u00e9ellement \u00e9mise par votre cam\u00e9ra ou automate, sinon le trigger ne sera simplement pas d\u00e9tect\u00e9." },
+          { question: "Ai-je toujours besoin d'un convertisseur PNP/NPN ?", answer: "Seulement si la polarit\u00e9 de sortie de votre cam\u00e9ra ou automate ne correspond pas \u00e0 ce qu'attend l'\u00e9clairage sur le Pin 4 \u2014 basculez le type de signal sur cette page pour voir exactement ce qui arrive \u00e0 l'\u00e9clairage avec et sans convertisseur." },
+                ]
+              : [
+          { question: "What is the difference between PNP and NPN trigger signals?", answer: "PNP (sourcing) outputs switch the signal line to positive voltage when active, while NPN (sinking) outputs switch it to ground \u2014 the light's Pin 4 must match the polarity your camera or PLC actually sends, or the trigger simply won't register." },
+          { question: "Do I always need a PNP/NPN converter?", answer: "Only if your camera or PLC's output polarity doesn't match what the light expects on Pin 4 \u2014 toggle the signal type on this page to see exactly what reaches the light with and without a converter." },
+                ],
+        })
+      : null;
+
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
 
       <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
         {t.h1}

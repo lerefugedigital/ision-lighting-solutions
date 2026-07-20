@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleJsonLd } from "@/lib/jsonld";
+import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
 
@@ -19,12 +19,12 @@ const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> =
   en: {
     metaTitle: "Choosing LED Color | Machine Vision Wavelength Guide",
     metaDescription:
-      "Why a monochrome camera can miss a color-coded defect entirely, and how choosing the right LED wavelength restores contrast.",
+      "Why a monochrome camera can miss a color-coded defect entirely, and how choosing the right LED wavelength restores contrast — read our full guide.",
   },
   fr: {
-    metaTitle: "Choisir la Couleur LED | Guide Longueur d'Onde Vision Industrielle",
+    metaTitle: "Choisir la Couleur LED | Guide Vision Industrielle",
     metaDescription:
-      "Pourquoi une caméra monochrome peut manquer un défaut pourtant visible en couleur, et comment le bon choix de longueur d'onde LED restaure le contraste.",
+      "Pourquoi une caméra monochrome peut manquer un défaut pourtant visible en couleur, et comment la bonne longueur d'onde LED restaure le contraste.",
   },
 };
 
@@ -97,14 +97,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     return {
       title: { absolute: m.metaTitle },
       description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY),
+      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
     };
   }
   const fallback = findCatalogSegment()?.content[locale];
   return {
     title: fallback ? { absolute: fallback.metaTitle } : undefined,
     description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -136,9 +136,27 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       })
     : null;
 
+  const faqJsonLd = rich
+    ? buildFaqPageJsonLd({
+        path: `/${locale}${ROUTE_KEY}`,
+        locale,
+        faqs:
+          locale === "fr"
+            ? [
+          { question: "Pourquoi une cam\u00e9ra monochrome peut-elle manquer un d\u00e9faut visible en couleur ?", answer: "La plupart des cam\u00e9ras de vision mesurent l'intensit\u00e9 lumineuse, pas la teinte. Sous une mauvaise longueur d'onde, un d\u00e9tail color\u00e9 peut r\u00e9fl\u00e9chir presque comme son fond, produisant un niveau de gris quasi identique dans l'image, alors qu'un \u0153il humain les s\u00e9parerait instantan\u00e9ment." },
+          { question: "Comment choisir la bonne longueur d'onde LED pour le contraste ?", answer: "Une surface color\u00e9e r\u00e9fl\u00e9chit fortement sa propre couleur et absorbe la couleur compl\u00e9mentaire. \u00c9clairer un d\u00e9tail rouge en rouge le rend clair ; l'\u00e9clairer en bleu ou vert le rend sombre \u2014 maximiser le contraste consiste \u00e0 choisir la longueur d'onde que chaque zone r\u00e9fl\u00e9chit ou absorbe." },
+              ]
+            : [
+          { question: "Why can a monochrome camera miss a color-coded defect?", answer: "Most machine vision cameras measure light intensity, not hue. Under the wrong illumination wavelength, a colored feature can reflect almost identically to its background, producing nearly the same gray level in the image even though the human eye would separate them instantly." },
+          { question: "How do you choose the right LED wavelength for contrast?", answer: "A colored surface strongly reflects light of its own color and absorbs the complementary color. Illuminating a red feature with red light makes it appear bright; illuminating it with blue or green light makes it appear dark \u2014 maximizing contrast is a matter of choosing the wavelength each region reflects or absorbs." },
+              ],
+      })
+    : null;
+
   return (
     <>
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
       <GuidePageContent
         rich={rich}
         placeholderH1={fallback?.h1 ?? "Choosing LED Color"}

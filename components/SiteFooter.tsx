@@ -13,6 +13,7 @@ const FOOTER_TEXT: Record<
     columnTools: string;
     columnSourcing: string;
     contactLabel: string;
+    sampleTestLabel: string;
     legalLabel: string;
     rightsReserved: string;
   }
@@ -24,6 +25,7 @@ const FOOTER_TEXT: Record<
     columnTools: "R&D & Tools",
     columnSourcing: "Sourcing & Contact",
     contactLabel: "Contact Form",
+    sampleTestLabel: "Sample Test Request",
     legalLabel: "Legal Notice",
     rightsReserved: "All rights reserved.",
   },
@@ -34,6 +36,7 @@ const FOOTER_TEXT: Record<
     columnTools: "R&D & Outils",
     columnSourcing: "Sourcing & Contact",
     contactLabel: "Formulaire de Contact",
+    sampleTestLabel: "Demande de Test sur Échantillon",
     legalLabel: "Mentions Légales",
     rightsReserved: "Tous droits réservés.",
   },
@@ -44,6 +47,7 @@ const FOOTER_TEXT: Record<
     columnTools: "F&E & Werkzeuge",
     columnSourcing: "Sourcing & Kontakt",
     contactLabel: "Kontaktformular",
+    sampleTestLabel: "Musterprüfung Anfragen",
     legalLabel: "Impressum",
     rightsReserved: "Alle Rechte vorbehalten.",
   },
@@ -54,6 +58,7 @@ const FOOTER_TEXT: Record<
     columnTools: "R&S & Strumenti",
     columnSourcing: "Sourcing & Contatto",
     contactLabel: "Modulo di Contatto",
+    sampleTestLabel: "Richiedi un Test su Campione",
     legalLabel: "Note Legali",
     rightsReserved: "Tutti i diritti riservati.",
   },
@@ -81,7 +86,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
   const equivalencesSilo = findSilo("equivalences");
 
   return (
-    <footer className="mt-24 border-t border-slate-200 dark:border-slate-800">
+    <footer className="mt-24 border-t border-slate-200 print:hidden dark:border-slate-800">
       <div className="mx-auto max-w-6xl px-6 py-12">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Column 1: Brand + language */}
@@ -158,6 +163,14 @@ export function SiteFooter({ locale }: { locale: Locale }) {
                   className="text-sm text-slate-500 hover:text-slate-900 hover:underline dark:text-slate-400 dark:hover:text-slate-100"
                 >
                   {t.contactLabel}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={"/test-sur-echantillon" as never}
+                  className="text-sm text-slate-500 hover:text-slate-900 hover:underline dark:text-slate-400 dark:hover:text-slate-100"
+                >
+                  {t.sampleTestLabel}
                 </Link>
               </li>
               <li>

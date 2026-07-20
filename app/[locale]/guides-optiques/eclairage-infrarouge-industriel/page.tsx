@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleJsonLd } from "@/lib/jsonld";
+import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
 
@@ -19,12 +19,12 @@ const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> =
   en: {
     metaTitle: "Industrial Infrared (IR) Lighting | Machine Vision Guide",
     metaDescription:
-      "Why infrared lighting sees through materials that look opaque under visible light, and how to apply it in machine vision inspection.",
+      "Why infrared lighting sees through materials that look opaque under visible light, and how to apply it in machine vision — read our full guide.",
   },
   fr: {
     metaTitle: "Éclairage Infrarouge Industriel | Guide Vision Industrielle",
     metaDescription:
-      "Pourquoi l'éclairage infrarouge traverse des matériaux qui semblent opaques en lumière visible, et comment l'appliquer en inspection vision industrielle.",
+      "Pourquoi l'éclairage infrarouge traverse des matériaux qui semblent opaques en lumière visible, et comment l'appliquer en inspection industrielle.",
   },
 };
 
@@ -105,14 +105,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     return {
       title: { absolute: m.metaTitle },
       description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY),
+      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
     };
   }
   const fallback = findCatalogSegment()?.content[locale];
   return {
     title: fallback ? { absolute: fallback.metaTitle } : undefined,
     description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -144,9 +144,27 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       })
     : null;
 
+  const faqJsonLd = rich
+    ? buildFaqPageJsonLd({
+        path: `/${locale}${ROUTE_KEY}`,
+        locale,
+        faqs:
+          locale === "fr"
+            ? [
+          { question: "Pourquoi l'\u00e9clairage infrarouge traverse-t-il des mat\u00e9riaux qui semblent opaques ?", answer: "L'opacit\u00e9 d'un mat\u00e9riau d\u00e9pend de la longueur d'onde, elle n'est pas absolue. De nombreux plastiques charg\u00e9s en carbone et encres sombres qui absorbent presque toute la lumi\u00e8re visible deviennent nettement plus transmissifs en proche infrarouge, typiquement autour de 850nm ou 940nm." },
+          { question: "Quand utiliser l'infrarouge plut\u00f4t qu'un \u00e9clairage visible ?", answer: "Quand un syst\u00e8me de vision doit inspecter un d\u00e9tail que la lumi\u00e8re visible ne peut atteindre \u2014 niveau de remplissage \u00e0 travers une bouteille sombre, cordon de soudure sous rev\u00eatement, impression cach\u00e9e sous un film opaque \u2014 car le mat\u00e9riau externe absorbe la lumi\u00e8re visible avant d'atteindre le d\u00e9tail recherch\u00e9." },
+              ]
+            : [
+          { question: "Why does infrared lighting see through materials that look opaque?", answer: "A material's opacity is wavelength-dependent, not absolute. Many carbon-loaded plastics and dark inks that absorb almost all visible light become significantly more transmissive in the near-infrared band, typically around 850nm or 940nm." },
+          { question: "When should you use infrared instead of visible lighting?", answer: "When a vision system needs to inspect a feature visible light can't reach \u2014 fill level through a dark bottle, a weld seam under a coating, print hidden beneath an opaque film \u2014 since the outer material absorbs visible light before it reaches the feature of interest." },
+              ],
+      })
+    : null;
+
   return (
     <>
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
       <GuidePageContent
         rich={rich}
         placeholderH1={fallback?.h1 ?? "Industrial Infrared Lighting"}

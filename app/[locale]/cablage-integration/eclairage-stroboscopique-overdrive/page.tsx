@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleWithHowToJsonLd, type HowToStepInput } from "@/lib/jsonld";
+import { buildTechArticleWithHowToJsonLd, buildFaqPageJsonLd, type HowToStepInput } from "@/lib/jsonld";
 import { ContactForm } from "@/components/ContactForm";
 import { StrobeOverdriveSimulator, type StrobeOverdriveLabels } from "@/components/StrobeOverdriveSimulator";
 
@@ -71,7 +71,7 @@ export const ARTICLE = {
   en: {
     metaTitle: "Strobe & Overdrive Lighting | Vision Lighting Solutions",
     metaDescription:
-      "How to configure strobe and overdrive modes to boost peak LED brightness and freeze motion on fast-moving lines without motion blur.",
+      "How to configure strobe and overdrive modes to boost peak LED brightness and freeze motion on fast lines — calculate your safe duty cycle now.",
     h1: "Strobe & Overdrive Lighting Setup for High-Speed Inspection",
     lead: "Adjust the pulse width and trigger frequency below to see the resulting duty cycle in real time — the single number that determines whether an overdrive setup is safe or headed for LED failure.",
     whatTitle: "What Overdrive Lighting Actually Is",
@@ -86,7 +86,7 @@ export const ARTICLE = {
     relatedTitle: "Related wiring guides",
   },
   fr: {
-    metaTitle: "Éclairage Stroboscopique & Overdrive | Vision Lighting Solutions",
+    metaTitle: "Éclairage Stroboscopique & Overdrive | Vision Lighting",
     metaDescription:
       "Comment configurer les modes stroboscopique et overdrive pour augmenter la luminosité crête LED et figer le mouvement sur des lignes rapides.",
     h1: "Configurer un Éclairage Stroboscopique et Overdrive pour l'Inspection Rapide",
@@ -194,7 +194,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   return {
     title: { absolute: t.metaTitle },
     description: t.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -222,9 +222,28 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
     steps,
   });
 
+  const faqJsonLd =
+    locale === "en" || locale === "fr"
+      ? buildFaqPageJsonLd({
+          path: `/${locale}${ROUTE_KEY}`,
+          locale,
+          faqs:
+            locale === "fr"
+              ? [
+          { question: "Qu'est-ce que l'\u00e9clairage overdrive et pourquoi limiter le rapport cyclique ?", answer: "L'overdrive alimente un ensemble LED avec un courant cr\u00eate bien sup\u00e9rieur \u00e0 sa valeur continue, pour une impulsion tr\u00e8s courte, afin d'augmenter la luminosit\u00e9 et figer le mouvement sur des lignes rapides \u2014 d\u00e9passer le rapport cyclique r\u00e9sultant surchauffe et d\u00e9truit l'ensemble LED." },
+          { question: "Comment calculer un rapport cyclique overdrive s\u00fbr ?", answer: "Ajustez la largeur d'impulsion et la fr\u00e9quence de trigger sur cette page pour voir le rapport cyclique r\u00e9sultant en temps r\u00e9el \u2014 le chiffre unique qui d\u00e9termine si un montage overdrive est s\u00fbr ou promis \u00e0 la d\u00e9faillance des LED." },
+                ]
+              : [
+          { question: "What is overdrive lighting and why does it need a duty cycle limit?", answer: "Overdrive drives an LED array with a peak current well above its continuous rating for a very short pulse, boosting brightness to freeze motion on fast-moving lines \u2014 exceeding the resulting duty cycle overheats and destroys the LED array." },
+          { question: "How do I calculate a safe overdrive duty cycle?", answer: "Adjust the pulse width and trigger frequency on this page to see the resulting duty cycle in real time \u2014 the single number that determines whether an overdrive setup is safe or headed for LED failure." },
+                ],
+        })
+      : null;
+
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
 
       <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
         {t.h1}

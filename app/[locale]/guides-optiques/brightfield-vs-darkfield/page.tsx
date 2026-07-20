@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleJsonLd } from "@/lib/jsonld";
+import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
 import { BrightfieldDarkfieldDiagram } from "@/components/diagrams/BrightfieldDarkfieldDiagram";
@@ -18,14 +18,14 @@ const TOOL_SLUGS = ["brochage-m12-5-pins"];
 
 const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
   en: {
-    metaTitle: "Brightfield vs Darkfield Lighting | Machine Vision Comparison",
+    metaTitle: "Brightfield vs Darkfield Lighting | Vision Lighting Guide",
     metaDescription:
       "Why the same scratch can appear bright or dark depending on lighting angle, and how to choose between brightfield and darkfield illumination.",
   },
   fr: {
-    metaTitle: "Brightfield vs Darkfield | Comparatif Éclairage Vision Industrielle",
+    metaTitle: "Brightfield vs Darkfield | Comparatif Éclairage Vision",
     metaDescription:
-      "Pourquoi une même rayure peut apparaître claire ou sombre selon l'angle d'éclairage, et comment choisir entre brightfield et darkfield.",
+      "Pourquoi une même rayure apparaît claire ou sombre selon l'angle d'éclairage, et comment choisir entre brightfield et darkfield en inspection.",
   },
 };
 
@@ -126,14 +126,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     return {
       title: { absolute: m.metaTitle },
       description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY),
+      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
     };
   }
   const fallback = findCatalogSegment()?.content[locale];
   return {
     title: fallback ? { absolute: fallback.metaTitle } : undefined,
     description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -165,9 +165,27 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       })
     : null;
 
+  const faqJsonLd = rich
+    ? buildFaqPageJsonLd({
+        path: `/${locale}${ROUTE_KEY}`,
+        locale,
+        faqs:
+          locale === "fr"
+            ? [
+          { question: "Pourquoi une m\u00eame rayure peut-elle appara\u00eetre claire ou sombre selon l'\u00e9clairage ?", answer: "Une rayure, gravure ou marque en relief est une discontinuit\u00e9 locale de l'angle de surface par rapport \u00e0 la zone plate environnante. Un angle d'\u00e9clairage choisi arbitrairement \u00e9choue souvent sur ce type de d\u00e9faut car cette discontinuit\u00e9 r\u00e9fl\u00e9chit la lumi\u00e8re diff\u00e9remment \u2014 ou pas du tout \u2014 d\u00e8s que l'angle change." },
+          { question: "Quelle est la diff\u00e9rence entre l'\u00e9clairage brightfield et darkfield ?", answer: "En brightfield, la source r\u00e9fl\u00e9chit directement vers la cam\u00e9ra sur la surface plate : l'image est claire par d\u00e9faut et un d\u00e9faut appara\u00eet sombre. En darkfield, la source est en incidence rasante afin que la r\u00e9flexion sp\u00e9culaire n'atteigne jamais l'objectif : l'image est sombre par d\u00e9faut et seule une ar\u00eate ou une rayure appara\u00eet claire." },
+              ]
+            : [
+          { question: "Why can the same scratch appear bright or dark depending on the lighting?", answer: "A scratch, engraving or embossed mark is a small, local discontinuity in a surface's angle relative to the surrounding flat area. A single, arbitrarily chosen lighting angle often fails on this class of defect because the same discontinuity reflects light differently \u2014 or not at all \u2014 as the angle changes." },
+          { question: "What's the difference between brightfield and darkfield lighting?", answer: "In brightfield lighting, the source reflects straight back into the camera off the flat surface, so the image is bright by default and a defect appears dark. In darkfield lighting, the source sits at a grazing angle so specular reflection never reaches the lens, so the image is dark by default and only a raised edge or scratch appears bright." },
+              ],
+      })
+    : null;
+
   return (
     <>
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
       <GuidePageContent
         rich={rich}
         placeholderH1={fallback?.h1 ?? "Brightfield vs Darkfield"}

@@ -4,21 +4,23 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { buildOrganizationAndWebsiteJsonLd } from "@/lib/jsonld";
 import { ReassuranceBar } from "@/components/ReassuranceBar";
+import { CaseStudies } from "@/components/CaseStudies";
 
 const COPY: Record<Locale, { metaTitle: string; metaDescription: string; heroTitle: string; heroBody: string }> = {
   en: {
-    metaTitle: "Machine Vision Lighting Solutions | LED Lighting for Industrial Vision",
+    metaTitle: "Machine Vision Lighting Solutions | LED Illumination",
     metaDescription:
-      "Vision Lighting Solutions designs and supplies LED lighting for machine vision: bar lights, backlights, coaxial and dome lights, plus brand equivalents and integration guides.",
+      "Vision Lighting Solutions designs and supplies LED lighting for machine vision: bar lights, backlights, coaxial and dome lights — request a quote.",
     heroTitle: "Machine Vision Lighting, Engineered for Reliable Inspection",
     heroBody:
       "From LED bar lights to coaxial and dome lighting, we help integrators and manufacturers choose, wire and deploy the right illumination for every inspection challenge.",
   },
   fr: {
-    metaTitle: "Solutions d'Éclairage pour la Vision Industrielle | Éclairage LED",
+    metaTitle: "Solutions d'Éclairage Vision Industrielle | Éclairage LED",
     metaDescription:
-      "Vision Lighting Solutions conçoit et fournit des éclairages LED pour la vision industrielle : barres, rétroéclairages, dômes et éclairages coaxiaux, équivalences et guides d'intégration.",
+      "Vision Lighting Solutions conçoit des éclairages LED pour la vision industrielle : barres, rétroéclairages, dômes et coaxiaux — demandez un devis.",
     heroTitle: "L'Éclairage Vision Industrielle, Pensé pour une Inspection Fiable",
     heroBody:
       "Des barres LED aux éclairages coaxiaux et dômes diffus, nous aidons intégrateurs et industriels à choisir, câbler et déployer l'éclairage adapté à chaque défi d'inspection.",
@@ -168,7 +170,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   return {
     title: { absolute: t.metaTitle },
     description: t.metaDescription,
-    alternates: buildLanguageAlternates("/"),
+    alternates: buildLanguageAlternates("/", locale),
   };
 }
 
@@ -177,9 +179,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
   setRequestLocale(locale);
   const t = COPY[locale];
   const rich = locale === "en" || locale === "fr" ? RICH_HOME[locale] : null;
+  const jsonLd = buildOrganizationAndWebsiteJsonLd();
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <section>
         <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
           {t.heroTitle}
@@ -229,6 +233,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
                 </Link>
               ))}
             </div>
+          </section>
+
+          <section className="mt-20">
+            <CaseStudies locale={locale as "en" | "fr"} />
           </section>
         </>
       )}

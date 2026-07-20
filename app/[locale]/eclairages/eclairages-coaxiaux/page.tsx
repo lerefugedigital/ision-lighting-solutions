@@ -28,12 +28,12 @@ const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> =
   en: {
     metaTitle: "Coaxial LED Lighting | Specular Surface Machine Vision",
     metaDescription:
-      "Industrial coaxial LED lighting: aluminum housing, M12 connector, 24VDC electronics, homogeneous on-axis illumination for specular and etched surfaces.",
+      "Industrial coaxial LED lighting: aluminum housing, M12 connector, 24VDC electronics, homogeneous on-axis illumination — request a free quote.",
   },
   fr: {
     metaTitle: "Éclairage Coaxial LED | Vision sur Surfaces Spéculaires",
     metaDescription:
-      "Éclairage coaxial LED industriel : corps aluminium, connecteur M12, électronique 24VDC, éclairage homogène dans l'axe optique pour surfaces spéculaires et gravées.",
+      "Éclairage coaxial LED industriel : corps aluminium, connecteur M12, électronique 24VDC, éclairage homogène dans l'axe optique — demandez un devis.",
   },
 };
 
@@ -80,7 +80,11 @@ function IntegrationContent({ locale }: { locale: RichLocale }) {
         <Link href="/cablage-integration/brochage-m12-5-pins" className="font-medium text-amber-600 hover:underline dark:text-amber-400">
           brochage M12 standard
         </Link>{" "}
-        pour son intégration électrique.
+        pour son intégration électrique. Vous remplacez une référence d'une autre marque ? Consultez notre{" "}
+        <Link href="/equivalences" className="font-medium text-amber-600 hover:underline dark:text-amber-400">
+          table d'équivalences et de dual sourcing
+        </Link>{" "}
+        pour identifier l'alternative compatible.
       </p>
     );
   }
@@ -94,7 +98,11 @@ function IntegrationContent({ locale }: { locale: RichLocale }) {
       <Link href="/cablage-integration/brochage-m12-5-pins" className="font-medium text-amber-600 hover:underline dark:text-amber-400">
         standard M12 pinout
       </Link>{" "}
-      for its electrical integration.
+      for its electrical integration. Replacing a reference from another brand? See our{" "}
+      <Link href="/equivalences" className="font-medium text-amber-600 hover:underline dark:text-amber-400">
+        brand equivalence and dual sourcing table
+      </Link>{" "}
+      to find the compatible alternative.
     </p>
   );
 }
@@ -181,14 +189,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     return {
       title: { absolute: m.metaTitle },
       description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY),
+      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
     };
   }
   const fallback = findCatalogSegment()?.content[locale];
   return {
     title: fallback ? { absolute: fallback.metaTitle } : undefined,
     description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 

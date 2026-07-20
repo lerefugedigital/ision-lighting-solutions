@@ -28,12 +28,12 @@ const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> =
   en: {
     metaTitle: "LED Backlights | Contour & Dimensional Machine Vision",
     metaDescription:
-      "Industrial LED backlight panels: aluminum frame, M12 connector, 24VDC electronics, uniform diffuse backlighting for silhouette and dimensional measurement.",
+      "Industrial LED backlight panels: aluminum frame, M12 connector, 24VDC electronics, uniform diffuse backlighting — request a free quote today.",
   },
   fr: {
-    metaTitle: "Rétroéclairages LED | Contrôle Dimensionnel Vision Industrielle",
+    metaTitle: "Rétroéclairages LED | Contrôle Dimensionnel Vision",
     metaDescription:
-      "Panneaux de rétroéclairage LED industriels : cadre aluminium, connecteur M12, électronique 24VDC, rétroéclairage diffus uniforme pour la mesure de silhouette et de dimensions.",
+      "Panneaux de rétroéclairage LED industriels : cadre aluminium, connecteur M12, électronique 24VDC, rétroéclairage diffus uniforme — demandez un devis.",
   },
 };
 
@@ -80,7 +80,11 @@ function IntegrationContent({ locale }: { locale: RichLocale }) {
         <Link href="/cablage-integration/brochage-m12-5-pins" className="font-medium text-amber-600 hover:underline dark:text-amber-400">
           brochage M12 standard
         </Link>{" "}
-        pour son intégration électrique.
+        pour son intégration électrique. Vous remplacez une référence d'une autre marque ? Consultez notre{" "}
+        <Link href="/equivalences" className="font-medium text-amber-600 hover:underline dark:text-amber-400">
+          table d'équivalences et de dual sourcing
+        </Link>{" "}
+        pour identifier l'alternative compatible.
       </p>
     );
   }
@@ -94,7 +98,11 @@ function IntegrationContent({ locale }: { locale: RichLocale }) {
       <Link href="/cablage-integration/brochage-m12-5-pins" className="font-medium text-amber-600 hover:underline dark:text-amber-400">
         standard M12 pinout
       </Link>{" "}
-      for its electrical integration.
+      for its electrical integration. Replacing a reference from another brand? See our{" "}
+      <Link href="/equivalences" className="font-medium text-amber-600 hover:underline dark:text-amber-400">
+        brand equivalence and dual sourcing table
+      </Link>{" "}
+      to find the compatible alternative.
     </p>
   );
 }
@@ -179,14 +187,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     return {
       title: { absolute: m.metaTitle },
       description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY),
+      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
     };
   }
   const fallback = findCatalogSegment()?.content[locale];
   return {
     title: fallback ? { absolute: fallback.metaTitle } : undefined,
     description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 

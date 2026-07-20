@@ -5,6 +5,7 @@ import { ProductConfigTable, type ProductConfigRow, type ProductConfigTableLabel
 import { BeamPatternViewer } from "./BeamPatternViewer";
 import { TechnicalDownloads } from "./TechnicalDownloads";
 import { ContactForm } from "./ContactForm";
+import { SampleTestCTA } from "./SampleTestCTA";
 import { ReassuranceBar } from "./ReassuranceBar";
 
 export interface ProductRichContent {
@@ -56,13 +57,19 @@ export function ProductPageContent({
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-16">
+    <main className="mx-auto max-w-4xl px-6 py-16 print:px-0 print:py-0">
+      <div className="mb-6 hidden border-b border-slate-300 pb-3 print:block">
+        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+          Vision Lighting Solutions — Datasheet Technique
+        </p>
+      </div>
+
       <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
         {rich.h1}
       </h1>
       <p className="mt-4 text-slate-600 dark:text-slate-300">{rich.lead}</p>
 
-      <section className="mt-10">
+      <section className="mt-10 print:hidden">
         <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
           {rich.introTitle}
         </h2>
@@ -71,7 +78,7 @@ export function ProductPageContent({
 
       {rich.diagram && <div className="mt-8">{rich.diagram}</div>}
 
-      <section className="mt-10">
+      <section className="mt-10 print:hidden">
         <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
           {rich.highlightsTitle}
         </h2>
@@ -85,26 +92,26 @@ export function ProductPageContent({
         </ul>
       </section>
 
-      <section className="mt-10">
+      <section className="mt-10 break-inside-avoid">
         <ProductConfigTable rows={rich.rows} labels={rich.tableLabels} />
         <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">{rich.disclaimerNote}</p>
       </section>
 
-      <section className="mt-10">
+      <section className="mt-10 break-inside-avoid">
         <BeamPatternViewer locale={locale as "en" | "fr"} />
       </section>
 
-      <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm leading-relaxed text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+      <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm leading-relaxed text-slate-600 print:hidden dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
         {rich.integrationContent}
       </section>
 
-      <div className="mt-14 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-start">
+      <div className="mt-14 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-start print:hidden">
         <TechnicalDownloads locale={locale as "en" | "fr"} productName={rich.h1} datasheetHref={datasheetHref} />
         <ContactForm locale={locale as "en" | "fr"} contextType="product" subjectContext={rich.h1} />
       </div>
 
       {relatedSegments.length > 0 && (
-        <section className="mt-14 border-t border-slate-200 pt-8 dark:border-slate-800">
+        <section className="mt-14 border-t border-slate-200 pt-8 print:hidden dark:border-slate-800">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{rich.relatedTitle}</h2>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2">
             {relatedSegments.map((segment) => (
@@ -121,7 +128,11 @@ export function ProductPageContent({
         </section>
       )}
 
-      <div className="mt-14">
+      <div className="mt-14 print:hidden">
+        <SampleTestCTA locale={locale as "en" | "fr"} />
+      </div>
+
+      <div className="mt-10 print:hidden">
         <ReassuranceBar locale={locale as "en" | "fr"} variant="compact" />
       </div>
     </main>

@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleJsonLd } from "@/lib/jsonld";
+import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
 
@@ -19,10 +19,10 @@ const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> =
   en: {
     metaTitle: "UV Lighting Guide | Machine Vision Fluorescence Detection",
     metaDescription:
-      "Why some defects are invisible under any normal light, and how UV-excited fluorescence reveals them in machine vision inspection.",
+      "Why some defects are invisible under any normal light, and how UV-excited fluorescence reveals them in machine vision inspection — full guide.",
   },
   fr: {
-    metaTitle: "Guide Éclairage UV | Détection par Fluorescence Vision Industrielle",
+    metaTitle: "Guide Éclairage UV | Détection Fluorescence Vision",
     metaDescription:
       "Pourquoi certains défauts sont invisibles sous toute lumière normale, et comment la fluorescence excitée par UV les révèle en inspection vision.",
   },
@@ -97,14 +97,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     return {
       title: { absolute: m.metaTitle },
       description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY),
+      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
     };
   }
   const fallback = findCatalogSegment()?.content[locale];
   return {
     title: fallback ? { absolute: fallback.metaTitle } : undefined,
     description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -136,9 +136,27 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       })
     : null;
 
+  const faqJsonLd = rich
+    ? buildFaqPageJsonLd({
+        path: `/${locale}${ROUTE_KEY}`,
+        locale,
+        faqs:
+          locale === "fr"
+            ? [
+          { question: "Pourquoi certains d\u00e9fauts sont-ils invisibles sous toute lumi\u00e8re normale ?", answer: "Certains d\u00e9tails partagent exactement la m\u00eame couleur et r\u00e9flectance que leur environnement en lumi\u00e8re visible ou infrarouge \u2014 fissure capillaire, r\u00e9sidu de colle, marquage de s\u00e9curit\u00e9 \u2014 si bien qu'aucun r\u00e9glage de position, filtrage ou intensit\u00e9 ne les s\u00e9parera jamais du fond." },
+          { question: "Comment l'\u00e9clairage UV les r\u00e9v\u00e8le-t-il ?", answer: "Certains mat\u00e9riaux fluorescent : ils absorbent les photons UV et r\u00e9\u00e9mettent une partie de cette \u00e9nergie en lumi\u00e8re visible \u00e0 plus grande longueur d'onde. \u00c9clairer en UV (bande 365-405nm) fait luire uniquement le mat\u00e9riau fluorescent, qui ressort nettement sur un fond qui n'en r\u00e9fl\u00e9chit presque aucun." },
+              ]
+            : [
+          { question: "Why are some defects invisible under any normal light?", answer: "Certain features share the exact same color and reflectance as their surroundings under visible or infrared light \u2014 a hairline crack, an adhesive residue, a security marking \u2014 so no repositioning, filtering or intensity adjustment will ever separate them from their background." },
+          { question: "How does UV lighting reveal them?", answer: "Certain materials fluoresce: they absorb UV photons and re-emit part of that energy as visible light at a longer wavelength. Illuminating with UV in the 365-405nm band makes only the fluorescing material glow, standing out sharply against a background that reflects almost none of it." },
+              ],
+      })
+    : null;
+
   return (
     <>
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
       <GuidePageContent
         rich={rich}
         placeholderH1={fallback?.h1 ?? "Ultraviolet (UV) Lighting"}

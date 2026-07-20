@@ -109,10 +109,10 @@ export function BeamPatternViewer({ locale }: { locale: "en" | "fr" }) {
   return (
     <section>
       <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{t.title}</h2>
-      <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{t.intro}</p>
+      <p className="mt-3 text-sm text-slate-600 dark:text-slate-300 print:hidden">{t.intro}</p>
 
       <div className="mt-6 grid gap-6 md:grid-cols-2 md:items-start">
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 print:hidden">
           {ORDER.map((key) => {
             const item = t.items[key];
             const active = variant === key;

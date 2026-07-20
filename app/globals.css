@@ -27,3 +27,17 @@ body {
   color: var(--color-slate-900);
   font-family: ui-sans-serif, system-ui, sans-serif;
 }
+
+/* Product datasheet print view — used by the "Datasheet Produit (PDF)" button (window.print())
+ * when no real PDF asset has been uploaded yet. Individual sections opt out via print:hidden. */
+@page {
+  size: A4;
+  margin: 1.5cm;
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+}

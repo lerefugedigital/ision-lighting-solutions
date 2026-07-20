@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleJsonLd } from "@/lib/jsonld";
+import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
 
@@ -17,14 +17,14 @@ const TOOL_SLUGS = ["eclairage-stroboscopique-overdrive", "brochage-m12-5-pins"]
 
 const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
   en: {
-    metaTitle: "Medical & Pharma Machine Vision Lighting | Guide",
+    metaTitle: "Medical & Pharma Vision Lighting Guide | Vision Lighting",
     metaDescription:
-      "Why translucent tablets and reflective blister foil defeat generic lighting, and how backlight silhouettes and diffuse domes solve it.",
+      "Why translucent tablets and reflective blister foil defeat generic lighting, and how backlight silhouettes and diffuse domes solve it — full guide.",
   },
   fr: {
     metaTitle: "Vision Médicale & Pharmaceutique | Guide Éclairage",
     metaDescription:
-      "Pourquoi comprimés translucides et films de blister réfléchissants mettent en échec un éclairage générique, et comment silhouette et dôme diffus y répondent.",
+      "Pourquoi comprimés translucides et blister réfléchissant mettent en échec un éclairage générique, et comment silhouette et dôme diffus y répondent.",
   },
 };
 
@@ -105,14 +105,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
     return {
       title: { absolute: m.metaTitle },
       description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY),
+      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
     };
   }
   const fallback = findCatalogSegment()?.content[locale];
   return {
     title: fallback ? { absolute: fallback.metaTitle } : undefined,
     description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -144,9 +144,27 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       })
     : null;
 
+  const faqJsonLd = rich
+    ? buildFaqPageJsonLd({
+        path: `/${locale}${ROUTE_KEY}`,
+        locale,
+        faqs:
+          locale === "fr"
+            ? [
+          { question: "Pourquoi un \u00e9clairage g\u00e9n\u00e9rique \u00e9choue-t-il sur comprim\u00e9s et blisters ?", answer: "Les comprim\u00e9s sont souvent translucides ou de couleur quasi identique au plateau sous eux, si bien que leur contour se fond dans le fond sous \u00e9clairage frontal. Le film de blister, froiss\u00e9 et tr\u00e8s r\u00e9fl\u00e9chissant, renvoie des points chauds nets qui saturent l'image et masquent les d\u00e9fauts de scellage." },
+          { question: "Quel \u00e9clairage r\u00e9sout chaque probl\u00e8me ?", answer: "Le r\u00e9tro\u00e9clairage du comprim\u00e9 par l'arri\u00e8re en fait une silhouette nette et contrast\u00e9e quelle que soit sa couleur de surface. Le d\u00f4me diffus \u00e9claire le film de blister froiss\u00e9 depuis tous les angles \u00e0 la fois, supprimant le reflet dur et r\u00e9v\u00e9lant le v\u00e9ritable d\u00e9faut d'alv\u00e9ole ou de scellage." },
+              ]
+            : [
+          { question: "Why do generic lighting setups fail on tablets and blister packs?", answer: "Tablets are often translucent or near-identical in color to the tray beneath them, so their outline blends into the background under front lighting. Blister foil is crinkled and highly reflective, throwing back sharp hot spots that saturate the image and hide seal defects." },
+          { question: "What lighting solves each problem?", answer: "Backlighting the tablet from behind turns it into a sharp, high-contrast silhouette regardless of surface color. Diffuse dome lighting illuminates crinkled blister foil from every angle at once, removing the hard reflection and revealing the actual seal or cavity defect." },
+              ],
+      })
+    : null;
+
   return (
     <>
       {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
       <GuidePageContent
         rich={rich}
         placeholderH1={fallback?.h1 ?? "Medical & Pharmaceutical Vision"}

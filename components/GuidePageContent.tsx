@@ -4,6 +4,7 @@ import type { Locale } from "@/i18n/routing";
 import type { Segment } from "@/data/catalog";
 import { ContactForm } from "./ContactForm";
 import { SampleTestCTA } from "./SampleTestCTA";
+import { CaseStudies } from "./CaseStudies";
 
 export interface GuideRichContent {
   h1: string;
@@ -97,7 +98,7 @@ export function GuidePageContent({
       </section>
 
       <div className="mt-14">
-        <SampleTestCTA locale={locale as "en" | "fr"} targetId="contact-form" />
+        <SampleTestCTA locale={locale as "en" | "fr"} />
       </div>
 
       <div id="contact-form" className="mt-8 scroll-mt-8">
@@ -117,6 +118,10 @@ export function GuidePageContent({
           <SegmentLinkGrid segments={toolSegments} locale={locale} />
         </section>
       )}
+
+      <div className="mt-14 border-t border-slate-200 pt-10 dark:border-slate-800">
+        <CaseStudies locale={locale as "en" | "fr"} />
+      </div>
     </main>
   );
 }

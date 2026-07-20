@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   return {
     title: { absolute: content.metaTitle },
     description: content.metaDescription,
-    alternates: buildLanguageAlternates(silo.routeKey),
+    alternates: buildLanguageAlternates(silo.routeKey, locale),
   };
 }
 

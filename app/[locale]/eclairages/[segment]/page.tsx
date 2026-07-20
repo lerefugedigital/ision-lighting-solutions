@@ -40,7 +40,7 @@ export async function generateMetadata({
   return {
     title: { absolute: content.metaTitle },
     description: content.metaDescription,
-    alternates: buildLanguageAlternates(segment.routeKey),
+    alternates: buildLanguageAlternates(segment.routeKey, locale),
   };
 }
 

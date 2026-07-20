@@ -5,7 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
-import { buildTechArticleWithHowToJsonLd, type HowToStepInput } from "@/lib/jsonld";
+import { buildTechArticleWithHowToJsonLd, buildFaqPageJsonLd, type HowToStepInput } from "@/lib/jsonld";
 import { ContactForm } from "@/components/ContactForm";
 import { CameraCompatibility, type CameraCompatInfo, type CameraCompatibilityLabels } from "@/components/CameraCompatibility";
 
@@ -315,7 +315,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   return {
     title: { absolute: t.metaTitle },
     description: t.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
@@ -343,9 +343,28 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
     steps,
   });
 
+  const faqJsonLd =
+    locale === "en" || locale === "fr"
+      ? buildFaqPageJsonLd({
+          path: `/${locale}${ROUTE_KEY}`,
+          locale,
+          faqs:
+            locale === "fr"
+              ? [
+          { question: "Comment les contr\u00f4leurs Keyence g\u00e8rent-ils le c\u00e2blage trigger et strobe ?", answer: "Les contr\u00f4leurs de vision Keyence exposent leurs E/S num\u00e9riques via un bornier ou un connecteur supportant le c\u00e2blage NPN et PNP, et la plupart des mod\u00e8les disposent d'une borne d\u00e9di\u00e9e \u00e0 la sortie stroboscopique." },
+          { question: "Que faut-il pour c\u00e2bler une cam\u00e9ra Keyence \u00e0 un \u00e9clairage Vision Lighting Solutions ?", answer: "S\u00e9lectionnez votre s\u00e9rie de cam\u00e9ra Keyence sur cette page pour voir son type d'E/S, sa tension, et le c\u00e2blage exact permettant de connecter sa sortie strobe au connecteur M12 de notre \u00e9clairage." },
+                ]
+              : [
+          { question: "How do Keyence vision controllers handle trigger and strobe wiring?", answer: "Keyence vision controllers expose digital I/O through a terminal block or connector supporting both NPN and PNP wiring, and most models include a terminal dedicated to strobe output." },
+          { question: "What do I need to wire a Keyence camera to Vision Lighting Solutions lighting?", answer: "Select your Keyence camera series on this page to see its I/O type, voltage, and the exact wiring needed to connect its strobe output to our lighting's M12 connector." },
+                ],
+        })
+      : null;
+
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
 
       <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
         {t.h1}

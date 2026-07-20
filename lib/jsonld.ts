@@ -1,5 +1,109 @@
 import { SITE_URL, SITE_NAME } from "./site-config";
 
+/** Organization + WebSite graph for the homepage — the root identity every other
+ * page's Organization/publisher references point back to via @id. */
+export function buildOrganizationAndWebsiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${SITE_URL}#organization`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        logo: `${SITE_URL}/icon.svg`,
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}#website`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        inLanguage: ["fr", "en", "de", "it"],
+        publisher: { "@id": `${SITE_URL}#organization` },
+      },
+    ],
+  };
+}
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+/** Rendered as its own <script> tag alongside a page's TechArticle/HowTo graph —
+ * the questions/answers must restate genuine content already written on the page,
+ * never new claims invented purely for rich-result eligibility. */
+export function buildFaqPageJsonLd(params: { path: string; locale: string; faqs: FaqItem[] }) {
+  const pageUrl = `${SITE_URL}${params.path}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${pageUrl}#faq`,
+    inLanguage: params.locale,
+    mainEntity: params.faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  };
+}
+
+/**
+ * ItemPage + a comparative ProductModel for Silo 2 (brand equivalences) — the
+ * competitor ranges named in `competitorRanges` must be the same real range names
+ * already shown in the page's own comparison table (isSimilarTo, not identical:
+ * these are compatible alternatives, not the same SKU).
+ */
+export function buildEquivalenceItemPageJsonLd(params: {
+  path: string;
+  locale: string;
+  name: string;
+  description: string;
+  image: string;
+  competitorBrand: string;
+  competitorRanges: string[];
+}) {
+  const pageUrl = `${SITE_URL}${params.path}`;
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ItemPage",
+        "@id": `${pageUrl}#itempage`,
+        url: pageUrl,
+        name: params.name,
+        description: params.description,
+        inLanguage: params.locale,
+        mainEntity: { "@id": `${pageUrl}#productmodel` },
+      },
+      {
+        "@type": "ProductModel",
+        "@id": `${pageUrl}#productmodel`,
+        name: params.name,
+        description: params.description,
+        image: params.image,
+        url: pageUrl,
+        inLanguage: params.locale,
+        brand: { "@type": "Brand", name: SITE_NAME },
+        manufacturer: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+        isSimilarTo: params.competitorRanges.map((range) => ({
+          "@type": "Product",
+          name: range,
+          brand: { "@type": "Brand", name: params.competitorBrand },
+        })),
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${pageUrl}#webpage`,
+        url: pageUrl,
+        name: params.name,
+        inLanguage: params.locale,
+      },
+    ],
+  };
+}
+
 export interface HowToStepInput {
   name: string;
   text: string;
@@ -110,6 +214,7 @@ export function buildProductModelJsonLd(params: {
         category: params.category,
         url: pageUrl,
         inLanguage: params.locale,
+        brand: { "@type": "Brand", name: SITE_NAME },
         manufacturer: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
         additionalProperty: params.additionalProperties.map((p) => ({
           "@type": "PropertyValue",

@@ -8,14 +8,14 @@ const ROUTE_KEY = "/contact";
 
 const META: Record<Locale, { metaTitle: string; metaDescription: string; h1: string; lead: string }> = {
   en: {
-    metaTitle: "Contact Us | Vision Lighting Solutions",
-    metaDescription: "Get in touch with our machine vision lighting engineers for specifications, quotes or technical questions.",
+    metaTitle: "Contact Us | Vision Lighting Solutions Engineering Team",
+    metaDescription: "Get in touch with our machine vision lighting engineers for product specifications, technical quotes, or wiring and integration questions today.",
     h1: "Contact Our Team",
     lead: "Whichever silo your question belongs to, this form reaches the same team of application engineers.",
   },
   fr: {
-    metaTitle: "Contact | Vision Lighting Solutions",
-    metaDescription: "Contactez nos ingénieurs en éclairage vision industrielle pour des spécifications, devis ou questions techniques.",
+    metaTitle: "Contactez Nos Ingénieurs | Vision Lighting Solutions",
+    metaDescription: "Contactez nos ingénieurs en éclairage vision industrielle pour vos spécifications produit, devis technique, ou questions de câblage et d'intégration.",
     h1: "Contacter Notre Équipe",
     lead: "Quel que soit le silo concerné par votre question, ce formulaire atteint la même équipe d'ingénieurs d'application.",
   },
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   return {
     title: { absolute: m.metaTitle },
     description: m.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 

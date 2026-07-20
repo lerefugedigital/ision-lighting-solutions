@@ -11,13 +11,13 @@ const META: Record<Locale, { metaTitle: string; metaDescription: string; h1: str
   en: {
     metaTitle: "Legal Notice & Privacy Policy | Vision Lighting Solutions",
     metaDescription:
-      "Legal notice, GDPR data protection policy, cookie declaration and technical liability limitation for vision-lighting-solutions.com.",
+      "Legal notice, GDPR data protection policy, cookie declaration and technical liability limitation for vision-lighting-solutions.com — read details.",
     h1: "Legal Notice & Privacy Policy",
   },
   fr: {
-    metaTitle: "Mentions Légales & Politique de Confidentialité | Vision Lighting Solutions",
+    metaTitle: "Mentions Légales & Confidentialité | Vision Lighting",
     metaDescription:
-      "Mentions légales, politique de protection des données RGPD, déclaration cookies et limitation de responsabilité technique de vision-lighting-solutions.com.",
+      "Mentions légales, politique de protection des données RGPD, déclaration cookies et limitation de responsabilité technique — consultez les détails.",
     h1: "Mentions Légales & Politique de Confidentialité",
   },
   de: {
@@ -119,7 +119,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   return {
     title: { absolute: m.metaTitle },
     description: m.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY),
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
 
