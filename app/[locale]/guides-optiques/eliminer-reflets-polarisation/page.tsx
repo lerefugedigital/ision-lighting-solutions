@@ -8,6 +8,7 @@ import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildTechArticleJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
+import { PolarizationDiagram } from "@/components/diagrams/PolarizationDiagram";
 
 const ROUTE_KEY = "/guides-optiques/eliminer-reflets-polarisation";
 const PUBLISHED_DATE = "2026-07-20";
@@ -61,6 +62,21 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
     solutionTitle: "The Optical Solution",
     solutionParagraph:
       "Unpolarized light reflecting specularly off a non-metallic surface becomes partially linearly polarized in the process — a real, well-established property of dielectric reflection. Light scattered diffusely from beneath the surface or from a rougher matte area, by contrast, keeps a much more random mix of polarization states. Placing a linear polarizing filter on the light source, and a second linear polarizing filter on the camera lens rotated 90° relative to the first — a \"crossed\" configuration — blocks most of that specularly polarized glare while still passing a large share of the depolarized diffuse light. The saturated hot spot disappears, and the feature that was hiding underneath it becomes visible.",
+    diagram: (
+      <PolarizationDiagram
+        labels={{
+          ariaLabel: "Diagram of crossed polarization: a 0° filter at the light and a 90° filter at the camera block specular glare while passing diffuse light",
+          source: "Light Source",
+          filter0: "Polarizer at 0°",
+          surface: "Reflective Surface",
+          filter90: "Crossed Polarizer at 90°",
+          camera: "Camera",
+          blocked: "Blocked (specular glare)",
+          passed: "Passed (diffuse light)",
+          caption: "A 90°-crossed polarizer blocks the specularly polarized glare while letting diffuse light through.",
+        }}
+      />
+    ),
     wiringTitle: "Wiring & Integration Recommendations",
     wiringContent: <WiringContent locale="en" />,
     productsTitle: PRODUCTS_TITLE.en,
@@ -75,6 +91,21 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
     solutionTitle: "La Solution Optique",
     solutionParagraph:
       "La lumière non polarisée réfléchie de façon spéculaire par une surface non métallique devient partiellement polarisée linéairement au cours de cette réflexion — une propriété réelle et bien établie de la réflexion diélectrique. La lumière diffusée depuis sous la surface, ou depuis une zone mate plus rugueuse, conserve à l'inverse un mélange de polarisations bien plus aléatoire. Placer un filtre polarisant linéaire sur la source lumineuse, et un second filtre polarisant linéaire sur l'objectif de la caméra tourné à 90° par rapport au premier — une configuration « croisée » — bloque l'essentiel de ce reflet spéculaire polarisé tout en laissant passer une large part de la lumière diffuse dépolarisée. Le point de saturation disparaît, et le détail qu'il masquait devient visible.",
+    diagram: (
+      <PolarizationDiagram
+        labels={{
+          ariaLabel: "Schéma de polarisation croisée : un filtre à 0° côté source et un filtre à 90° côté caméra bloquent le reflet spéculaire tout en laissant passer la lumière diffuse",
+          source: "Source Lumineuse",
+          filter0: "Polariseur à 0°",
+          surface: "Surface Réfléchissante",
+          filter90: "Polariseur Croisé à 90°",
+          camera: "Caméra",
+          blocked: "Bloqué (reflet spéculaire)",
+          passed: "Transmis (lumière diffuse)",
+          caption: "Un polariseur croisé à 90° bloque le reflet spéculaire polarisé tout en laissant passer la lumière diffuse.",
+        }}
+      />
+    ),
     wiringTitle: "Recommandations de Câblage et d'Intégration",
     wiringContent: <WiringContent locale="fr" />,
     productsTitle: PRODUCTS_TITLE.fr,

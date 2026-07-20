@@ -2,7 +2,8 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import type { Segment } from "@/data/catalog";
 import { EquivalenceTable, type EquivalenceRow, type EquivalenceTableLabels } from "./EquivalenceTable";
-import { EquivalenceRequestForm, type EquivalenceRequestFormLabels } from "./EquivalenceRequestForm";
+import { ContactForm } from "./ContactForm";
+import { ReassuranceBar } from "./ReassuranceBar";
 
 export interface EquivalenceRichContent {
   h1: string;
@@ -12,8 +13,6 @@ export interface EquivalenceRichContent {
   tableLabels: EquivalenceTableLabels;
   rows: EquivalenceRow[];
   disclaimerNote: string;
-  formLabels: EquivalenceRequestFormLabels;
-  formSubjectPrefix: string;
   relatedTitle: string;
 }
 
@@ -65,7 +64,7 @@ export function EquivalencePageContent({
       </section>
 
       <div className="mt-14">
-        <EquivalenceRequestForm labels={rich.formLabels} subjectPrefix={rich.formSubjectPrefix} />
+        <ContactForm locale={locale as "en" | "fr"} contextType="equivalence" subjectContext={rich.h1} />
       </div>
 
       {relatedSegments.length > 0 && (
@@ -85,6 +84,10 @@ export function EquivalencePageContent({
           </ul>
         </section>
       )}
+
+      <div className="mt-14">
+        <ReassuranceBar locale={locale as "en" | "fr"} variant="compact" />
+      </div>
     </main>
   );
 }

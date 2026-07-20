@@ -8,7 +8,6 @@ import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildProductModelJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
-  FORM_LABELS,
   DISCLAIMER_NOTE,
   RELATED_TITLE,
   RELATED_SLUGS,
@@ -17,6 +16,7 @@ import {
 } from "@/lib/product-shared-content";
 import { ProductPageContent, type ProductRichContent } from "@/components/ProductPageContent";
 import type { ProductConfigRow } from "@/components/ProductConfigTable";
+import { DomeDiagram } from "@/components/diagrams/DomeDiagram";
 
 const ROUTE_KEY = "/eclairages/domes-diffus-rainlights";
 const PUBLISHED_DATE = "2026-07-20";
@@ -104,6 +104,17 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     introTitle: "What Is a Diffuse Dome Light Used For?",
     introParagraph:
       "A dome light illuminates the target from a hemisphere of diffuse directions simultaneously rather than from one fixed angle. Where a bar light on a shiny, curved or crinkled surface produces a single hard reflection that can blind the camera, a dome surrounds the part with light so no single glare point dominates — ideal for metal caps, blister packs, curved glass or embossed surfaces. For flat, mirror-like or etched surfaces viewed straight-on, a coaxial light is generally the better-suited choice instead.",
+    diagram: (
+      <DomeDiagram
+        labels={{
+          ariaLabel: "Diagram of a diffuse dome light: light converging on the object from many directions at once",
+          dome: "Diffuse Dome",
+          object: "Object",
+          camera: "Camera",
+          caption: "Light reaches the object from every direction simultaneously — no single angle dominates.",
+        }}
+      />
+    ),
     highlightsTitle: "Technical Highlights",
     highlights: [
       "Hemispherical diffusing shell delivering omnidirectional, shadow-free light.",
@@ -116,8 +127,6 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     rows: ROWS.en,
     disclaimerNote: DISCLAIMER_NOTE.en,
     integrationContent: <IntegrationContent locale="en" />,
-    formLabels: FORM_LABELS.en,
-    formSubjectPrefix: "Specification request — Diffuse Dome Lights",
     relatedTitle: RELATED_TITLE.en,
   },
   fr: {
@@ -126,6 +135,17 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     introTitle: "À Quoi Sert un Dôme Diffus ?",
     introParagraph:
       "Un dôme diffus éclaire la cible depuis un hémisphère de directions diffuses simultanément, plutôt que depuis un angle fixe unique. Là où une barre LED sur une surface brillante, courbe ou froissée produit un reflet dur unique pouvant aveugler la caméra, un dôme entoure la pièce de lumière de sorte qu'aucun point de reflet ne domine — idéal pour les capsules métalliques, les blisters, le verre courbe ou les surfaces embossées. Pour des surfaces plates, de type miroir ou gravées, observées de face, un éclairage coaxial est généralement le choix plus adapté.",
+    diagram: (
+      <DomeDiagram
+        labels={{
+          ariaLabel: "Schéma d'un dôme diffus : lumière convergeant sur l'objet depuis de nombreuses directions à la fois",
+          dome: "Dôme Diffus",
+          object: "Objet",
+          camera: "Caméra",
+          caption: "La lumière atteint l'objet depuis toutes les directions à la fois — aucun angle ne domine.",
+        }}
+      />
+    ),
     highlightsTitle: "Points Forts Techniques",
     highlights: [
       "Coque diffusante hémisphérique délivrant une lumière omnidirectionnelle, sans ombre.",
@@ -138,8 +158,6 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     rows: ROWS.fr,
     disclaimerNote: DISCLAIMER_NOTE.fr,
     integrationContent: <IntegrationContent locale="fr" />,
-    formLabels: FORM_LABELS.fr,
-    formSubjectPrefix: "Demande de spécifications — Dômes Diffus",
     relatedTitle: RELATED_TITLE.fr,
   },
 };

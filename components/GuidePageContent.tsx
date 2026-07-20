@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import type { Segment } from "@/data/catalog";
+import { ContactForm } from "./ContactForm";
+import { SampleTestCTA } from "./SampleTestCTA";
 
 export interface GuideRichContent {
   h1: string;
@@ -10,6 +12,8 @@ export interface GuideRichContent {
   problemParagraph: string;
   solutionTitle: string;
   solutionParagraph: string;
+  /** Optional native SVG schematic illustrating the optical principle just explained. */
+  diagram?: ReactNode;
   wiringTitle: string;
   /** Built per-page as JSX so it can embed contextual <Link>s to Silo 3 guides. */
   wiringContent: ReactNode;
@@ -85,10 +89,20 @@ export function GuidePageContent({
         <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">{rich.solutionParagraph}</p>
       </section>
 
+      {rich.diagram && <div className="mt-8">{rich.diagram}</div>}
+
       <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm leading-relaxed text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
         <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{rich.wiringTitle}</h2>
         <div className="mt-3">{rich.wiringContent}</div>
       </section>
+
+      <div className="mt-14">
+        <SampleTestCTA locale={locale as "en" | "fr"} targetId="contact-form" />
+      </div>
+
+      <div id="contact-form" className="mt-8 scroll-mt-8">
+        <ContactForm locale={locale as "en" | "fr"} contextType="optical_guide" subjectContext={rich.h1} />
+      </div>
 
       {productSegments.length > 0 && (
         <section className="mt-14 border-t border-slate-200 pt-8 dark:border-slate-800">

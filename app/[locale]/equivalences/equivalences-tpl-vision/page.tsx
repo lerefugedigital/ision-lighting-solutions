@@ -7,7 +7,6 @@ import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildTechArticleJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
-  FORM_LABELS,
   LIGHT_TYPES,
   CRITERIA,
   VLS_ALTERNATIVES,
@@ -58,8 +57,6 @@ const RICH_CONTENT: Record<RichLocale, EquivalenceRichContent> = {
     tableLabels: TABLE_LABELS.en,
     rows: buildRows("en"),
     disclaimerNote: DISCLAIMER_NOTE.en,
-    formLabels: FORM_LABELS.en,
-    formSubjectPrefix: "Equivalence request — TPL Vision reference",
     relatedTitle: RELATED_TITLE.en,
   },
   fr: {
@@ -71,8 +68,6 @@ const RICH_CONTENT: Record<RichLocale, EquivalenceRichContent> = {
     tableLabels: TABLE_LABELS.fr,
     rows: buildRows("fr"),
     disclaimerNote: DISCLAIMER_NOTE.fr,
-    formLabels: FORM_LABELS.fr,
-    formSubjectPrefix: "Demande d'équivalence — référence TPL Vision",
     relatedTitle: RELATED_TITLE.fr,
   },
 };

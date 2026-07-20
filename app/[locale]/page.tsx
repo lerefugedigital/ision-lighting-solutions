@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { ReassuranceBar } from "@/components/ReassuranceBar";
 
 const COPY: Record<Locale, { metaTitle: string; metaDescription: string; heroTitle: string; heroBody: string }> = {
   en: {
@@ -188,6 +189,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
 
       {rich && (
         <>
+          <div className="mt-10">
+            <ReassuranceBar locale={locale as "en" | "fr"} variant="full" />
+          </div>
+
           <section className="mt-20">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
               {rich.methodologyTitle}

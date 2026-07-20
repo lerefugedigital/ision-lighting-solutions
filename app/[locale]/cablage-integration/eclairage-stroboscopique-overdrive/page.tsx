@@ -6,6 +6,7 @@ import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildTechArticleWithHowToJsonLd, type HowToStepInput } from "@/lib/jsonld";
+import { ContactForm } from "@/components/ContactForm";
 import { StrobeOverdriveSimulator, type StrobeOverdriveLabels } from "@/components/StrobeOverdriveSimulator";
 
 const ROUTE_KEY = "/cablage-integration/eclairage-stroboscopique-overdrive";
@@ -248,6 +249,12 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
           <p className="mt-2 text-sm leading-relaxed text-red-800 dark:text-red-300/90">{t.overdriveParagraph}</p>
         </div>
       </section>
+
+      {(locale === "en" || locale === "fr") && (
+        <div className="mt-14">
+          <ContactForm locale={locale} contextType="wiring" subjectContext={t.h1} />
+        </div>
+      )}
 
       {relatedSegments.length > 0 && (
         <section className="mt-14 border-t border-slate-200 pt-8 dark:border-slate-800">

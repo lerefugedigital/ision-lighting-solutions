@@ -1,5 +1,4 @@
 import type { EquivalenceTableLabels } from "@/components/EquivalenceTable";
-import type { EquivalenceRequestFormLabels } from "@/components/EquivalenceRequestForm";
 
 /** The only two locales with written body copy for Silo 2 equivalence pages. */
 export type RichLocale = "en" | "fr";
@@ -16,25 +15,6 @@ export const TABLE_LABELS: Record<RichLocale, EquivalenceTableLabels> = {
     columnCompetitor: "Gamme Concurrente Ciblée",
     columnCriteria: "Critères d'Interchangeabilité",
     columnAlternative: "Alternative Vision Lighting Solutions",
-  },
-};
-
-export const FORM_LABELS: Record<RichLocale, EquivalenceRequestFormLabels> = {
-  en: {
-    title: "Request a Compatibility Study",
-    description:
-      "Paste your exact reference below and one of our engineers will send you a cross-reference study within 24 business hours.",
-    placeholder: "e.g. your exact part reference…",
-    submitLabel: "Request My Cross-Reference",
-    disclaimer: "No obligation. Response from an engineer within 24 business hours.",
-  },
-  fr: {
-    title: "Demander une Étude de Correspondance",
-    description:
-      "Collez votre référence exacte ci-dessous : un de nos ingénieurs vous envoie une étude de correspondance sous 24h ouvrées.",
-    placeholder: "ex : votre référence exacte…",
-    submitLabel: "Demander Ma Correspondance",
-    disclaimer: "Sans engagement. Réponse d'un ingénieur sous 24h ouvrées.",
   },
 };
 

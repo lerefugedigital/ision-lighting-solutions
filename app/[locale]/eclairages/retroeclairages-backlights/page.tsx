@@ -8,7 +8,6 @@ import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildProductModelJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
-  FORM_LABELS,
   DISCLAIMER_NOTE,
   RELATED_TITLE,
   RELATED_SLUGS,
@@ -17,6 +16,7 @@ import {
 } from "@/lib/product-shared-content";
 import { ProductPageContent, type ProductRichContent } from "@/components/ProductPageContent";
 import type { ProductConfigRow } from "@/components/ProductConfigTable";
+import { BacklightDiagram } from "@/components/diagrams/BacklightDiagram";
 
 const ROUTE_KEY = "/eclairages/retroeclairages-backlights";
 const PUBLISHED_DATE = "2026-07-20";
@@ -104,6 +104,17 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     introTitle: "What Is a Backlight Used For?",
     introParagraph:
       "A backlight is a diffuse LED panel placed behind or underneath the object, turning it into a dark silhouette against a bright, uniform background. That contrast is exactly what dimensional measurement, edge/contour detection and hole or feature counting need — where a bar light illuminates the front surface directly and a dome light handles reflective or curved parts, a backlight instead removes surface detail entirely in favor of a clean outline.",
+    diagram: (
+      <BacklightDiagram
+        labels={{
+          ariaLabel: "Diagram of a backlight panel: light transmitted around an opaque object, straight to the camera",
+          panel: "Backlight Panel",
+          object: "Object",
+          camera: "Camera",
+          caption: "The object blocks the central rays, producing a sharp silhouette against the glowing panel.",
+        }}
+      />
+    ),
     highlightsTitle: "Technical Highlights",
     highlights: [
       "Industrial design: aluminum frame for heat dissipation, integrated M12 connector for a standardized wiring harness.",
@@ -116,8 +127,6 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     rows: ROWS.en,
     disclaimerNote: DISCLAIMER_NOTE.en,
     integrationContent: <IntegrationContent locale="en" />,
-    formLabels: FORM_LABELS.en,
-    formSubjectPrefix: "Specification request — Backlights",
     relatedTitle: RELATED_TITLE.en,
   },
   fr: {
@@ -126,6 +135,17 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     introTitle: "À Quoi Sert un Rétroéclairage ?",
     introParagraph:
       "Un rétroéclairage est un panneau LED diffus placé derrière ou sous l'objet, le transformant en silhouette sombre sur un fond lumineux et uniforme. C'est exactement le contraste dont ont besoin la mesure dimensionnelle, la détection de contour/bord et le comptage de trous ou de détails — là où une barre LED éclaire directement la surface avant et un dôme diffus traite les pièces réfléchissantes ou courbes, un rétroéclairage supprime au contraire tout détail de surface au profit d'un contour net.",
+    diagram: (
+      <BacklightDiagram
+        labels={{
+          ariaLabel: "Schéma d'un rétroéclairage : lumière transmise autour d'un objet opaque, directement vers la caméra",
+          panel: "Panneau de Rétroéclairage",
+          object: "Objet",
+          camera: "Caméra",
+          caption: "L'objet bloque les rayons centraux, produisant une silhouette nette sur le panneau lumineux.",
+        }}
+      />
+    ),
     highlightsTitle: "Points Forts Techniques",
     highlights: [
       "Conception industrielle : cadre en aluminium pour la dissipation thermique, connecteur M12 intégré pour un câblage standardisé.",
@@ -138,8 +158,6 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     rows: ROWS.fr,
     disclaimerNote: DISCLAIMER_NOTE.fr,
     integrationContent: <IntegrationContent locale="fr" />,
-    formLabels: FORM_LABELS.fr,
-    formSubjectPrefix: "Demande de spécifications — Rétroéclairages",
     relatedTitle: RELATED_TITLE.fr,
   },
 };

@@ -2,13 +2,16 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import type { Segment } from "@/data/catalog";
 import { ProductConfigTable, type ProductConfigRow, type ProductConfigTableLabels } from "./ProductConfigTable";
-import { EquivalenceRequestForm, type EquivalenceRequestFormLabels } from "./EquivalenceRequestForm";
+import { ContactForm } from "./ContactForm";
+import { ReassuranceBar } from "./ReassuranceBar";
 
 export interface ProductRichContent {
   h1: string;
   lead: string;
   introTitle: string;
   introParagraph: string;
+  /** Optional native SVG schematic illustrating how this lighting format works. */
+  diagram?: React.ReactNode;
   highlightsTitle: string;
   highlights: string[];
   tableLabels: ProductConfigTableLabels;
@@ -16,8 +19,6 @@ export interface ProductRichContent {
   disclaimerNote: string;
   /** Built per-page as JSX so it can embed contextual <Link>s to Silo 3 guides. */
   integrationContent: React.ReactNode;
-  formLabels: EquivalenceRequestFormLabels;
-  formSubjectPrefix: string;
   relatedTitle: string;
 }
 
@@ -63,6 +64,8 @@ export function ProductPageContent({
         <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">{rich.introParagraph}</p>
       </section>
 
+      {rich.diagram && <div className="mt-8">{rich.diagram}</div>}
+
       <section className="mt-10">
         <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
           {rich.highlightsTitle}
@@ -87,7 +90,7 @@ export function ProductPageContent({
       </section>
 
       <div className="mt-14">
-        <EquivalenceRequestForm labels={rich.formLabels} subjectPrefix={rich.formSubjectPrefix} />
+        <ContactForm locale={locale as "en" | "fr"} contextType="product" subjectContext={rich.h1} />
       </div>
 
       {relatedSegments.length > 0 && (
@@ -107,6 +110,10 @@ export function ProductPageContent({
           </ul>
         </section>
       )}
+
+      <div className="mt-14">
+        <ReassuranceBar locale={locale as "en" | "fr"} variant="compact" />
+      </div>
     </main>
   );
 }

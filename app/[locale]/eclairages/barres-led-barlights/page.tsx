@@ -8,7 +8,6 @@ import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildProductModelJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
-  FORM_LABELS,
   DISCLAIMER_NOTE,
   RELATED_TITLE,
   RELATED_SLUGS,
@@ -17,6 +16,7 @@ import {
 } from "@/lib/product-shared-content";
 import { ProductPageContent, type ProductRichContent } from "@/components/ProductPageContent";
 import type { ProductConfigRow } from "@/components/ProductConfigTable";
+import { BarLightDiagram } from "@/components/diagrams/BarLightDiagram";
 
 const ROUTE_KEY = "/eclairages/barres-led-barlights";
 const PUBLISHED_DATE = "2026-07-20";
@@ -116,6 +116,18 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     introTitle: "What Is an LED Bar Light Used For?",
     introParagraph:
       "A bar light is a linear array of LEDs behind an optical diffuser, mounted at a direct or grazing angle to illuminate a flat or gently curved field of view. It's the default choice for conveyor-line inspection, label and print verification, and any application needing even illumination across a wide, elongated area — where a dome light would be used instead for reflective or curved parts, and a coaxial light for specular, mirror-like surfaces.",
+    diagram: (
+      <BarLightDiagram
+        labels={{
+          ariaLabel: "Diagram of an LED bar light: incident beam and reflection at equal angles into the camera",
+          source: "LED Bar Light",
+          camera: "Camera",
+          surface: "Inspected Surface",
+          angleEqual: "θ (incidence) = θ' (reflection)",
+          caption: "Angle of incidence equals angle of reflection — the geometry behind every direct lighting setup.",
+        }}
+      />
+    ),
     highlightsTitle: "Technical Highlights",
     highlights: [
       "Industrial design: aluminum body for heat dissipation, integrated M12 connector for a standardized wiring harness.",
@@ -128,8 +140,6 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     rows: ROWS.en,
     disclaimerNote: DISCLAIMER_NOTE.en,
     integrationContent: <IntegrationContent locale="en" />,
-    formLabels: FORM_LABELS.en,
-    formSubjectPrefix: "Specification request — LED Bar Lights",
     relatedTitle: RELATED_TITLE.en,
   },
   fr: {
@@ -138,6 +148,18 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     introTitle: "À Quoi Sert une Barre LED ?",
     introParagraph:
       "Une barre LED est un alignement linéaire de LED derrière un diffuseur optique, monté en incidence directe ou rasante pour éclairer un champ de vision plat ou légèrement courbe. C'est le choix par défaut pour l'inspection sur ligne de convoyage, la vérification d'étiquettes et d'impression, et toute application nécessitant un éclairage homogène sur une zone large et allongée — là où un dôme diffus serait plutôt utilisé pour des pièces réfléchissantes ou courbes, et un éclairage coaxial pour des surfaces spéculaires de type miroir.",
+    diagram: (
+      <BarLightDiagram
+        labels={{
+          ariaLabel: "Schéma d'une barre LED : faisceau incident et réflexion à angles égaux vers la caméra",
+          source: "Barre LED",
+          camera: "Caméra",
+          surface: "Surface Inspectée",
+          angleEqual: "θ (incidence) = θ' (réflexion)",
+          caption: "L'angle d'incidence égale l'angle de réflexion — la géométrie derrière tout montage en éclairage direct.",
+        }}
+      />
+    ),
     highlightsTitle: "Points Forts Techniques",
     highlights: [
       "Conception industrielle : corps en aluminium pour la dissipation thermique, connecteur M12 intégré pour un câblage standardisé.",
@@ -150,8 +172,6 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     rows: ROWS.fr,
     disclaimerNote: DISCLAIMER_NOTE.fr,
     integrationContent: <IntegrationContent locale="fr" />,
-    formLabels: FORM_LABELS.fr,
-    formSubjectPrefix: "Demande de spécifications — Barres LED",
     relatedTitle: RELATED_TITLE.fr,
   },
 };

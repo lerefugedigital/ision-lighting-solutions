@@ -18,16 +18,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/",
     ...catalog.silos.map((silo) => silo.routeKey),
     ...catalog.segments.map((segment) => segment.routeKey),
+    "/contact",
+    "/mentions-legales",
   ];
 
   return paths.map((path) => {
     const languages = alternatesFor(path);
     const depth = path.split("/").filter(Boolean).length;
+    const isUtilityPage = path === "/contact" || path === "/mentions-legales";
     return {
       url: languages[routing.defaultLocale],
       alternates: { languages },
-      priority: depth === 0 ? 1 : depth === 1 ? 0.8 : 0.6,
-      changeFrequency: path === "/" ? "weekly" : "monthly",
+      priority: path === "/" ? 1 : isUtilityPage ? 0.5 : depth === 1 ? 0.8 : 0.6,
+      changeFrequency: path === "/" ? "weekly" : isUtilityPage ? "yearly" : "monthly",
     };
   });
 }

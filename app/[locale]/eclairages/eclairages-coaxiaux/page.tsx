@@ -8,7 +8,6 @@ import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildProductModelJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
-  FORM_LABELS,
   DISCLAIMER_NOTE,
   RELATED_TITLE,
   RELATED_SLUGS,
@@ -17,6 +16,7 @@ import {
 } from "@/lib/product-shared-content";
 import { ProductPageContent, type ProductRichContent } from "@/components/ProductPageContent";
 import type { ProductConfigRow } from "@/components/ProductConfigTable";
+import { CoaxialDiagram } from "@/components/diagrams/CoaxialDiagram";
 
 const ROUTE_KEY = "/eclairages/eclairages-coaxiaux";
 const PUBLISHED_DATE = "2026-07-20";
@@ -104,6 +104,18 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     introTitle: "What Is Coaxial Lighting Used For?",
     introParagraph:
       "Coaxial lighting sends light through a beamsplitter so it travels along precisely the same axis as the camera's lens. Only surfaces perpendicular to that axis reflect light straight back into the lens — flat areas appear bright and uniform, while any scratch, engraving, dent or laser-marked code that breaks that perpendicularity appears dark by contrast. That makes it the reference choice for flat, mirror-like or etched metal parts, where a dome light (built for curved or irregular reflective surfaces) or a bar light (built for flat matte surfaces) would instead wash the same defects out.",
+    diagram: (
+      <CoaxialDiagram
+        labels={{
+          ariaLabel: "Diagram of coaxial lighting: a beamsplitter aligns the light source with the camera's optical axis",
+          source: "Light Source",
+          beamsplitter: "Beamsplitter (45°)",
+          camera: "Camera",
+          object: "Object",
+          caption: "The beamsplitter aligns the light source with the camera's own optical axis.",
+        }}
+      />
+    ),
     highlightsTitle: "Technical Highlights",
     highlights: [
       "Integrated beamsplitter directing light exactly along the camera's optical axis.",
@@ -116,8 +128,6 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     rows: ROWS.en,
     disclaimerNote: DISCLAIMER_NOTE.en,
     integrationContent: <IntegrationContent locale="en" />,
-    formLabels: FORM_LABELS.en,
-    formSubjectPrefix: "Specification request — Coaxial Lighting",
     relatedTitle: RELATED_TITLE.en,
   },
   fr: {
@@ -126,6 +136,18 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     introTitle: "À Quoi Sert un Éclairage Coaxial ?",
     introParagraph:
       "L'éclairage coaxial envoie la lumière à travers un diviseur optique de sorte qu'elle parcoure exactement le même axe que l'objectif de la caméra. Seules les surfaces perpendiculaires à cet axe renvoient la lumière directement vers l'objectif — les zones plates apparaissent lumineuses et uniformes, tandis qu'une rayure, une gravure, un choc ou un code marqué au laser qui rompt cette perpendicularité apparaît sombre par contraste. C'est ce qui en fait le choix de référence pour les pièces métalliques plates, de type miroir ou gravées, là où un dôme diffus (conçu pour les surfaces réfléchissantes courbes ou irrégulières) ou une barre LED (conçue pour les surfaces plates mates) effaceraient au contraire ces mêmes défauts.",
+    diagram: (
+      <CoaxialDiagram
+        labels={{
+          ariaLabel: "Schéma de l'éclairage coaxial : un diviseur optique aligne la source lumineuse sur l'axe optique de la caméra",
+          source: "Source Lumineuse",
+          beamsplitter: "Diviseur Optique (45°)",
+          camera: "Caméra",
+          object: "Objet",
+          caption: "Le diviseur optique aligne la source lumineuse sur l'axe optique propre de la caméra.",
+        }}
+      />
+    ),
     highlightsTitle: "Points Forts Techniques",
     highlights: [
       "Diviseur optique intégré dirigeant la lumière exactement dans l'axe optique de la caméra.",
@@ -138,8 +160,6 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     rows: ROWS.fr,
     disclaimerNote: DISCLAIMER_NOTE.fr,
     integrationContent: <IntegrationContent locale="fr" />,
-    formLabels: FORM_LABELS.fr,
-    formSubjectPrefix: "Demande de spécifications — Éclairage Coaxial",
     relatedTitle: RELATED_TITLE.fr,
   },
 };

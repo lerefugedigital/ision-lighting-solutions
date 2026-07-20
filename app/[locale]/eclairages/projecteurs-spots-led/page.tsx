@@ -8,7 +8,6 @@ import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildProductModelJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
-  FORM_LABELS,
   DISCLAIMER_NOTE,
   RELATED_TITLE,
   RELATED_SLUGS,
@@ -17,6 +16,7 @@ import {
 } from "@/lib/product-shared-content";
 import { ProductPageContent, type ProductRichContent } from "@/components/ProductPageContent";
 import type { ProductConfigRow } from "@/components/ProductConfigTable";
+import { SpotlightDiagram } from "@/components/diagrams/SpotlightDiagram";
 
 const ROUTE_KEY = "/eclairages/projecteurs-spots-led";
 const PUBLISHED_DATE = "2026-07-20";
@@ -104,6 +104,18 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     introTitle: "What Are LED Spotlights & Floodlights Used For?",
     introParagraph:
       "Spotlights and floodlights use a focusing lens or reflector to project light over long working distances, well beyond what a close-mounted bar, dome, backlight or coaxial light is built for. A narrow-beam spot concentrates light on a distant, contained field; a wide-beam flood covers a large area instead — both suited to outdoor inspection, large-object scanning, or any high-ambient-light environment where the camera needs to out-compete sunlight or factory floor lighting rather than simply illuminate a nearby part.",
+    diagram: (
+      <SpotlightDiagram
+        labels={{
+          ariaLabel: "Diagram of a spotlight: a directional beam projected over a long working distance to a distant target",
+          source: "Spotlight",
+          camera: "Camera",
+          target: "Distant Target",
+          distance: "Long Working Distance",
+          caption: "A focused beam reaches targets no close-mounted light format can illuminate.",
+        }}
+      />
+    ),
     highlightsTitle: "Technical Highlights",
     highlights: [
       "Focusing lens or reflector optics engineered for long working distances.",
@@ -116,8 +128,6 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     rows: ROWS.en,
     disclaimerNote: DISCLAIMER_NOTE.en,
     integrationContent: <IntegrationContent locale="en" />,
-    formLabels: FORM_LABELS.en,
-    formSubjectPrefix: "Specification request — LED Spotlights & Floodlights",
     relatedTitle: RELATED_TITLE.en,
   },
   fr: {
@@ -126,6 +136,18 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     introTitle: "À Quoi Servent les Projecteurs et Spots LED ?",
     introParagraph:
       "Les projecteurs et spots utilisent une lentille de focalisation ou un réflecteur pour projeter la lumière sur de longues distances de travail, bien au-delà de ce pour quoi une barre LED, un dôme, un rétroéclairage ou un éclairage coaxial monté à courte distance sont conçus. Un spot à faisceau étroit concentre la lumière sur un champ distant et contenu ; un projecteur à faisceau large couvre au contraire une grande surface — tous deux adaptés à l'inspection en extérieur, au scan de grands objets, ou à tout environnement en forte lumière ambiante où la caméra doit primer sur la lumière du soleil ou l'éclairage d'atelier plutôt que simplement éclairer une pièce proche.",
+    diagram: (
+      <SpotlightDiagram
+        labels={{
+          ariaLabel: "Schéma d'un projecteur : un faisceau directionnel projeté sur une longue distance de travail vers une cible distante",
+          source: "Projecteur",
+          camera: "Caméra",
+          target: "Cible Distante",
+          distance: "Longue Distance de Travail",
+          caption: "Un faisceau focalisé atteint des cibles qu'aucun format d'éclairage monté à courte distance ne peut couvrir.",
+        }}
+      />
+    ),
     highlightsTitle: "Points Forts Techniques",
     highlights: [
       "Optique à lentille de focalisation ou réflecteur conçue pour les longues distances de travail.",
@@ -138,8 +160,6 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     rows: ROWS.fr,
     disclaimerNote: DISCLAIMER_NOTE.fr,
     integrationContent: <IntegrationContent locale="fr" />,
-    formLabels: FORM_LABELS.fr,
-    formSubjectPrefix: "Demande de spécifications — Projecteurs & Spots LED",
     relatedTitle: RELATED_TITLE.fr,
   },
 };

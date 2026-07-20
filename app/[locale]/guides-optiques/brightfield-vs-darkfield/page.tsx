@@ -8,6 +8,7 @@ import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildTechArticleJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
+import { BrightfieldDarkfieldDiagram } from "@/components/diagrams/BrightfieldDarkfieldDiagram";
 
 const ROUTE_KEY = "/guides-optiques/brightfield-vs-darkfield";
 const PUBLISHED_DATE = "2026-07-20";
@@ -61,6 +62,20 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
     solutionTitle: "The Optical Solution",
     solutionParagraph:
       "This is exactly the distinction between brightfield and darkfield illumination, a well-established principle from optics and microscopy that applies directly to machine vision. In brightfield lighting, the source is positioned so its light reflects straight back into the camera off the flat, undamaged surface — the image is bright by default, and a scratch or defect that scatters that light away from the lens appears as a dark mark against it. In darkfield lighting, the source instead sits at a grazing, oblique angle chosen so that specular reflection off the flat surface never reaches the lens at all — the image is dark by default, and only a raised edge, scratch or engraving that happens to scatter light back toward the lens at that specific angle appears as a bright mark against the dark field. Brightfield suits flat, mirror-like surfaces best viewed on-axis (a job for coaxial lighting); darkfield suits surface-relief defects like scratches and embossing, and is typically achieved with a bar or dome light mounted at a low, grazing angle instead of straight on.",
+    diagram: (
+      <BrightfieldDarkfieldDiagram
+        labels={{
+          ariaLabel: "Side-by-side diagram comparing brightfield lighting (direct reflection into the camera) and darkfield lighting (grazing angle, only a defect scatters light into the camera)",
+          brightfield: "Brightfield",
+          darkfield: "Darkfield",
+          source: "Light",
+          camera: "Camera",
+          defect: "Defect",
+          missed: "Reflection misses the lens",
+          caption: "Brightfield: flat areas reflect straight into the lens. Darkfield: only a defect scatters light toward it.",
+        }}
+      />
+    ),
     wiringTitle: "Wiring & Integration Recommendations",
     wiringContent: <WiringContent locale="en" />,
     productsTitle: PRODUCTS_TITLE.en,
@@ -75,6 +90,20 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
     solutionTitle: "La Solution Optique",
     solutionParagraph:
       "C'est exactement la distinction entre l'éclairage brightfield et darkfield, un principe bien établi issu de l'optique et de la microscopie qui s'applique directement à la vision industrielle. En brightfield, la source est positionnée de sorte que sa lumière soit réfléchie directement vers la caméra par la surface plate et intacte — l'image est claire par défaut, et une rayure ou un défaut qui disperse cette lumière hors de l'objectif apparaît comme une marque sombre. En darkfield, la source est au contraire placée selon un angle rasant et oblique choisi pour que la réflexion spéculaire de la surface plate n'atteigne jamais l'objectif — l'image est sombre par défaut, et seul un bord surélevé, une rayure ou une gravure qui disperse la lumière vers l'objectif sous cet angle précis apparaît comme une marque claire sur fond sombre. Le brightfield convient aux surfaces plates de type miroir observées dans l'axe (le rôle d'un éclairage coaxial) ; le darkfield convient aux défauts de relief comme les rayures et embossages, et s'obtient généralement avec une barre LED ou un dôme monté selon un angle bas et rasant plutôt que de face.",
+    diagram: (
+      <BrightfieldDarkfieldDiagram
+        labels={{
+          ariaLabel: "Schéma comparatif brightfield (réflexion directe vers la caméra) et darkfield (angle rasant, seul un défaut disperse la lumière vers la caméra)",
+          brightfield: "Brightfield",
+          darkfield: "Darkfield",
+          source: "Éclairage",
+          camera: "Caméra",
+          defect: "Défaut",
+          missed: "Le reflet manque l'objectif",
+          caption: "Brightfield : les zones plates réfléchissent droit vers l'objectif. Darkfield : seul un défaut y disperse la lumière.",
+        }}
+      />
+    ),
     wiringTitle: "Recommandations de Câblage et d'Intégration",
     wiringContent: <WiringContent locale="fr" />,
     productsTitle: PRODUCTS_TITLE.fr,
