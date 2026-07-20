@@ -2,6 +2,8 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import type { Segment } from "@/data/catalog";
 import { ProductConfigTable, type ProductConfigRow, type ProductConfigTableLabels } from "./ProductConfigTable";
+import { BeamPatternViewer } from "./BeamPatternViewer";
+import { TechnicalDownloads } from "./TechnicalDownloads";
 import { ContactForm } from "./ContactForm";
 import { ReassuranceBar } from "./ReassuranceBar";
 
@@ -28,6 +30,8 @@ interface ProductPageContentProps {
   placeholderComingSoon: string;
   relatedSegments: Segment[];
   locale: Locale;
+  /** Real PDF path from public/downloads, or null to show the "available on request" fallback. */
+  datasheetHref?: string | null;
 }
 
 export function ProductPageContent({
@@ -36,6 +40,7 @@ export function ProductPageContent({
   placeholderComingSoon,
   relatedSegments,
   locale,
+  datasheetHref = null,
 }: ProductPageContentProps) {
   if (!rich) {
     return (
@@ -85,11 +90,16 @@ export function ProductPageContent({
         <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">{rich.disclaimerNote}</p>
       </section>
 
+      <section className="mt-10">
+        <BeamPatternViewer locale={locale as "en" | "fr"} />
+      </section>
+
       <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm leading-relaxed text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
         {rich.integrationContent}
       </section>
 
-      <div className="mt-14">
+      <div className="mt-14 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-start">
+        <TechnicalDownloads locale={locale as "en" | "fr"} productName={rich.h1} datasheetHref={datasheetHref} />
         <ContactForm locale={locale as "en" | "fr"} contextType="product" subjectContext={rich.h1} />
       </div>
 

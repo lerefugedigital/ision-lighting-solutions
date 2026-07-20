@@ -22,6 +22,12 @@ const MATERIAL_TYPE_LABEL: Record<string, string> = {
   other: "Other",
 };
 
+const CAD_FORMAT_LABEL: Record<string, string> = {
+  step: "STEP",
+  iges: "IGES",
+  solidworks: "SolidWorks",
+};
+
 interface ContactPayload {
   name?: unknown;
   email?: unknown;
@@ -35,6 +41,7 @@ interface ContactPayload {
   operatingMode?: unknown;
   cameraModel?: unknown;
   materialType?: unknown;
+  cadFormat?: unknown;
   /** Honeypot — must stay empty. If a bot fills it, we accept silently and skip sending. */
   website?: unknown;
 }
@@ -67,9 +74,18 @@ export async function POST(request: Request) {
   const operatingMode = asString(body.operatingMode);
   const cameraModel = asString(body.cameraModel);
   const materialType = asString(body.materialType);
+  const cadFormat = asString(body.cadFormat);
+
+  // The CAD request modal is deliberately a 3-field form (email, company, format) —
+  // no name or message is collected, so it has its own minimal validation.
+  const isCadRequest = contextType === "cad_request";
 
   // Server-side validation — never trust the client alone.
-  if (!name || !email || !company || !message) {
+  if (isCadRequest) {
+    if (!email || !company || !cadFormat) {
+      return NextResponse.json({ ok: false, error: "missing_required_field" }, { status: 400 });
+    }
+  } else if (!name || !email || !company || !message) {
     return NextResponse.json({ ok: false, error: "missing_required_field" }, { status: 400 });
   }
   if (!EMAIL_REGEX.test(email)) {
@@ -89,18 +105,25 @@ export async function POST(request: Request) {
   if (contextType === "optical_guide" && materialType) {
     contextLines.push(`Material / part type: ${MATERIAL_TYPE_LABEL[materialType] ?? materialType}`);
   }
+  if (isCadRequest && cadFormat) {
+    contextLines.push(`Requested CAD format: ${CAD_FORMAT_LABEL[cadFormat] ?? cadFormat}`);
+  }
+
+  const effectiveMessage = isCadRequest
+    ? `3D CAD file request — desired format: ${CAD_FORMAT_LABEL[cadFormat] ?? cadFormat}.`
+    : message;
 
   const textBody = [
     `New B2B contact form submission — ${subjectContext}`,
     "",
-    `Name: ${name}`,
+    name ? `Name: ${name}` : null,
     `Email: ${email}`,
     `Company: ${company}`,
     phone ? `Phone: ${phone}` : null,
     ...contextLines,
     "",
     "Message:",
-    message,
+    effectiveMessage,
   ]
     .filter((line): line is string => line !== null)
     .join("\n");

@@ -24,7 +24,8 @@ const PILLARS: Record<"en" | "fr", Pillar[]> = {
     {
       icon: "⚡",
       title: "Engineering Support",
-      description: "Optical schematic validation and overdrive calculation within 24h.",
+      description:
+        "Optical schematic validation and overdrive calculation within 24h. 2D/3D plans & datasheets available on request.",
     },
     {
       icon: "🛡️",
@@ -46,7 +47,8 @@ const PILLARS: Record<"en" | "fr", Pillar[]> = {
     {
       icon: "⚡",
       title: "Support Ingénierie",
-      description: "Validation de votre schéma optique et calcul overdrive sous 24h.",
+      description:
+        "Validation de votre schéma optique et calcul overdrive sous 24h. Plans 2D/3D & datasheets disponibles sur demande.",
     },
     {
       icon: "🛡️",
@@ -64,7 +66,7 @@ export function ReassuranceBar({ locale, variant = "full" }: ReassuranceBarProps
       <div className="rounded-2xl border border-slate-800 bg-[#0b1220] px-6 py-5">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {pillars.map((pillar) => (
-            <div key={pillar.title} className="flex items-center gap-2.5">
+            <div key={pillar.title} title={pillar.description} className="flex items-center gap-2.5">
               <span aria-hidden="true" className="text-lg">
                 {pillar.icon}
               </span>

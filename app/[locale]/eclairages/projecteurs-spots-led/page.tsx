@@ -14,10 +14,12 @@ import {
   PLACEHOLDER_COMING_SOON,
   type RichLocale,
 } from "@/lib/product-shared-content";
+import { getDatasheetHref } from "@/lib/technical-downloads";
 import { ProductPageContent, type ProductRichContent } from "@/components/ProductPageContent";
 import type { ProductConfigRow } from "@/components/ProductConfigTable";
 import { SpotlightDiagram } from "@/components/diagrams/SpotlightDiagram";
 
+const PRODUCT_SLUG = "projecteurs-spots-led";
 const ROUTE_KEY = "/eclairages/projecteurs-spots-led";
 const PUBLISHED_DATE = "2026-07-20";
 const MODIFIED_DATE = "2026-07-20";
@@ -200,6 +202,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
 
   const isRich = locale === "en" || locale === "fr";
   const rich = isRich ? RICH_CONTENT[locale as RichLocale] : null;
+  const datasheetHref = rich ? getDatasheetHref(PRODUCT_SLUG, locale as RichLocale) : null;
   const fallback = findCatalogSegment()?.content[locale];
 
   const jsonLd = rich
@@ -234,6 +237,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         placeholderComingSoon={PLACEHOLDER_COMING_SOON[locale as "de" | "it"] ?? "Content coming soon."}
         relatedSegments={relatedSegments}
         locale={locale}
+        datasheetHref={datasheetHref}
       />
     </>
   );
