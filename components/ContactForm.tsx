@@ -1,8 +1,19 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
+import { trackEvent } from "@/lib/gtag";
 
 export type ContactFormContextType = "product" | "equivalence" | "wiring" | "optical_guide" | "general";
+
+/** Maps each form context to its silo, so the GA4 event tells apart submissions coming
+ *  from Silo 1 (product), Silo 2 (equivalence), Silo 3 (wiring) and Silo 4 (optical_guide). */
+const CONTEXT_TO_SILO: Record<ContactFormContextType, string> = {
+  product: "eclairages",
+  equivalence: "equivalences",
+  wiring: "cablage-integration",
+  optical_guide: "guides-optiques",
+  general: "general",
+};
 
 export interface ContactFormProps {
   locale: "en" | "fr";
@@ -260,6 +271,12 @@ export function ContactForm({ locale, contextType, subjectContext }: ContactForm
       });
       if (!res.ok) throw new Error("Request failed");
       setStatus("success");
+      trackEvent("contact_form_submit", {
+        form_silo: CONTEXT_TO_SILO[contextType],
+        form_context: contextType,
+        form_subject: subjectContext ?? t.context[contextType].title,
+        locale,
+      });
     } catch {
       setStatus("error");
     }
