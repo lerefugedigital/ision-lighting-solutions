@@ -20,6 +20,8 @@ export interface ProductRichContent {
   tableLabels: ProductConfigTableLabels;
   rows: ProductConfigRow[];
   disclaimerNote: string;
+  /** Optional "Gamme & Séries" block (variants table + series cards + reassurance CTA), built per-page. */
+  rangeSection?: React.ReactNode;
   /** Built per-page as JSX so it can embed contextual <Link>s to Silo 3 guides. */
   integrationContent: React.ReactNode;
   relatedTitle: string;
@@ -91,6 +93,8 @@ export function ProductPageContent({
           ))}
         </ul>
       </section>
+
+      {rich.rangeSection && <section className="mt-10 print:hidden">{rich.rangeSection}</section>}
 
       <section className="mt-10 break-inside-avoid">
         <ProductConfigTable rows={rich.rows} labels={rich.tableLabels} />

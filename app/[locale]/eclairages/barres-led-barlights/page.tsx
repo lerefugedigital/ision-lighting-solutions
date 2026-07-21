@@ -18,6 +18,13 @@ import { getDatasheetHref } from "@/lib/technical-downloads";
 import { ProductPageContent, type ProductRichContent } from "@/components/ProductPageContent";
 import type { ProductConfigRow } from "@/components/ProductConfigTable";
 import { BarLightDiagram } from "@/components/diagrams/BarLightDiagram";
+import { ProductRangeSection, type BarLightSeriesCode } from "@/components/ProductRangeSection";
+
+const SERIES_SLUGS: Record<BarLightSeriesCode, string> = {
+  "BAR-STD": "barres-led-barlights-bar-std",
+  "BAR-PWR": "barres-led-barlights-bar-pwr",
+  "BAR-INOX": "barres-led-barlights-bar-inox",
+};
 
 const PRODUCT_SLUG = "barres-led-barlights";
 const ROUTE_KEY = "/eclairages/barres-led-barlights";
@@ -221,9 +228,24 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   );
 
   const isRich = locale === "en" || locale === "fr";
-  const rich = isRich ? RICH_CONTENT[locale as RichLocale] : null;
-  const datasheetHref = rich ? getDatasheetHref(PRODUCT_SLUG, locale as RichLocale) : null;
+  const datasheetHref = isRich ? getDatasheetHref(PRODUCT_SLUG, locale as RichLocale) : null;
   const fallback = findCatalogSegment()?.content[locale];
+
+  const rich = isRich
+    ? {
+        ...RICH_CONTENT[locale as RichLocale],
+        rangeSection: (
+          <ProductRangeSection
+            locale={locale as RichLocale}
+            datasheetHrefs={{
+              "BAR-STD": getDatasheetHref(SERIES_SLUGS["BAR-STD"], locale as RichLocale),
+              "BAR-PWR": getDatasheetHref(SERIES_SLUGS["BAR-PWR"], locale as RichLocale),
+              "BAR-INOX": getDatasheetHref(SERIES_SLUGS["BAR-INOX"], locale as RichLocale),
+            }}
+          />
+        ),
+      }
+    : null;
 
   const jsonLd = rich
     ? buildProductModelJsonLd({

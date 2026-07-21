@@ -19,3 +19,19 @@ public/downloads/barres-led-barlights/datasheet-fr.pdf
 
 No code change is needed — `lib/technical-downloads.ts` checks for the file's existence
 at request time and links to it automatically once it's present.
+
+## Per-series datasheets (Gamme & Séries pages)
+
+Pages that break a range down into series (e.g. `/eclairages/barres-led-barlights`) use one
+subfolder per series, named `<segment-slug>-<series-code>`:
+
+```
+public/downloads/barres-led-barlights-bar-std/datasheet-en.pdf
+public/downloads/barres-led-barlights-bar-std/datasheet-fr.pdf
+public/downloads/barres-led-barlights-bar-pwr/datasheet-en.pdf
+public/downloads/barres-led-barlights-bar-pwr/datasheet-fr.pdf
+public/downloads/barres-led-barlights-bar-inox/datasheet-en.pdf
+public/downloads/barres-led-barlights-bar-inox/datasheet-fr.pdf
+```
+
+Until a given file exists, its "Datasheet (PDF)" button falls back to the browser's print view.
