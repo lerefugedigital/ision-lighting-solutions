@@ -8,6 +8,7 @@ import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
+import { WavelengthContrastSimulator } from "@/components/WavelengthContrastSimulator";
 
 const ROUTE_KEY = "/guides-optiques/choisir-couleur-led-vision";
 const PUBLISHED_DATE = "2026-07-20";
@@ -61,6 +62,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
     solutionTitle: "The Optical Solution",
     solutionParagraph:
       "A colored surface strongly reflects light of its own color and strongly absorbs light of the complementary color on the color wheel — a direct, well-established consequence of selective reflectance. Illuminating a red feature with red light makes it reflect brightly, appearing light in the image; illuminating that same red feature with blue or green light instead makes it absorb strongly, appearing dark. Maximizing contrast between two differently colored regions is therefore a matter of choosing a wavelength that one region reflects and the other absorbs — brightening what you want visible, and darkening what you want suppressed, before the camera ever sees a single pixel.",
+    interactiveTool: <WavelengthContrastSimulator locale="en" />,
     wiringTitle: "Wiring & Integration Recommendations",
     wiringContent: <WiringContent locale="en" />,
     productsTitle: PRODUCTS_TITLE.en,
@@ -75,6 +77,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
     solutionTitle: "La Solution Optique",
     solutionParagraph:
       "Une surface colorée réfléchit fortement la lumière de sa propre couleur et absorbe fortement la lumière de la couleur complémentaire sur le cercle chromatique — une conséquence directe et bien établie de la réflectance sélective. Éclairer un détail rouge en lumière rouge le fait réfléchir fortement, apparaissant clair dans l'image ; éclairer ce même détail rouge en lumière bleue ou verte le fait au contraire absorber fortement, apparaissant sombre. Maximiser le contraste entre deux zones de couleurs différentes revient donc à choisir une longueur d'onde que l'une réfléchit et que l'autre absorbe — éclaircissant ce que vous voulez voir, et assombrissant ce que vous voulez supprimer, avant même que la caméra ne voie le moindre pixel.",
+    interactiveTool: <WavelengthContrastSimulator locale="fr" />,
     wiringTitle: "Recommandations de Câblage et d'Intégration",
     wiringContent: <WiringContent locale="fr" />,
     productsTitle: PRODUCTS_TITLE.fr,

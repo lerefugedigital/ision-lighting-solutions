@@ -18,12 +18,108 @@ import { getDatasheetHref } from "@/lib/technical-downloads";
 import { ProductPageContent, type ProductRichContent } from "@/components/ProductPageContent";
 import type { ProductConfigRow } from "@/components/ProductConfigTable";
 import { BarLightDiagram } from "@/components/diagrams/BarLightDiagram";
-import { ProductRangeSection, type BarLightSeriesCode } from "@/components/ProductRangeSection";
+import { ProductRangeSection, type ProductRangeSectionProps } from "@/components/ProductRangeSection";
+import { WavelengthContrastSimulator } from "@/components/WavelengthContrastSimulator";
+
+type BarLightSeriesCode = "BAR-STD" | "BAR-PWR" | "BAR-INOX";
 
 const SERIES_SLUGS: Record<BarLightSeriesCode, string> = {
   "BAR-STD": "barres-led-barlights-bar-std",
   "BAR-PWR": "barres-led-barlights-bar-pwr",
   "BAR-INOX": "barres-led-barlights-bar-inox",
+};
+
+type RangeContent = Omit<ProductRangeSectionProps, "locale" | "datasheetHrefs">;
+
+const RANGE_CONTENT: Record<RichLocale, RangeContent> = {
+  en: {
+    specsTitle: "Range Specifications & Variants",
+    specsIntro:
+      "Every bar light in the range is configured from the parameters below to match your application and camera.",
+    columnCharacteristic: "Characteristic",
+    columnOptions: "Available Variants",
+    specs: [
+      { label: "Available Lengths", values: "100 mm · 200 mm · 300 mm · 450 mm · 600 mm" },
+      {
+        label: "Wavelengths / Colors",
+        values: "Red (630 nm) · Infrared (850 nm) · White (5700 K) · Blue (470 nm) · UV (365 nm / 395 nm)",
+      },
+      { label: "Operating Modes", values: "Continuous 24V DC · Strobe Overdrive (up to x5 intensity)" },
+      { label: "Ingress Protection", values: "IP65 (Standard) · IP69K (Stainless Food-Grade Option)" },
+      { label: "Connector", values: "M12 male, 5-pin (standardized wiring)" },
+    ],
+    seriesTitle: "The 3 Flagship Series",
+    seriesIntro: "Pick the series matched to your line speed and environment, then request the datasheet or the 3D model.",
+    series: [
+      {
+        code: "BAR-STD",
+        name: "Standard 24V LED Bar Light",
+        description: "Ideal for presence detection, code reading and standard grazing illumination.",
+      },
+      {
+        code: "BAR-PWR",
+        name: "Overdrive LED Bar Light",
+        description: "Built for high-speed lines and short exposure times (< 1 ms).",
+      },
+      {
+        code: "BAR-INOX",
+        name: "IP69K 316L Stainless LED Bar Light",
+        description: "For washdown, chemical, healthcare and food-processing environments.",
+      },
+    ],
+    datasheetButtonLabel: "Datasheet (PDF)",
+    cadButtonLabel: "3D Model (STEP)",
+    reassurance: {
+      title: "Not sure which length or wavelength fits your camera?",
+      description:
+        "Send us your parts — our engineers test the optimal bar light on your application in the lab and send back results within 48h.",
+      button: "Test on Your Parts — 48h Turnaround",
+    },
+  },
+  fr: {
+    specsTitle: "Caractéristiques & Déclinaisons de la Gamme",
+    specsIntro:
+      "Chaque barre LED de la gamme se configure à partir des paramètres ci-dessous pour s'adapter à votre application et à votre caméra.",
+    columnCharacteristic: "Caractéristique",
+    columnOptions: "Déclinaisons Disponibles",
+    specs: [
+      { label: "Longueurs Disponibles", values: "100 mm · 200 mm · 300 mm · 450 mm · 600 mm" },
+      {
+        label: "Longueurs d'Onde / Couleurs",
+        values: "Rouge (630 nm) · Infrarouge (850 nm) · Blanc (5700 K) · Bleu (470 nm) · UV (365 nm / 395 nm)",
+      },
+      { label: "Modes de Fonctionnement", values: "Continu 24V DC · Strobe Overdrive (jusqu'à x5 d'intensité)" },
+      { label: "Indices de Protection", values: "IP65 (Standard) · IP69K (Option Inox Agroalimentaire)" },
+      { label: "Connectique", values: "M12 mâle 5 pôles (câblage standardisé)" },
+    ],
+    seriesTitle: "Les 3 Séries Phares",
+    seriesIntro: "Choisissez la série adaptée à votre cadence et votre environnement, puis demandez la fiche technique ou le modèle 3D.",
+    series: [
+      {
+        code: "BAR-STD",
+        name: "Barre LED 24V Standard",
+        description: "Idéale pour le contrôle de présence, la lecture de code et l'éclairage rasant standard.",
+      },
+      {
+        code: "BAR-PWR",
+        name: "Barre LED Overdrive",
+        description: "Conçue pour les cadences rapides et les temps de pose brefs (< 1 ms).",
+      },
+      {
+        code: "BAR-INOX",
+        name: "Barre LED IP69K Inox 316L",
+        description: "Pour environnements lavables, chimie, santé et agroalimentaire.",
+      },
+    ],
+    datasheetButtonLabel: "Fiche Technique (PDF)",
+    cadButtonLabel: "Modèle 3D (STEP)",
+    reassurance: {
+      title: "Vous hésitez sur la longueur ou la couleur d'éclairage adaptée à votre caméra ?",
+      description:
+        "Envoyez-nous vos pièces : nos ingénieurs testent la barre LED optimale pour votre application en laboratoire et vous retournent les résultats sous 48h.",
+      button: "Tester sur Vos Pièces en Laboratoire — Prêt 48h",
+    },
+  },
 };
 
 const PRODUCT_SLUG = "barres-led-barlights";
@@ -237,6 +333,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         rangeSection: (
           <ProductRangeSection
             locale={locale as RichLocale}
+            {...RANGE_CONTENT[locale as RichLocale]}
             datasheetHrefs={{
               "BAR-STD": getDatasheetHref(SERIES_SLUGS["BAR-STD"], locale as RichLocale),
               "BAR-PWR": getDatasheetHref(SERIES_SLUGS["BAR-PWR"], locale as RichLocale),
@@ -244,6 +341,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
             }}
           />
         ),
+        wavelengthSimulator: <WavelengthContrastSimulator locale={locale as RichLocale} />,
       }
     : null;
 

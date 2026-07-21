@@ -22,6 +22,8 @@ export interface ProductRichContent {
   disclaimerNote: string;
   /** Optional "Gamme & Séries" block (variants table + series cards + reassurance CTA), built per-page. */
   rangeSection?: React.ReactNode;
+  /** Optional interactive wavelength/contrast demo, built per-page. */
+  wavelengthSimulator?: React.ReactNode;
   /** Built per-page as JSX so it can embed contextual <Link>s to Silo 3 guides. */
   integrationContent: React.ReactNode;
   relatedTitle: string;
@@ -104,6 +106,8 @@ export function ProductPageContent({
       <section className="mt-10 break-inside-avoid">
         <BeamPatternViewer locale={locale as "en" | "fr"} />
       </section>
+
+      {rich.wavelengthSimulator && <section className="mt-10 print:hidden">{rich.wavelengthSimulator}</section>}
 
       <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm leading-relaxed text-slate-600 print:hidden dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
         {rich.integrationContent}

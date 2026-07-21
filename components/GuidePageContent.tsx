@@ -15,6 +15,8 @@ export interface GuideRichContent {
   solutionParagraph: string;
   /** Optional native SVG schematic illustrating the optical principle just explained. */
   diagram?: ReactNode;
+  /** Optional interactive demo (e.g. wavelength/contrast simulator), built per-page. */
+  interactiveTool?: ReactNode;
   wiringTitle: string;
   /** Built per-page as JSX so it can embed contextual <Link>s to Silo 3 guides. */
   wiringContent: ReactNode;
@@ -91,6 +93,8 @@ export function GuidePageContent({
       </section>
 
       {rich.diagram && <div className="mt-8">{rich.diagram}</div>}
+
+      {rich.interactiveTool && <div className="mt-10">{rich.interactiveTool}</div>}
 
       <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm leading-relaxed text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
         <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{rich.wiringTitle}</h2>

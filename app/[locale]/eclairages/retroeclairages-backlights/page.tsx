@@ -18,22 +18,124 @@ import { getDatasheetHref } from "@/lib/technical-downloads";
 import { ProductPageContent, type ProductRichContent } from "@/components/ProductPageContent";
 import type { ProductConfigRow } from "@/components/ProductConfigTable";
 import { BacklightDiagram } from "@/components/diagrams/BacklightDiagram";
+import { ProductRangeSection, type ProductRangeSectionProps } from "@/components/ProductRangeSection";
+import { HomogeneitySimulator } from "@/components/HomogeneitySimulator";
+import { WavelengthContrastSimulator } from "@/components/WavelengthContrastSimulator";
 
 const PRODUCT_SLUG = "retroeclairages-backlights";
 const ROUTE_KEY = "/eclairages/retroeclairages-backlights";
 const PUBLISHED_DATE = "2026-07-20";
 const MODIFIED_DATE = "2026-07-20";
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
+type BacklightSeriesCode = "BKL-STD" | "BKL-PWR" | "BKL-SLIM / INOX";
+
+const SERIES_SLUGS: Record<BacklightSeriesCode, string> = {
+  "BKL-STD": "retroeclairages-backlights-bkl-std",
+  "BKL-PWR": "retroeclairages-backlights-bkl-pwr",
+  "BKL-SLIM / INOX": "retroeclairages-backlights-bkl-slim-inox",
+};
+
+type RangeContent = Omit<ProductRangeSectionProps, "locale" | "datasheetHrefs">;
+
+const RANGE_CONTENT: Record<RichLocale, RangeContent> = {
   en: {
-    metaTitle: "LED Backlights | Contour & Dimensional Machine Vision",
-    metaDescription:
-      "Industrial LED backlight panels: aluminum frame, M12 connector, 24VDC electronics, uniform diffuse backlighting — request a free quote today.",
+    specsTitle: "Range Specifications & Formats",
+    specsIntro:
+      "Every backlight in the range is configured from the parameters below to match your application and camera.",
+    columnCharacteristic: "Characteristic",
+    columnOptions: "Available Variants",
+    specs: [
+      { label: "Uniformity", values: "> 90% across the full active surface (distortion-free contour measurement)" },
+      { label: "Standard Formats", values: "50×50 mm · 100×100 mm · 200×200 mm · 300×300 mm · Custom formats" },
+      { label: "Thickness", values: "Ultra-thin: 12 mm to 25 mm depending on series, for tight-space integration" },
+      { label: "Wavelengths", values: "Red (630 nm) · Infrared (850 nm — plastic penetration) · White · Blue" },
+      { label: "Operating Modes", values: "Continuous 24V DC · Strobe Overdrive (exposure time < 100 µs)" },
+    ],
+    seriesTitle: "The 3 Backlight Series",
+    seriesIntro: "Pick the series matched to your line speed and environment, then request the datasheet or the 3D model.",
+    series: [
+      {
+        code: "BKL-STD",
+        name: "Standard 24V Diffuse Backlight",
+        description: "Silhouette control and dimensional measurement at standard line speed.",
+      },
+      {
+        code: "BKL-PWR",
+        name: "High-Intensity Overdrive Backlight",
+        description: "Built for high-speed lines and strobe operation.",
+      },
+      {
+        code: "BKL-SLIM / INOX",
+        name: "Ultra-Thin Backlight & IP69K Food-Grade Version",
+        description: "Tight-space integration, or washdown food-processing environments.",
+      },
+    ],
+    datasheetButtonLabel: "Datasheet (PDF)",
+    cadButtonLabel: "3D Model (STEP)",
+    useCases: {
+      title: "What Applications Is It Used For?",
+      items: [
+        "Dimensional measurement of machined parts and thread pitch",
+        "Fill-level control (bottles, vials)",
+        "Opacity, bubble and inclusion inspection in glass or plastic",
+      ],
+    },
   },
   fr: {
-    metaTitle: "Rétroéclairages LED | Contrôle Dimensionnel Vision",
+    specsTitle: "Spécifications & Formats de la Gamme",
+    specsIntro:
+      "Chaque rétroéclairage de la gamme se configure à partir des paramètres ci-dessous pour s'adapter à votre application et à votre caméra.",
+    columnCharacteristic: "Caractéristique",
+    columnOptions: "Déclinaisons Disponibles",
+    specs: [
+      { label: "Homogénéité", values: "> 90% sur toute la surface utile (mesure de contours sans distorsion)" },
+      { label: "Formats Standard", values: "50×50 mm · 100×100 mm · 200×200 mm · 300×300 mm · Formats sur-mesure" },
+      { label: "Épaisseur", values: "Ultra-fine : 12 mm à 25 mm selon séries, pour intégration en espace restreint" },
+      { label: "Longueurs d'Onde", values: "Rouge (630 nm) · Infrarouge (850 nm — pénétration plastiques) · Blanc · Bleu" },
+      { label: "Modes de Fonctionnement", values: "Continu 24V DC · Overdrive stroboscopique (temps de pose < 100 µs)" },
+    ],
+    seriesTitle: "Les 3 Séries de Backlights",
+    seriesIntro: "Choisissez la série adaptée à votre cadence et votre environnement, puis demandez la fiche technique ou le modèle 3D.",
+    series: [
+      {
+        code: "BKL-STD",
+        name: "Backlight Diffus Standard 24V",
+        description: "Contrôle de silhouette et mesure dimensionnelle en cadence standard.",
+      },
+      {
+        code: "BKL-PWR",
+        name: "Backlight Overdrive Haute Intensité",
+        description: "Conçu pour les cadences rapides et le mode stroboscopique.",
+      },
+      {
+        code: "BKL-SLIM / INOX",
+        name: "Backlight Ultra-Fin & Version IP69K Agroalimentaire",
+        description: "Intégration en espace restreint, ou environnement lavable agroalimentaire.",
+      },
+    ],
+    datasheetButtonLabel: "Fiche Technique (PDF)",
+    cadButtonLabel: "Modèle 3D (STEP)",
+    useCases: {
+      title: "Pour Quelles Applications ?",
+      items: [
+        "Mesure dimensionnelle de pièces usinées et de pas de vis",
+        "Contrôle de niveau de remplissage (bouteilles, flacons)",
+        "Inspection d'opacité, de bulles et d'inclusions dans le verre ou le plastique",
+      ],
+    },
+  },
+};
+
+const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
+  en: {
+    metaTitle: "Backlight & Industrial Machine Vision Backlighting 24V | Vision Lighting",
     metaDescription:
-      "Panneaux de rétroéclairage LED industriels : cadre aluminium, connecteur M12, électronique 24VDC, rétroéclairage diffus uniforme — demandez un devis.",
+      "High-uniformity LED backlights for silhouette control, dimensional measurement and liquid level inspection. Compact formats, large formats and IP69K.",
+  },
+  fr: {
+    metaTitle: "Rétroéclairage & Backlight Vision Industrielle 24V | Vision Lighting",
+    metaDescription:
+      "Rétroéclairages LED haute homogénéité pour contrôle de silhouettes, mesure dimensionnelle et niveau de liquide. Formats compacts, grands formats et IP69K.",
   },
 };
 
@@ -109,7 +211,7 @@ function IntegrationContent({ locale }: { locale: RichLocale }) {
 
 const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
   en: {
-    h1: "Backlights for Contour & Dimensional Inspection",
+    h1: "Backlights & Backlighting for Industrial Machine Vision",
     lead: "Flat, uniform LED panels placed behind or beneath the target to create a high-contrast silhouette — the reference lighting format for dimensional measurement and contour extraction.",
     introTitle: "What Is a Backlight Used For?",
     introParagraph:
@@ -140,7 +242,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     relatedTitle: RELATED_TITLE.en,
   },
   fr: {
-    h1: "Rétroéclairages pour le Contrôle Dimensionnel et de Contour",
+    h1: "Rétroéclairages & Backlights pour Vision Industrielle",
     lead: "Panneaux LED plats et uniformes placés derrière ou sous la cible pour créer une silhouette à fort contraste — le format d'éclairage de référence pour la mesure dimensionnelle et l'extraction de contour.",
     introTitle: "À Quoi Sert un Rétroéclairage ?",
     introParagraph:
@@ -207,9 +309,27 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   );
 
   const isRich = locale === "en" || locale === "fr";
-  const rich = isRich ? RICH_CONTENT[locale as RichLocale] : null;
-  const datasheetHref = rich ? getDatasheetHref(PRODUCT_SLUG, locale as RichLocale) : null;
+  const datasheetHref = isRich ? getDatasheetHref(PRODUCT_SLUG, locale as RichLocale) : null;
   const fallback = findCatalogSegment()?.content[locale];
+
+  const rich = isRich
+    ? {
+        ...RICH_CONTENT[locale as RichLocale],
+        rangeSection: (
+          <ProductRangeSection
+            locale={locale as RichLocale}
+            {...RANGE_CONTENT[locale as RichLocale]}
+            afterSpecs={<HomogeneitySimulator locale={locale as RichLocale} />}
+            datasheetHrefs={{
+              "BKL-STD": getDatasheetHref(SERIES_SLUGS["BKL-STD"], locale as RichLocale),
+              "BKL-PWR": getDatasheetHref(SERIES_SLUGS["BKL-PWR"], locale as RichLocale),
+              "BKL-SLIM / INOX": getDatasheetHref(SERIES_SLUGS["BKL-SLIM / INOX"], locale as RichLocale),
+            }}
+          />
+        ),
+        wavelengthSimulator: <WavelengthContrastSimulator locale={locale as RichLocale} />,
+      }
+    : null;
 
   const jsonLd = rich
     ? buildProductModelJsonLd({

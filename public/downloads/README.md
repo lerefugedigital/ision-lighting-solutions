@@ -32,6 +32,13 @@ public/downloads/barres-led-barlights-bar-pwr/datasheet-en.pdf
 public/downloads/barres-led-barlights-bar-pwr/datasheet-fr.pdf
 public/downloads/barres-led-barlights-bar-inox/datasheet-en.pdf
 public/downloads/barres-led-barlights-bar-inox/datasheet-fr.pdf
+
+public/downloads/retroeclairages-backlights-bkl-std/datasheet-en.pdf
+public/downloads/retroeclairages-backlights-bkl-std/datasheet-fr.pdf
+public/downloads/retroeclairages-backlights-bkl-pwr/datasheet-en.pdf
+public/downloads/retroeclairages-backlights-bkl-pwr/datasheet-fr.pdf
+public/downloads/retroeclairages-backlights-bkl-slim-inox/datasheet-en.pdf
+public/downloads/retroeclairages-backlights-bkl-slim-inox/datasheet-fr.pdf
 ```
 
 Until a given file exists, its "Datasheet (PDF)" button falls back to the browser's print view.
