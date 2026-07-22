@@ -11,6 +11,8 @@ import { ReassuranceBar } from "./ReassuranceBar";
 export interface ProductRichContent {
   h1: string;
   lead: string;
+  /** Optional hero "fast tracks" quick-access cards, rendered right under the lead paragraph. */
+  heroFastTracks?: React.ReactNode;
   /** Optional wrapper H2 grouping introTitle + highlightsTitle as H3s underneath. Omit to keep both as top-level H2s. */
   principlesTitle?: string;
   introTitle: string;
@@ -79,6 +81,8 @@ export function ProductPageContent({
         {rich.h1}
       </h1>
       <p className="mt-4 text-slate-600 dark:text-slate-300">{rich.lead}</p>
+
+      {rich.heroFastTracks && <div className="mt-8">{rich.heroFastTracks}</div>}
 
       {rich.principlesTitle ? (
         <section className="mt-10 print:hidden">
@@ -149,7 +153,10 @@ export function ProductPageContent({
         {rich.integrationContent}
       </section>
 
-      <div className="mt-14 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-start print:hidden">
+      <div
+        id="documents-techniques"
+        className="mt-14 scroll-mt-20 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-start print:hidden"
+      >
         <TechnicalDownloads
           locale={locale as "en" | "fr"}
           productName={rich.h1}

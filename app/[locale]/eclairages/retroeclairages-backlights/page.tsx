@@ -20,6 +20,7 @@ import { BacklightDiagram } from "@/components/diagrams/BacklightDiagram";
 import { ProductRangeSection, type ProductRangeSectionProps } from "@/components/ProductRangeSection";
 import { HomogeneitySimulator } from "@/components/HomogeneitySimulator";
 import { WavelengthContrastSimulator } from "@/components/WavelengthContrastSimulator";
+import { FastTracks } from "@/components/FastTracks";
 
 const PRODUCT_SLUG = "retroeclairages-backlights";
 const ROUTE_KEY = "/eclairages/retroeclairages-backlights";
@@ -327,9 +328,11 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   const rich = isRich
     ? {
         ...RICH_CONTENT[locale as RichLocale],
+        heroFastTracks: <FastTracks locale={locale as RichLocale} productName={RICH_CONTENT[locale as RichLocale].h1} />,
         rangeSection: (
           <ProductRangeSection
             locale={locale as RichLocale}
+            sectionId="specifications-gamme"
             {...RANGE_CONTENT[locale as RichLocale]}
             afterSpecs={
               <div className="space-y-8">

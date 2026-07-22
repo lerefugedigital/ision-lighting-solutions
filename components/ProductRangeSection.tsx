@@ -31,6 +31,8 @@ export interface RangeUseCases {
 
 export interface ProductRangeSectionProps {
   locale: "en" | "fr";
+  /** Optional anchor id on the specs block, for in-page "jump to" links (e.g. hero fast-track cards). */
+  sectionId?: string;
   specsTitle: string;
   specsIntro: string;
   columnCharacteristic: string;
@@ -60,6 +62,7 @@ const MODAL_CLOSED: ModalTarget = { open: false, series: null };
 
 export function ProductRangeSection({
   locale,
+  sectionId,
   specsTitle,
   specsIntro,
   columnCharacteristic,
@@ -120,7 +123,7 @@ export function ProductRangeSection({
 
   return (
     <div className="space-y-10">
-      <div>
+      <div id={sectionId} className={sectionId ? "scroll-mt-20" : undefined}>
         <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{specsTitle}</h2>
         <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{specsIntro}</p>
         <div className="mt-5 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
