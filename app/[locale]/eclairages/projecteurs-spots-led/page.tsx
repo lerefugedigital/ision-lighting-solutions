@@ -18,6 +18,7 @@ import { getDatasheetHref } from "@/lib/technical-downloads";
 import { ProductPageContent, type ProductRichContent } from "@/components/ProductPageContent";
 import type { ProductConfigRow } from "@/components/ProductConfigTable";
 import { SpotlightDiagram } from "@/components/diagrams/SpotlightDiagram";
+import { FastTracks } from "@/components/FastTracks";
 
 const PRODUCT_SLUG = "projecteurs-spots-led";
 const ROUTE_KEY = "/eclairages/projecteurs-spots-led";
@@ -137,6 +138,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     tableLabels: TABLE_LABELS.en,
     rows: ROWS.en,
     disclaimerNote: DISCLAIMER_NOTE.en,
+    specsSectionId: "specifications-gamme",
     integrationContent: <IntegrationContent locale="en" />,
     relatedTitle: RELATED_TITLE.en,
   },
@@ -169,6 +171,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     tableLabels: TABLE_LABELS.fr,
     rows: ROWS.fr,
     disclaimerNote: DISCLAIMER_NOTE.fr,
+    specsSectionId: "specifications-gamme",
     integrationContent: <IntegrationContent locale="fr" />,
     relatedTitle: RELATED_TITLE.fr,
   },
@@ -209,9 +212,17 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   );
 
   const isRich = locale === "en" || locale === "fr";
-  const rich = isRich ? RICH_CONTENT[locale as RichLocale] : null;
-  const datasheetHref = rich ? getDatasheetHref(PRODUCT_SLUG, locale as RichLocale) : null;
+  const datasheetHref = isRich ? getDatasheetHref(PRODUCT_SLUG, locale as RichLocale) : null;
   const fallback = findCatalogSegment()?.content[locale];
+
+  const rich = isRich
+    ? {
+        ...RICH_CONTENT[locale as RichLocale],
+        heroFastTracks: (
+          <FastTracks locale={locale as RichLocale} productName={RICH_CONTENT[locale as RichLocale].h1} />
+        ),
+      }
+    : null;
 
   const jsonLd = rich
     ? buildProductModelJsonLd({

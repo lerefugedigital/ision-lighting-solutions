@@ -20,6 +20,7 @@ import type { ProductConfigRow } from "@/components/ProductConfigTable";
 import { BarLightDiagram } from "@/components/diagrams/BarLightDiagram";
 import { ProductRangeSection, type ProductRangeSectionProps } from "@/components/ProductRangeSection";
 import { WavelengthContrastSimulator } from "@/components/WavelengthContrastSimulator";
+import { FastTracks } from "@/components/FastTracks";
 
 type BarLightSeriesCode = "BAR-STD" | "BAR-PWR" | "BAR-INOX";
 
@@ -330,9 +331,13 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   const rich = isRich
     ? {
         ...RICH_CONTENT[locale as RichLocale],
+        heroFastTracks: (
+          <FastTracks locale={locale as RichLocale} productName={RICH_CONTENT[locale as RichLocale].h1} />
+        ),
         rangeSection: (
           <ProductRangeSection
             locale={locale as RichLocale}
+            sectionId="specifications-gamme"
             {...RANGE_CONTENT[locale as RichLocale]}
             datasheetHrefs={{
               "BAR-STD": getDatasheetHref(SERIES_SLUGS["BAR-STD"], locale as RichLocale),

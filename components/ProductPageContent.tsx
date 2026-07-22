@@ -24,6 +24,8 @@ export interface ProductRichContent {
   tableLabels: ProductConfigTableLabels;
   rows: ProductConfigRow[];
   disclaimerNote: string;
+  /** Optional anchor id on the ProductConfigTable section, for pages without a rangeSection (which carries its own anchor). */
+  specsSectionId?: string;
   /** Optional "Gamme & Séries" block (variants table + series cards + reassurance CTA), built per-page. */
   rangeSection?: React.ReactNode;
   /** Optional interactive wavelength/contrast demo, built per-page. Omit if it's already nested inside rangeSection. */
@@ -138,7 +140,10 @@ export function ProductPageContent({
 
       {rich.rangeSection && <section className="mt-10 print:hidden">{rich.rangeSection}</section>}
 
-      <section className="mt-10 break-inside-avoid">
+      <section
+        id={rich.specsSectionId}
+        className={`mt-10 break-inside-avoid${rich.specsSectionId ? " scroll-mt-20" : ""}`}
+      >
         <ProductConfigTable rows={rich.rows} labels={rich.tableLabels} />
         <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">{rich.disclaimerNote}</p>
       </section>
