@@ -2,6 +2,7 @@ import { Link } from "@/i18n/navigation";
 
 export interface SampleTestCTAProps {
   locale: "en" | "fr";
+  titleOverride?: string;
 }
 
 const TEXT: Record<"en" | "fr", { title: string; description: string; button: string }> = {
@@ -19,12 +20,12 @@ const TEXT: Record<"en" | "fr", { title: string; description: string; button: st
   },
 };
 
-export function SampleTestCTA({ locale }: SampleTestCTAProps) {
+export function SampleTestCTA({ locale, titleOverride }: SampleTestCTAProps) {
   const t = TEXT[locale];
 
   return (
     <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-900/50 dark:bg-amber-950/20 sm:p-8">
-      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t.title}</h2>
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{titleOverride ?? t.title}</h2>
       <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{t.description}</p>
       <Link
         href={"/test-sur-echantillon" as never}

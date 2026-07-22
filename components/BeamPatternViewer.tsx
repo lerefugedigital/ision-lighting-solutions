@@ -102,13 +102,13 @@ const TEXT = {
   },
 } as const;
 
-export function BeamPatternViewer({ locale }: { locale: "en" | "fr" }) {
+export function BeamPatternViewer({ locale, titleOverride }: { locale: "en" | "fr"; titleOverride?: string }) {
   const [variant, setVariant] = useState<BeamPatternVariant>("direct");
   const t = TEXT[locale];
 
   return (
     <section>
-      <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{t.title}</h2>
+      <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{titleOverride ?? t.title}</h2>
       <p className="mt-3 text-sm text-slate-600 dark:text-slate-300 print:hidden">{t.intro}</p>
 
       <div className="mt-6 grid gap-6 md:grid-cols-2 md:items-start">

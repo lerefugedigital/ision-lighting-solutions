@@ -75,7 +75,13 @@ const TEXT: Record<"en" | "fr", HomogeneityText> = {
   },
 };
 
-export function HomogeneitySimulator({ locale }: { locale: "en" | "fr" }) {
+export interface HomogeneitySimulatorProps {
+  locale: "en" | "fr";
+  /** Heading level for the section title — "h3" when nested under a parent H2 (e.g. a specs section). Defaults to "h2". */
+  headingLevel?: "h2" | "h3";
+}
+
+export function HomogeneitySimulator({ locale, headingLevel = "h2" }: HomogeneitySimulatorProps) {
   const [variant, setVariant] = useState<HomogeneityVariant>("standard");
   const uid = useId();
   const t = TEXT[locale];
@@ -84,10 +90,15 @@ export function HomogeneitySimulator({ locale }: { locale: "en" | "fr" }) {
 
   const gradientId = `homog-hotspot-${uid}`;
   const blurId = `homog-blur-${uid}`;
+  const Heading = headingLevel;
+  const headingClasses =
+    headingLevel === "h3"
+      ? "text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100"
+      : "text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100";
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-950 sm:p-8">
-      <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{t.title}</h2>
+      <Heading className={headingClasses}>{t.title}</Heading>
       <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{t.intro}</p>
 
       <div className="mt-6 flex flex-col gap-2 sm:flex-row">

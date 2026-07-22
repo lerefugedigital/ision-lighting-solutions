@@ -20,6 +20,8 @@ export interface ContactFormProps {
   contextType: ContactFormContextType;
   /** Short label for what this form is about, e.g. "LED Bar Lights" or "M12 5-Pin Wiring" — used in the email subject and the mailto fallback. */
   subjectContext?: string;
+  /** Overrides the displayed H2 only; the mailto/email subject default still uses the context's own title. */
+  titleOverride?: string;
 }
 
 type OperatingMode = "continuous" | "strobe_overdrive" | "undetermined";
@@ -230,7 +232,7 @@ function buildMailtoHref(params: {
   return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
 }
 
-export function ContactForm({ locale, contextType, subjectContext }: ContactFormProps) {
+export function ContactForm({ locale, contextType, subjectContext, titleOverride }: ContactFormProps) {
   const t = TEXT[locale];
   const idPrefix = useId();
   const [state, setState] = useState<FormState>(INITIAL_STATE);
@@ -310,7 +312,7 @@ export function ContactForm({ locale, contextType, subjectContext }: ContactForm
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900 sm:p-8">
-      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{contextCopy.title}</h2>
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{titleOverride ?? contextCopy.title}</h2>
       <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{contextCopy.description}</p>
 
       <form onSubmit={handleSubmit} className="mt-6" noValidate>

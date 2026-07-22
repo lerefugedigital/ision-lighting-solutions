@@ -10,6 +10,7 @@ export interface TechnicalDownloadsProps {
   productName: string;
   /** Real PDF path from public/downloads, or null to fall back to the browser's print-to-PDF view. */
   datasheetHref: string | null;
+  titleOverride?: string;
 }
 
 const TEXT = {
@@ -25,7 +26,7 @@ const TEXT = {
   },
 } as const;
 
-export function TechnicalDownloads({ locale, productName, datasheetHref }: TechnicalDownloadsProps) {
+export function TechnicalDownloads({ locale, productName, datasheetHref, titleOverride }: TechnicalDownloadsProps) {
   const [cadModalOpen, setCadModalOpen] = useState(false);
   const [datasheetModalOpen, setDatasheetModalOpen] = useState(false);
   const t = TEXT[locale];
@@ -61,7 +62,7 @@ export function TechnicalDownloads({ locale, productName, datasheetHref }: Techn
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900 sm:p-8 print:hidden">
-      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t.title}</h2>
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{titleOverride ?? t.title}</h2>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <button type="button" onClick={handleDatasheetClick} className={primaryButtonClasses}>

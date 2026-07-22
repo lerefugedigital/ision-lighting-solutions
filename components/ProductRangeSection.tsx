@@ -109,6 +109,10 @@ export function ProductRangeSection({
     return locale === "fr" ? `Série ${target.code} — ${target.name}` : `${target.code} Series — ${target.name}`;
   }
 
+  function seriesHeading(target: RangeSeriesInfo): string {
+    return locale === "fr" ? `Série ${target.code} : ${target.name}` : `${target.code} Series: ${target.name}`;
+  }
+
   const primaryButtonClasses =
     "flex-1 rounded-lg bg-amber-500 px-3 py-2 text-center text-xs font-semibold text-slate-950 transition hover:bg-amber-400";
   const secondaryButtonClasses =
@@ -153,7 +157,7 @@ export function ProductRangeSection({
               <span className="text-xs font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">
                 {item.code}
               </span>
-              <h3 className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">{item.name}</h3>
+              <h3 className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">{seriesHeading(item)}</h3>
               <p className="mt-2 flex-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">{item.description}</p>
               <div className="mt-4 flex gap-2">
                 <button type="button" onClick={() => handleDatasheetClick(item)} className={primaryButtonClasses}>

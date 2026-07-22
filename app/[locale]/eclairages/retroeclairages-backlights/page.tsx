@@ -9,7 +9,6 @@ import { buildProductModelJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
   DISCLAIMER_NOTE,
-  RELATED_TITLE,
   RELATED_SLUGS,
   PLACEHOLDER_COMING_SOON,
   type RichLocale,
@@ -35,11 +34,14 @@ const SERIES_SLUGS: Record<BacklightSeriesCode, string> = {
   "BKL-SLIM / INOX": "retroeclairages-backlights-bkl-slim-inox",
 };
 
+/** This page also surfaces the camera-compatibility guides alongside the usual M12/Overdrive ones. */
+const PAGE_RELATED_SLUGS = [...RELATED_SLUGS, "compatibilite-camera-cognex", "compatibilite-camera-keyence"];
+
 type RangeContent = Omit<ProductRangeSectionProps, "locale" | "datasheetHrefs">;
 
 const RANGE_CONTENT: Record<RichLocale, RangeContent> = {
   en: {
-    specsTitle: "Range Specifications & Formats",
+    specsTitle: "Range Specifications and Formats",
     specsIntro:
       "Every backlight in the range is configured from the parameters below to match your application and camera.",
     columnCharacteristic: "Characteristic",
@@ -51,7 +53,7 @@ const RANGE_CONTENT: Record<RichLocale, RangeContent> = {
       { label: "Wavelengths", values: "Red (630 nm) · Infrared (850 nm — plastic penetration) · White · Blue" },
       { label: "Operating Modes", values: "Continuous 24V DC · Strobe Overdrive (exposure time < 100 µs)" },
     ],
-    seriesTitle: "The 3 Backlight Series",
+    seriesTitle: "The 3 LED Backlight Series",
     seriesIntro: "Pick the series matched to your line speed and environment, then request the datasheet or the 3D model.",
     series: [
       {
@@ -73,7 +75,7 @@ const RANGE_CONTENT: Record<RichLocale, RangeContent> = {
     datasheetButtonLabel: "Datasheet (PDF)",
     cadButtonLabel: "3D Model (STEP)",
     useCases: {
-      title: "What Applications Is It Used For?",
+      title: "Industrial Applications and Use Cases",
       items: [
         "Dimensional measurement of machined parts and thread pitch",
         "Fill-level control (bottles, vials)",
@@ -82,7 +84,7 @@ const RANGE_CONTENT: Record<RichLocale, RangeContent> = {
     },
   },
   fr: {
-    specsTitle: "Spécifications & Formats de la Gamme",
+    specsTitle: "Spécifications et Formats de la Gamme",
     specsIntro:
       "Chaque rétroéclairage de la gamme se configure à partir des paramètres ci-dessous pour s'adapter à votre application et à votre caméra.",
     columnCharacteristic: "Caractéristique",
@@ -94,7 +96,7 @@ const RANGE_CONTENT: Record<RichLocale, RangeContent> = {
       { label: "Longueurs d'Onde", values: "Rouge (630 nm) · Infrarouge (850 nm — pénétration plastiques) · Blanc · Bleu" },
       { label: "Modes de Fonctionnement", values: "Continu 24V DC · Overdrive stroboscopique (temps de pose < 100 µs)" },
     ],
-    seriesTitle: "Les 3 Séries de Backlights",
+    seriesTitle: "Les 3 Séries de Backlights LED",
     seriesIntro: "Choisissez la série adaptée à votre cadence et votre environnement, puis demandez la fiche technique ou le modèle 3D.",
     series: [
       {
@@ -116,7 +118,7 @@ const RANGE_CONTENT: Record<RichLocale, RangeContent> = {
     datasheetButtonLabel: "Fiche Technique (PDF)",
     cadButtonLabel: "Modèle 3D (STEP)",
     useCases: {
-      title: "Pour Quelles Applications ?",
+      title: "Applications et Cas d'Usage Industriels",
       items: [
         "Mesure dimensionnelle de pièces usinées et de pas de vis",
         "Contrôle de niveau de remplissage (bouteilles, flacons)",
@@ -211,9 +213,10 @@ function IntegrationContent({ locale }: { locale: RichLocale }) {
 
 const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
   en: {
-    h1: "Backlights & Backlighting for Industrial Machine Vision",
+    h1: "Backlights & LED Backlighting for Industrial Machine Vision",
     lead: "Flat, uniform LED panels placed behind or beneath the target to create a high-contrast silhouette — the reference lighting format for dimensional measurement and contour extraction.",
-    introTitle: "What Is a Backlight Used For?",
+    principlesTitle: "Industrial Machine Vision Backlighting: Principles and Advantages",
+    introTitle: "What Is a Backlight Used For in Machine Vision?",
     introParagraph:
       "A backlight is a diffuse LED panel placed behind or underneath the object, turning it into a dark silhouette against a bright, uniform background. That contrast is exactly what dimensional measurement, edge/contour detection and hole or feature counting need — where a bar light illuminates the front surface directly and a dome light handles reflective or curved parts, a backlight instead removes surface detail entirely in favor of a clean outline.",
     diagram: (
@@ -227,7 +230,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
         }}
       />
     ),
-    highlightsTitle: "Technical Highlights",
+    highlightsTitle: "Technical Highlights: Uniformity and Exposure Time",
     highlights: [
       "Industrial design: aluminum frame for heat dissipation, integrated M12 connector for a standardized wiring harness.",
       "Hardened 24VDC electronics built for continuous production-line duty.",
@@ -239,12 +242,17 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     rows: ROWS.en,
     disclaimerNote: DISCLAIMER_NOTE.en,
     integrationContent: <IntegrationContent locale="en" />,
-    relatedTitle: RELATED_TITLE.en,
+    relatedTitle: "Integration Guides and Camera Compatibility (Cognex, Keyence...)",
+    beamPatternTitle: "Optical Beam Pattern Visualization and Formats",
+    technicalDownloadsTitle: "Datasheets and 3D CAD Files (STEP)",
+    contactFormTitle: "Request a Datasheet or a Quote",
+    sampleTestTitle: "Validate Your Application: Free Sample Testing",
   },
   fr: {
-    h1: "Rétroéclairages & Backlights pour Vision Industrielle",
+    h1: "Rétroéclairages & Backlights LED pour Vision Industrielle",
     lead: "Panneaux LED plats et uniformes placés derrière ou sous la cible pour créer une silhouette à fort contraste — le format d'éclairage de référence pour la mesure dimensionnelle et l'extraction de contour.",
-    introTitle: "À Quoi Sert un Rétroéclairage ?",
+    principlesTitle: "Rétroéclairage Vision Industrielle : Principes et Avantages",
+    introTitle: "À Quoi Sert un Rétroéclairage en Vision Industrielle ?",
     introParagraph:
       "Un rétroéclairage est un panneau LED diffus placé derrière ou sous l'objet, le transformant en silhouette sombre sur un fond lumineux et uniforme. C'est exactement le contraste dont ont besoin la mesure dimensionnelle, la détection de contour/bord et le comptage de trous ou de détails — là où une barre LED éclaire directement la surface avant et un dôme diffus traite les pièces réfléchissantes ou courbes, un rétroéclairage supprime au contraire tout détail de surface au profit d'un contour net.",
     diagram: (
@@ -258,7 +266,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
         }}
       />
     ),
-    highlightsTitle: "Points Forts Techniques",
+    highlightsTitle: "Points Forts Techniques : Homogénéité et Temps de Pose",
     highlights: [
       "Conception industrielle : cadre en aluminium pour la dissipation thermique, connecteur M12 intégré pour un câblage standardisé.",
       "Électronique durcie 24VDC conçue pour un fonctionnement continu en environnement de production.",
@@ -270,7 +278,11 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     rows: ROWS.fr,
     disclaimerNote: DISCLAIMER_NOTE.fr,
     integrationContent: <IntegrationContent locale="fr" />,
-    relatedTitle: RELATED_TITLE.fr,
+    relatedTitle: "Guides d'Intégration et Compatibilité Caméra (Cognex, Keyence...)",
+    beamPatternTitle: "Visualisation des Faisceaux Optiques et Formats",
+    technicalDownloadsTitle: "Fiches Techniques et Fichiers CAO 3D (STEP)",
+    contactFormTitle: "Demander une Fiche Technique ou un Devis",
+    sampleTestTitle: "Valider Votre Application : Test Gratuit sur Échantillon",
   },
 };
 
@@ -304,7 +316,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const relatedSegments = RELATED_SLUGS.map((slug) => catalog.segments.find((s) => s.slug === slug)).filter(
+  const relatedSegments = PAGE_RELATED_SLUGS.map((slug) => catalog.segments.find((s) => s.slug === slug)).filter(
     (s): s is NonNullable<typeof s> => Boolean(s)
   );
 
@@ -319,7 +331,12 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
           <ProductRangeSection
             locale={locale as RichLocale}
             {...RANGE_CONTENT[locale as RichLocale]}
-            afterSpecs={<HomogeneitySimulator locale={locale as RichLocale} />}
+            afterSpecs={
+              <div className="space-y-8">
+                <HomogeneitySimulator locale={locale as RichLocale} headingLevel="h3" />
+                <WavelengthContrastSimulator locale={locale as RichLocale} headingLevel="h3" />
+              </div>
+            }
             datasheetHrefs={{
               "BKL-STD": getDatasheetHref(SERIES_SLUGS["BKL-STD"], locale as RichLocale),
               "BKL-PWR": getDatasheetHref(SERIES_SLUGS["BKL-PWR"], locale as RichLocale),
@@ -327,7 +344,6 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
             }}
           />
         ),
-        wavelengthSimulator: <WavelengthContrastSimulator locale={locale as RichLocale} />,
       }
     : null;
 

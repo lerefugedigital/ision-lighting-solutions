@@ -11,6 +11,8 @@ import { ReassuranceBar } from "./ReassuranceBar";
 export interface ProductRichContent {
   h1: string;
   lead: string;
+  /** Optional wrapper H2 grouping introTitle + highlightsTitle as H3s underneath. Omit to keep both as top-level H2s. */
+  principlesTitle?: string;
   introTitle: string;
   introParagraph: string;
   /** Optional native SVG schematic illustrating how this lighting format works. */
@@ -22,11 +24,16 @@ export interface ProductRichContent {
   disclaimerNote: string;
   /** Optional "Gamme & Séries" block (variants table + series cards + reassurance CTA), built per-page. */
   rangeSection?: React.ReactNode;
-  /** Optional interactive wavelength/contrast demo, built per-page. */
+  /** Optional interactive wavelength/contrast demo, built per-page. Omit if it's already nested inside rangeSection. */
   wavelengthSimulator?: React.ReactNode;
   /** Built per-page as JSX so it can embed contextual <Link>s to Silo 3 guides. */
   integrationContent: React.ReactNode;
   relatedTitle: string;
+  /** Per-page title overrides for shared components — omit to keep each component's own default title. */
+  beamPatternTitle?: string;
+  technicalDownloadsTitle?: string;
+  contactFormTitle?: string;
+  sampleTestTitle?: string;
 }
 
 interface ProductPageContentProps {
@@ -73,28 +80,57 @@ export function ProductPageContent({
       </h1>
       <p className="mt-4 text-slate-600 dark:text-slate-300">{rich.lead}</p>
 
-      <section className="mt-10 print:hidden">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-          {rich.introTitle}
-        </h2>
-        <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">{rich.introParagraph}</p>
-      </section>
+      {rich.principlesTitle ? (
+        <section className="mt-10 print:hidden">
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            {rich.principlesTitle}
+          </h2>
 
-      {rich.diagram && <div className="mt-8">{rich.diagram}</div>}
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{rich.introTitle}</h3>
+            <p className="mt-3 leading-relaxed text-slate-600 dark:text-slate-300">{rich.introParagraph}</p>
+          </div>
 
-      <section className="mt-10 print:hidden">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-          {rich.highlightsTitle}
-        </h2>
-        <ul className="mt-4 space-y-2.5">
-          {rich.highlights.map((item) => (
-            <li key={item.slice(0, 24)} className="flex gap-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-              <span aria-hidden="true" className="mt-2 h-1 w-1 shrink-0 rounded-full bg-amber-500" />
-              {item}
-            </li>
-          ))}
-        </ul>
-      </section>
+          {rich.diagram && <div className="mt-8">{rich.diagram}</div>}
+
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{rich.highlightsTitle}</h3>
+            <ul className="mt-3 space-y-2.5">
+              {rich.highlights.map((item) => (
+                <li key={item.slice(0, 24)} className="flex gap-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                  <span aria-hidden="true" className="mt-2 h-1 w-1 shrink-0 rounded-full bg-amber-500" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : (
+        <>
+          <section className="mt-10 print:hidden">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+              {rich.introTitle}
+            </h2>
+            <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">{rich.introParagraph}</p>
+          </section>
+
+          {rich.diagram && <div className="mt-8">{rich.diagram}</div>}
+
+          <section className="mt-10 print:hidden">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+              {rich.highlightsTitle}
+            </h2>
+            <ul className="mt-4 space-y-2.5">
+              {rich.highlights.map((item) => (
+                <li key={item.slice(0, 24)} className="flex gap-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                  <span aria-hidden="true" className="mt-2 h-1 w-1 shrink-0 rounded-full bg-amber-500" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
+        </>
+      )}
 
       {rich.rangeSection && <section className="mt-10 print:hidden">{rich.rangeSection}</section>}
 
@@ -104,7 +140,7 @@ export function ProductPageContent({
       </section>
 
       <section className="mt-10 break-inside-avoid">
-        <BeamPatternViewer locale={locale as "en" | "fr"} />
+        <BeamPatternViewer locale={locale as "en" | "fr"} titleOverride={rich.beamPatternTitle} />
       </section>
 
       {rich.wavelengthSimulator && <section className="mt-10 print:hidden">{rich.wavelengthSimulator}</section>}
@@ -114,8 +150,18 @@ export function ProductPageContent({
       </section>
 
       <div className="mt-14 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-start print:hidden">
-        <TechnicalDownloads locale={locale as "en" | "fr"} productName={rich.h1} datasheetHref={datasheetHref} />
-        <ContactForm locale={locale as "en" | "fr"} contextType="product" subjectContext={rich.h1} />
+        <TechnicalDownloads
+          locale={locale as "en" | "fr"}
+          productName={rich.h1}
+          datasheetHref={datasheetHref}
+          titleOverride={rich.technicalDownloadsTitle}
+        />
+        <ContactForm
+          locale={locale as "en" | "fr"}
+          contextType="product"
+          subjectContext={rich.h1}
+          titleOverride={rich.contactFormTitle}
+        />
       </div>
 
       {relatedSegments.length > 0 && (
@@ -137,7 +183,7 @@ export function ProductPageContent({
       )}
 
       <div className="mt-14 print:hidden">
-        <SampleTestCTA locale={locale as "en" | "fr"} />
+        <SampleTestCTA locale={locale as "en" | "fr"} titleOverride={rich.sampleTestTitle} />
       </div>
 
       <div className="mt-10 print:hidden">
