@@ -7,6 +7,7 @@ import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildEquivalenceItemPageJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
+  ACTION_LABEL,
   LIGHT_TYPES,
   CRITERIA,
   VLS_ALTERNATIVES,
@@ -14,6 +15,11 @@ import {
   RELATED_TITLE,
   RELATED_SLUGS,
   PLACEHOLDER_COMING_SOON,
+  ELECTRICAL_TEXT,
+  MECHANICAL_TEXT,
+  AVAILABILITY_TEXT,
+  SUPPORT_TEXT,
+  buildEquivalenceHeadings,
   type RichLocale,
 } from "@/lib/equivalence-shared-content";
 import { EquivalencePageContent, type EquivalenceRichContent } from "@/components/EquivalencePageContent";
@@ -21,55 +27,68 @@ import type { EquivalenceRow } from "@/components/EquivalenceTable";
 
 const ROUTE_KEY = "/equivalences/equivalences-tpl-vision";
 const PUBLISHED_DATE = "2026-07-20";
-const MODIFIED_DATE = "2026-07-20";
+const MODIFIED_DATE = "2026-07-22";
+const COMPETITOR_NAME = "TPL Vision";
 const COMPETITOR_RANGE_LABEL = "TPL Vision — Essential / Expert";
 
 const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
   en: {
-    metaTitle: "TPL Vision Equivalents & Dual Sourcing | Vision Lighting",
+    metaTitle: "TPL Vision Equivalent: LED Lighting Alternatives | Vision Lighting",
     metaDescription:
-      "Interoperability guide: compatible alternatives to TPL Vision lighting ranges for dual sourcing and supply chain continuity — request a quote.",
+      "Find the direct equivalent to your TPL Vision lighting (Essential Bar, M-TBAL...). Mechanical and electrical 24V M12 compatibility. Quote within 2h.",
   },
   fr: {
-    metaTitle: "Équivalences TPL Vision & Dual Sourcing | Vision Lighting",
+    metaTitle: "Équivalence TPL Vision : Alternatives Éclairage LED | Vision Lighting",
     metaDescription:
-      "Guide d'interopérabilité : alternatives compatibles aux gammes d'éclairage TPL Vision pour le dual sourcing et la continuité d'approvisionnement.",
+      "Trouvez l'équivalent direct à vos éclairages TPL Vision (Essential Bar, M-TBAL...). Compatibilité mécanique et électrique 24V M12. Devis sous 2h.",
   },
+};
+
+/** Named references only where explicitly known; generic range label otherwise (never a fabricated model code). */
+const COMPETITOR_REFS: Record<RichLocale, [string, string, string, string]> = {
+  en: ["Essential Bar", "M-TBAL", "TPL Vision — Dome Range", "TPL Vision — Coaxial Range"],
+  fr: ["Essential Bar", "M-TBAL", "TPL Vision — Gamme Dômes", "TPL Vision — Gamme Coaxiale"],
 };
 
 function buildRows(locale: RichLocale): EquivalenceRow[] {
   return LIGHT_TYPES[locale].map((type, i) => ({
-    lightTypeRouteKey: type.routeKey,
-    lightTypeLabel: type.label,
-    competitorRange: COMPETITOR_RANGE_LABEL,
-    interchangeabilityCriteria: CRITERIA[locale][i],
-    vlsAlternative: VLS_ALTERNATIVES[locale][i],
+    key: type.routeKey,
+    competitorRef: COMPETITOR_REFS[locale][i],
+    vlsEquivalent: VLS_ALTERNATIVES[locale][i],
+    formatSpec: CRITERIA[locale][i],
+    actionHref: `${type.routeKey}#documents-techniques`,
+    actionLabel: ACTION_LABEL[locale],
   }));
 }
 
+function buildRichContent(locale: RichLocale, h1: string, lead: string): EquivalenceRichContent {
+  const headings = buildEquivalenceHeadings(locale, COMPETITOR_NAME);
+  return {
+    h1,
+    lead,
+    ...headings,
+    electricalText: ELECTRICAL_TEXT[locale],
+    mechanicalText: MECHANICAL_TEXT[locale],
+    tableLabels: TABLE_LABELS[locale],
+    rows: buildRows(locale),
+    disclaimerNote: DISCLAIMER_NOTE[locale],
+    availabilityText: AVAILABILITY_TEXT[locale],
+    supportText: SUPPORT_TEXT[locale],
+    relatedTitle: RELATED_TITLE[locale],
+  };
+}
+
 const RICH_CONTENT: Record<RichLocale, EquivalenceRichContent> = {
-  en: {
-    h1: "TPL Vision Lighting Equivalents & Cross-References",
-    lead: "Equivalences and compatible alternatives for TPL Vision ranges — a technical cross-reference table for buyers securing dual sourcing on machine vision lighting.",
-    introTitle: "Why Secure a Second Source for Your Lighting",
-    introParagraph:
-      "Machine vision lighting is a small line item that can stop an entire production line if it fails and no equivalent is on hand. Buyers increasingly qualify a second, compatible source for their TPL Vision references — not to replace the relationship, but to protect lead times, gain pricing flexibility, and avoid a single point of failure in the bill of materials. The table below maps TPL Vision's product families to a compatible Vision Lighting Solutions alternative by physical and electrical characteristics.",
-    tableLabels: TABLE_LABELS.en,
-    rows: buildRows("en"),
-    disclaimerNote: DISCLAIMER_NOTE.en,
-    relatedTitle: RELATED_TITLE.en,
-  },
-  fr: {
-    h1: "Équivalences et Correspondances aux Éclairages TPL Vision",
-    lead: "Équivalences et alternatives compatibles aux gammes TPL Vision — table de correspondance technique pour les acheteurs sécurisant un dual sourcing sur l'éclairage vision industrielle.",
-    introTitle: "Pourquoi Sécuriser une Seconde Source pour Votre Éclairage",
-    introParagraph:
-      "L'éclairage de vision industrielle est une ligne de nomenclature modeste qui peut pourtant arrêter toute une ligne de production en cas de rupture sans équivalent disponible. De plus en plus d'acheteurs qualifient une seconde source compatible pour leurs références TPL Vision — non pour remplacer la relation existante, mais pour protéger les délais, gagner en flexibilité tarifaire et éviter un point de défaillance unique dans la nomenclature. Le tableau ci-dessous fait correspondre les familles de produits TPL Vision à une alternative Vision Lighting Solutions compatible, sur la base de critères physiques et électriques.",
-    tableLabels: TABLE_LABELS.fr,
-    rows: buildRows("fr"),
-    disclaimerNote: DISCLAIMER_NOTE.fr,
-    relatedTitle: RELATED_TITLE.fr,
-  },
+  en: buildRichContent(
+    "en",
+    "Equivalences and Alternatives to TPL Vision Lighting",
+    "Looking for an equivalent TPL Vision reference? This page cross-references TPL Vision's lighting families (Essential Bar, M-TBAL and more) with a compatible Vision Lighting Solutions alternative, for buyers securing dual sourcing on machine vision lighting."
+  ),
+  fr: buildRichContent(
+    "fr",
+    "Équivalences et Alternatives aux Éclairages TPL Vision",
+    "Vous cherchez un équivalent à une référence TPL Vision ? Cette page fait correspondre les familles d'éclairage TPL Vision (Essential Bar, M-TBAL et autres) à une alternative Vision Lighting Solutions compatible, pour les acheteurs sécurisant un dual sourcing sur l'éclairage vision industrielle."
+  ),
 };
 
 export function generateStaticParams() {
@@ -117,7 +136,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         name: rich.h1,
         description: META[locale as RichLocale].metaDescription,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
-        competitorBrand: "TPL Vision",
+        competitorBrand: COMPETITOR_NAME,
         competitorRanges: [COMPETITOR_RANGE_LABEL],
       })
     : null;

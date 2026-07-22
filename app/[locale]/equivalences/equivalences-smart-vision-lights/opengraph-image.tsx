@@ -14,8 +14,8 @@ const EYEBROW: Record<Locale, string> = {
 };
 
 const TITLE: Record<Locale, string> = {
-  en: "Smart Vision Lights Equivalents & Cross-References",
-  fr: "Équivalences et Correspondances Smart Vision Lights",
+  en: "Equivalences and Alternatives to Smart Vision Lights Lighting",
+  fr: "Équivalences et Alternatives aux Éclairages Smart Vision Lights",
   de: "Smart Vision Lights Äquivalente und Querverweise",
   it: "Equivalenze e Corrispondenze Smart Vision Lights",
 };

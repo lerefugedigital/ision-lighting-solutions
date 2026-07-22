@@ -14,8 +14,8 @@ const EYEBROW: Record<Locale, string> = {
 };
 
 const TITLE: Record<Locale, string> = {
-  en: "Advanced Illumination Equivalents & Cross-References",
-  fr: "Équivalences et Correspondances Advanced Illumination",
+  en: "Equivalences and Alternatives to Advanced Illumination Lighting",
+  fr: "Équivalences et Alternatives aux Éclairages Advanced Illumination",
   de: "Advanced Illumination Äquivalente und Querverweise",
   it: "Equivalenze e Corrispondenze Advanced Illumination",
 };

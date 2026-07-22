@@ -7,6 +7,7 @@ import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildEquivalenceItemPageJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
+  ACTION_LABEL,
   LIGHT_TYPES,
   CRITERIA,
   VLS_ALTERNATIVES,
@@ -14,6 +15,11 @@ import {
   RELATED_TITLE,
   RELATED_SLUGS,
   PLACEHOLDER_COMING_SOON,
+  ELECTRICAL_TEXT,
+  MECHANICAL_TEXT,
+  AVAILABILITY_TEXT,
+  SUPPORT_TEXT,
+  buildEquivalenceHeadings,
   type RichLocale,
 } from "@/lib/equivalence-shared-content";
 import { EquivalencePageContent, type EquivalenceRichContent } from "@/components/EquivalencePageContent";
@@ -21,55 +27,68 @@ import type { EquivalenceRow } from "@/components/EquivalenceTable";
 
 const ROUTE_KEY = "/equivalences/equivalences-smart-vision-lights";
 const PUBLISHED_DATE = "2026-07-20";
-const MODIFIED_DATE = "2026-07-20";
+const MODIFIED_DATE = "2026-07-22";
+const COMPETITOR_NAME = "Smart Vision Lights";
 const COMPETITOR_RANGE_LABEL = "Smart Vision Lights — L Series / RM Series";
 
 const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
   en: {
-    metaTitle: "Smart Vision Lights LED Equivalents | Vision Lighting",
+    metaTitle: "Smart Vision Lights Equivalent: Lighting Alternatives | Vision Lighting",
     metaDescription:
-      "Interoperability guide: compatible alternatives to Smart Vision Lights ranges for dual sourcing and supply chain continuity — get a quote today.",
+      "Find a compatible alternative to your Smart Vision Lights spotlights and bars (S75, Brick Light...). Standard M12 connectivity and 24h support.",
   },
   fr: {
-    metaTitle: "Équivalences Smart Vision Lights | Vision Lighting",
+    metaTitle: "Équivalence Smart Vision Lights : Alternatives Éclairage | Vision Lighting",
     metaDescription:
-      "Guide d'interopérabilité : alternatives compatibles aux gammes Smart Vision Lights pour le dual sourcing — demandez votre étude de correspondance.",
+      "Trouvez une alternative compatible à vos projecteurs et barres Smart Vision Lights (S75, Brick Light...). Connectique standard M12 et support 24h.",
   },
+};
+
+/** Named references only where explicitly known; generic range label otherwise (never a fabricated model code). */
+const COMPETITOR_REFS: Record<RichLocale, [string, string, string, string]> = {
+  en: ["S75", "Brick Light", "Smart Vision Lights — Dome Range", "Smart Vision Lights — Coaxial Range"],
+  fr: ["S75", "Brick Light", "Smart Vision Lights — Gamme Dômes", "Smart Vision Lights — Gamme Coaxiale"],
 };
 
 function buildRows(locale: RichLocale): EquivalenceRow[] {
   return LIGHT_TYPES[locale].map((type, i) => ({
-    lightTypeRouteKey: type.routeKey,
-    lightTypeLabel: type.label,
-    competitorRange: COMPETITOR_RANGE_LABEL,
-    interchangeabilityCriteria: CRITERIA[locale][i],
-    vlsAlternative: VLS_ALTERNATIVES[locale][i],
+    key: type.routeKey,
+    competitorRef: COMPETITOR_REFS[locale][i],
+    vlsEquivalent: VLS_ALTERNATIVES[locale][i],
+    formatSpec: CRITERIA[locale][i],
+    actionHref: `${type.routeKey}#documents-techniques`,
+    actionLabel: ACTION_LABEL[locale],
   }));
 }
 
+function buildRichContent(locale: RichLocale, h1: string, lead: string): EquivalenceRichContent {
+  const headings = buildEquivalenceHeadings(locale, COMPETITOR_NAME);
+  return {
+    h1,
+    lead,
+    ...headings,
+    electricalText: ELECTRICAL_TEXT[locale],
+    mechanicalText: MECHANICAL_TEXT[locale],
+    tableLabels: TABLE_LABELS[locale],
+    rows: buildRows(locale),
+    disclaimerNote: DISCLAIMER_NOTE[locale],
+    availabilityText: AVAILABILITY_TEXT[locale],
+    supportText: SUPPORT_TEXT[locale],
+    relatedTitle: RELATED_TITLE[locale],
+  };
+}
+
 const RICH_CONTENT: Record<RichLocale, EquivalenceRichContent> = {
-  en: {
-    h1: "Smart Vision Lights Equivalents & Cross-References",
-    lead: "Equivalences and compatible alternatives for Smart Vision Lights ranges — a technical cross-reference table for buyers securing dual sourcing on machine vision lighting.",
-    introTitle: "Why Secure a Second Source for Your Lighting",
-    introParagraph:
-      "When a lighting reference goes out of stock or lead times stretch out, the inspection cell it feeds stops with it. Buyers running Smart Vision Lights equipment increasingly qualify a compatible second source in parallel — not to displace the incumbent supplier, but to protect lead times, gain pricing flexibility, and remove a single point of failure from the bill of materials. The table below maps Smart Vision Lights' product families to a compatible Vision Lighting Solutions alternative by physical and electrical characteristics.",
-    tableLabels: TABLE_LABELS.en,
-    rows: buildRows("en"),
-    disclaimerNote: DISCLAIMER_NOTE.en,
-    relatedTitle: RELATED_TITLE.en,
-  },
-  fr: {
-    h1: "Équivalences et Correspondances aux Éclairages Smart Vision Lights",
-    lead: "Équivalences et alternatives compatibles aux gammes Smart Vision Lights — table de correspondance technique pour les acheteurs sécurisant un dual sourcing sur l'éclairage vision industrielle.",
-    introTitle: "Pourquoi Sécuriser une Seconde Source pour Votre Éclairage",
-    introParagraph:
-      "Quand une référence d'éclairage tombe en rupture ou que les délais s'allongent, c'est toute la cellule d'inspection qu'elle alimente qui s'arrête avec elle. Les acheteurs équipés en Smart Vision Lights qualifient de plus en plus une seconde source compatible en parallèle — non pour évincer le fournisseur en place, mais pour protéger les délais, gagner en flexibilité tarifaire et supprimer un point de défaillance unique de la nomenclature. Le tableau ci-dessous fait correspondre les familles de produits Smart Vision Lights à une alternative Vision Lighting Solutions compatible, sur la base de critères physiques et électriques.",
-    tableLabels: TABLE_LABELS.fr,
-    rows: buildRows("fr"),
-    disclaimerNote: DISCLAIMER_NOTE.fr,
-    relatedTitle: RELATED_TITLE.fr,
-  },
+  en: buildRichContent(
+    "en",
+    "Equivalences and Alternatives to Smart Vision Lights Lighting",
+    "Looking for an equivalent Smart Vision Lights reference? This page cross-references Smart Vision Lights' product families (S75, Brick Light and more) with a compatible Vision Lighting Solutions alternative, for buyers securing dual sourcing on machine vision lighting."
+  ),
+  fr: buildRichContent(
+    "fr",
+    "Équivalences et Alternatives aux Éclairages Smart Vision Lights",
+    "Vous cherchez un équivalent à une référence Smart Vision Lights ? Cette page fait correspondre les familles de produits Smart Vision Lights (S75, Brick Light et autres) à une alternative Vision Lighting Solutions compatible, pour les acheteurs sécurisant un dual sourcing sur l'éclairage vision industrielle."
+  ),
 };
 
 export function generateStaticParams() {
@@ -117,7 +136,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         name: rich.h1,
         description: META[locale as RichLocale].metaDescription,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
-        competitorBrand: "Smart Vision Lights",
+        competitorBrand: COMPETITOR_NAME,
         competitorRanges: [COMPETITOR_RANGE_LABEL],
       })
     : null;

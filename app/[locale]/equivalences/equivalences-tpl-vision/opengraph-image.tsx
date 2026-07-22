@@ -14,8 +14,8 @@ const EYEBROW: Record<Locale, string> = {
 };
 
 const TITLE: Record<Locale, string> = {
-  en: "TPL Vision Equivalents & Cross-References",
-  fr: "Équivalences et Correspondances TPL Vision",
+  en: "Equivalences and Alternatives to TPL Vision Lighting",
+  fr: "Équivalences et Alternatives aux Éclairages TPL Vision",
   de: "TPL Vision Äquivalente und Querverweise",
   it: "Equivalenze e Corrispondenze TPL Vision",
 };

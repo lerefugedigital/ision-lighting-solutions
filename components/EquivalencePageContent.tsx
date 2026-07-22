@@ -8,11 +8,21 @@ import { ReassuranceBar } from "./ReassuranceBar";
 export interface EquivalenceRichContent {
   h1: string;
   lead: string;
-  introTitle: string;
-  introParagraph: string;
+  compatibilityTitle: string;
+  electricalTitle: string;
+  electricalText: string;
+  mechanicalTitle: string;
+  mechanicalText: string;
+  tableTitle: string;
   tableLabels: EquivalenceTableLabels;
   rows: EquivalenceRow[];
   disclaimerNote: string;
+  whyTitle: string;
+  availabilityTitle: string;
+  availabilityText: string;
+  supportTitle: string;
+  supportText: string;
+  ctaTitle: string;
   relatedTitle: string;
 }
 
@@ -53,18 +63,51 @@ export function EquivalencePageContent({
 
       <section className="mt-10">
         <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-          {rich.introTitle}
+          {rich.compatibilityTitle}
         </h2>
-        <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">{rich.introParagraph}</p>
+
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{rich.electricalTitle}</h3>
+          <p className="mt-3 leading-relaxed text-slate-600 dark:text-slate-300">{rich.electricalText}</p>
+        </div>
+
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{rich.mechanicalTitle}</h3>
+          <p className="mt-3 leading-relaxed text-slate-600 dark:text-slate-300">{rich.mechanicalText}</p>
+        </div>
       </section>
 
       <section className="mt-10">
-        <EquivalenceTable rows={rich.rows} labels={rich.tableLabels} />
-        <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">{rich.disclaimerNote}</p>
+        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+          {rich.tableTitle}
+        </h2>
+        <div className="mt-5">
+          <EquivalenceTable rows={rich.rows} labels={rich.tableLabels} />
+          <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">{rich.disclaimerNote}</p>
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{rich.whyTitle}</h2>
+
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{rich.availabilityTitle}</h3>
+          <p className="mt-3 leading-relaxed text-slate-600 dark:text-slate-300">{rich.availabilityText}</p>
+        </div>
+
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{rich.supportTitle}</h3>
+          <p className="mt-3 leading-relaxed text-slate-600 dark:text-slate-300">{rich.supportText}</p>
+        </div>
       </section>
 
       <div className="mt-14">
-        <ContactForm locale={locale as "en" | "fr"} contextType="equivalence" subjectContext={rich.h1} />
+        <ContactForm
+          locale={locale as "en" | "fr"}
+          contextType="equivalence"
+          subjectContext={rich.h1}
+          titleOverride={rich.ctaTitle}
+        />
       </div>
 
       {relatedSegments.length > 0 && (

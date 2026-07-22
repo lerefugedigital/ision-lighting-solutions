@@ -7,6 +7,7 @@ import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildEquivalenceItemPageJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
+  ACTION_LABEL,
   LIGHT_TYPES,
   CRITERIA,
   VLS_ALTERNATIVES,
@@ -14,6 +15,11 @@ import {
   RELATED_TITLE,
   RELATED_SLUGS,
   PLACEHOLDER_COMING_SOON,
+  ELECTRICAL_TEXT,
+  MECHANICAL_TEXT,
+  AVAILABILITY_TEXT,
+  SUPPORT_TEXT,
+  buildEquivalenceHeadings,
   type RichLocale,
 } from "@/lib/equivalence-shared-content";
 import { EquivalencePageContent, type EquivalenceRichContent } from "@/components/EquivalencePageContent";
@@ -21,55 +27,78 @@ import type { EquivalenceRow } from "@/components/EquivalenceTable";
 
 const ROUTE_KEY = "/equivalences/equivalences-advanced-illumination";
 const PUBLISHED_DATE = "2026-07-20";
-const MODIFIED_DATE = "2026-07-20";
+const MODIFIED_DATE = "2026-07-22";
+const COMPETITOR_NAME = "Advanced Illumination";
 const COMPETITOR_RANGE_LABEL = "Advanced Illumination — AL / DL Series";
 
 const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
   en: {
-    metaTitle: "Advanced Illumination Equivalents | Vision Lighting",
+    metaTitle: "Advanced Illumination Equivalent: LED Alternatives | Vision Lighting",
     metaDescription:
-      "Interoperability guide: compatible alternatives to Advanced Illumination lighting ranges for dual sourcing — request your cross-reference now.",
+      "Replace your Advanced Illumination lighting (Bar lights, Backlights...). Direct 1:1 replacement for machine vision and integrators.",
   },
   fr: {
-    metaTitle: "Équivalences Advanced Illumination | Vision Lighting",
+    metaTitle: "Équivalence Advanced Illumination : Alternatives LED | Vision Lighting",
     metaDescription:
-      "Guide d'interopérabilité : alternatives compatibles aux gammes Advanced Illumination pour le dual sourcing — demandez votre étude de correspondance.",
+      "Remplacez vos éclairages Advanced Illumination (Bar lights, Backlights...). Remplacement direct 1:1 pour vision industrielle et intégrateurs.",
   },
+};
+
+/** Named references only where explicitly known; generic range label otherwise (never a fabricated model code). */
+const COMPETITOR_REFS: Record<RichLocale, [string, string, string, string]> = {
+  en: [
+    "Advanced Illumination — Bar Lights",
+    "Advanced Illumination — Backlights",
+    "Advanced Illumination — Dome Range",
+    "Advanced Illumination — Coaxial Range",
+  ],
+  fr: [
+    "Advanced Illumination — Bar Lights",
+    "Advanced Illumination — Backlights",
+    "Advanced Illumination — Gamme Dômes",
+    "Advanced Illumination — Gamme Coaxiale",
+  ],
 };
 
 function buildRows(locale: RichLocale): EquivalenceRow[] {
   return LIGHT_TYPES[locale].map((type, i) => ({
-    lightTypeRouteKey: type.routeKey,
-    lightTypeLabel: type.label,
-    competitorRange: COMPETITOR_RANGE_LABEL,
-    interchangeabilityCriteria: CRITERIA[locale][i],
-    vlsAlternative: VLS_ALTERNATIVES[locale][i],
+    key: type.routeKey,
+    competitorRef: COMPETITOR_REFS[locale][i],
+    vlsEquivalent: VLS_ALTERNATIVES[locale][i],
+    formatSpec: CRITERIA[locale][i],
+    actionHref: `${type.routeKey}#documents-techniques`,
+    actionLabel: ACTION_LABEL[locale],
   }));
 }
 
+function buildRichContent(locale: RichLocale, h1: string, lead: string): EquivalenceRichContent {
+  const headings = buildEquivalenceHeadings(locale, COMPETITOR_NAME);
+  return {
+    h1,
+    lead,
+    ...headings,
+    electricalText: ELECTRICAL_TEXT[locale],
+    mechanicalText: MECHANICAL_TEXT[locale],
+    tableLabels: TABLE_LABELS[locale],
+    rows: buildRows(locale),
+    disclaimerNote: DISCLAIMER_NOTE[locale],
+    availabilityText: AVAILABILITY_TEXT[locale],
+    supportText: SUPPORT_TEXT[locale],
+    relatedTitle: RELATED_TITLE[locale],
+  };
+}
+
 const RICH_CONTENT: Record<RichLocale, EquivalenceRichContent> = {
-  en: {
-    h1: "Advanced Illumination Lighting Equivalents & Cross-References",
-    lead: "Equivalences and compatible alternatives for Advanced Illumination ranges — a technical cross-reference table for buyers securing dual sourcing on machine vision lighting.",
-    introTitle: "Why Secure a Second Source for Your Lighting",
-    introParagraph:
-      "A single unavailable lighting reference can idle an entire inspection cell while a replacement is sourced. Procurement teams running Advanced Illumination lighting increasingly qualify a compatible second source alongside it — not to displace the incumbent supplier, but to shorten lead times, add pricing leverage, and remove a single point of failure from the bill of materials. The table below maps Advanced Illumination's product families to a compatible Vision Lighting Solutions alternative by physical and electrical characteristics.",
-    tableLabels: TABLE_LABELS.en,
-    rows: buildRows("en"),
-    disclaimerNote: DISCLAIMER_NOTE.en,
-    relatedTitle: RELATED_TITLE.en,
-  },
-  fr: {
-    h1: "Équivalences et Correspondances aux Éclairages Advanced Illumination",
-    lead: "Équivalences et alternatives compatibles aux gammes Advanced Illumination — table de correspondance technique pour les acheteurs sécurisant un dual sourcing sur l'éclairage vision industrielle.",
-    introTitle: "Pourquoi Sécuriser une Seconde Source pour Votre Éclairage",
-    introParagraph:
-      "Une seule référence d'éclairage indisponible peut immobiliser toute une cellule d'inspection le temps de trouver un remplacement. Les équipes achats travaillant avec des éclairages Advanced Illumination qualifient de plus en plus une seconde source compatible en parallèle — non pour évincer le fournisseur en place, mais pour réduire les délais, gagner un levier tarifaire et supprimer un point de défaillance unique de la nomenclature. Le tableau ci-dessous fait correspondre les familles de produits Advanced Illumination à une alternative Vision Lighting Solutions compatible, sur la base de critères physiques et électriques.",
-    tableLabels: TABLE_LABELS.fr,
-    rows: buildRows("fr"),
-    disclaimerNote: DISCLAIMER_NOTE.fr,
-    relatedTitle: RELATED_TITLE.fr,
-  },
+  en: buildRichContent(
+    "en",
+    "Equivalences and Alternatives to Advanced Illumination Lighting",
+    "Looking for an equivalent Advanced Illumination reference? This page cross-references Advanced Illumination's product families (bar lights, backlights and more) with a compatible Vision Lighting Solutions alternative, for buyers securing dual sourcing on machine vision lighting."
+  ),
+  fr: buildRichContent(
+    "fr",
+    "Équivalences et Alternatives aux Éclairages Advanced Illumination",
+    "Vous cherchez un équivalent à une référence Advanced Illumination ? Cette page fait correspondre les familles de produits Advanced Illumination (bar lights, backlights et autres) à une alternative Vision Lighting Solutions compatible, pour les acheteurs sécurisant un dual sourcing sur l'éclairage vision industrielle."
+  ),
 };
 
 export function generateStaticParams() {
@@ -117,7 +146,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         name: rich.h1,
         description: META[locale as RichLocale].metaDescription,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
-        competitorBrand: "Advanced Illumination",
+        competitorBrand: COMPETITOR_NAME,
         competitorRanges: [COMPETITOR_RANGE_LABEL],
       })
     : null;
