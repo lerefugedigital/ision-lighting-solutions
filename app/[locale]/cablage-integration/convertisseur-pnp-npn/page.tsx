@@ -7,6 +7,7 @@ import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildTechArticleWithHowToJsonLd, buildFaqPageJsonLd, type HowToStepInput } from "@/lib/jsonld";
 import { ContactForm } from "@/components/ContactForm";
+import { WiringFastTracks } from "@/components/WiringFastTracks";
 import { PnpNpnConverter, type PnpNpnModeInfo, type PnpNpnConverterLabels } from "@/components/PnpNpnConverter";
 
 const ROUTE_KEY = "/cablage-integration/convertisseur-pnp-npn";
@@ -124,9 +125,6 @@ const LABELS: Record<Locale, PnpNpnConverterLabels> = {
 
 export const ARTICLE = {
   en: {
-    metaTitle: "PNP/NPN Signal Converter | Vision Lighting Solutions",
-    metaDescription:
-      "How to convert PNP (sourcing) and NPN (sinking) trigger signals to wire vision lighting to any PLC or camera I/O — request a free quote today.",
     h1: "PNP/NPN Signal Converter for Vision Lighting Integration",
     lead: "Toggle your camera or PLC output's signal type below to see how a PNP/NPN converter changes what reaches the light's Pin 4 — and whether you actually need one.",
     recapTitle: "PNP vs NPN, Briefly",
@@ -141,9 +139,6 @@ export const ARTICLE = {
     relatedTitle: "Related wiring guides",
   },
   fr: {
-    metaTitle: "Convertisseur de Signal PNP/NPN | Vision Lighting Solutions",
-    metaDescription:
-      "Comment convertir un signal trigger PNP (source) en NPN (drain) et inversement pour intégrer l'éclairage vision à n'importe quel automate ou caméra.",
     h1: "Convertisseur de Signal PNP/NPN pour l'Intégration Éclairage Vision",
     lead: "Basculez le type de signal de votre sortie caméra ou automate ci-dessous pour voir comment un convertisseur PNP/NPN modifie ce qui arrive au Pin 4 de l'éclairage — et si vous en avez réellement besoin.",
     recapTitle: "PNP vs NPN, en Bref",
@@ -158,9 +153,6 @@ export const ARTICLE = {
     relatedTitle: "Guides de câblage associés",
   },
   de: {
-    metaTitle: "PNP/NPN-Wandler | Vision Lighting Solutions",
-    metaDescription:
-      "So wandeln Sie PNP- (Sourcing) und NPN- (Sinking) Triggersignale um, um Vision-Beleuchtung mit jeder SPS oder Kamera-I/O zu integrieren.",
     h1: "PNP/NPN-Signalwandler für die Integration von Vision-Beleuchtung",
     lead: "Schalten Sie unten den Signaltyp Ihres Kamera- oder SPS-Ausgangs um, um zu sehen, wie ein PNP/NPN-Wandler verändert, was an Pin 4 der Beleuchtung ankommt — und ob Sie überhaupt einen benötigen.",
     recapTitle: "PNP vs NPN, Kurz Erklärt",
@@ -175,9 +167,6 @@ export const ARTICLE = {
     relatedTitle: "Verwandte Verkabelungsleitfäden",
   },
   it: {
-    metaTitle: "Convertitore PNP/NPN | Vision Lighting Solutions",
-    metaDescription:
-      "Come convertire un segnale trigger PNP (source) in NPN (sink) e viceversa per integrare l'illuminazione vision con qualsiasi PLC o camera.",
     h1: "Convertitore di Segnale PNP/NPN per l'Integrazione dell'Illuminazione Vision",
     lead: "Cambia il tipo di segnale della tua uscita camera o PLC qui sotto per vedere come un convertitore PNP/NPN modifica ciò che arriva al Pin 4 dell'illuminazione — e se ne hai davvero bisogno.",
     recapTitle: "PNP vs NPN, in Breve",
@@ -194,8 +183,6 @@ export const ARTICLE = {
 } satisfies Record<
   Locale,
   {
-    metaTitle: string;
-    metaDescription: string;
     h1: string;
     lead: string;
     recapTitle: string;
@@ -243,12 +230,16 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+function findCatalogSegment() {
+  return catalog.segments.find((s) => s.slug === "convertisseur-pnp-npn");
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  const t = ARTICLE[locale];
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: { absolute: t.metaTitle },
-    description: t.metaDescription,
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
     alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
@@ -258,6 +249,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   setRequestLocale(locale);
 
   const t = ARTICLE[locale];
+  const content = findCatalogSegment()?.content[locale];
   const relatedSegments = RELATED_SLUGS.map((slug) => catalog.segments.find((s) => s.slug === slug)).filter(
     (s): s is NonNullable<typeof s> => Boolean(s)
   );
@@ -268,7 +260,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
     path: `/${locale}${ROUTE_KEY}`,
     locale,
     headline: t.h1,
-    description: t.metaDescription,
+    description: content?.metaDescription ?? t.lead,
     image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
     datePublished: PUBLISHED_DATE,
     dateModified: MODIFIED_DATE,
@@ -305,6 +297,12 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       </h1>
       <p className="mt-4 text-slate-600 dark:text-slate-300">{t.lead}</p>
 
+      {(locale === "en" || locale === "fr") && (
+        <div className="mt-8">
+          <WiringFastTracks locale={locale} />
+        </div>
+      )}
+
       <div className="mt-10">
         <PnpNpnConverter modes={MODES[locale]} labels={LABELS[locale]} />
       </div>
@@ -329,7 +327,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       </section>
 
       {(locale === "en" || locale === "fr") && (
-        <div className="mt-14">
+        <div id="contact-form" className="mt-14 scroll-mt-8">
           <ContactForm locale={locale} contextType="wiring" subjectContext={t.h1} />
         </div>
       )}

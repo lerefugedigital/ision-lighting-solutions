@@ -8,35 +8,23 @@ import { buildOrganizationAndWebsiteJsonLd } from "@/lib/jsonld";
 import { ReassuranceBar } from "@/components/ReassuranceBar";
 import { CaseStudies } from "@/components/CaseStudies";
 
-const COPY: Record<Locale, { metaTitle: string; metaDescription: string; heroTitle: string; heroBody: string }> = {
+const COPY: Record<Locale, { heroTitle: string; heroBody: string }> = {
   en: {
-    metaTitle: "Machine Vision Lighting Solutions | LED Illumination",
-    metaDescription:
-      "Vision Lighting Solutions designs and supplies LED lighting for machine vision: bar lights, backlights, coaxial and dome lights — request a quote.",
     heroTitle: "Machine Vision Lighting, Engineered for Reliable Inspection",
     heroBody:
       "From LED bar lights to coaxial and dome lighting, we help integrators and manufacturers choose, wire and deploy the right illumination for every inspection challenge.",
   },
   fr: {
-    metaTitle: "Solutions d'Éclairage Vision Industrielle | Éclairage LED",
-    metaDescription:
-      "Vision Lighting Solutions conçoit des éclairages LED pour la vision industrielle : barres, rétroéclairages, dômes et coaxiaux — demandez un devis.",
     heroTitle: "L'Éclairage Vision Industrielle, Pensé pour une Inspection Fiable",
     heroBody:
       "Des barres LED aux éclairages coaxiaux et dômes diffus, nous aidons intégrateurs et industriels à choisir, câbler et déployer l'éclairage adapté à chaque défi d'inspection.",
   },
   de: {
-    metaTitle: "Beleuchtungslösungen für die Bildverarbeitung | LED-Beleuchtung",
-    metaDescription:
-      "Vision Lighting Solutions entwickelt und liefert LED-Beleuchtung für die Bildverarbeitung: Balkenleuchten, Hintergrundbeleuchtung, Koaxial- und Kuppelleuchten, Äquivalente und Integrationsleitfäden.",
     heroTitle: "Vision-Beleuchtung, Konzipiert für Zuverlässige Inspektion",
     heroBody:
       "Von LED-Balkenleuchten bis zu Koaxial- und Kuppelbeleuchtung helfen wir Integratoren und Herstellern, die richtige Beleuchtung für jede Inspektionsaufgabe zu wählen, zu verkabeln und einzusetzen.",
   },
   it: {
-    metaTitle: "Soluzioni di Illuminazione per la Visione Industriale | Illuminazione LED",
-    metaDescription:
-      "Vision Lighting Solutions progetta e fornisce illuminazioni LED per la visione industriale: barre, retroilluminazioni, cupole e illuminazioni coassiali, equivalenze e guide di integrazione.",
     heroTitle: "Illuminazione per la Visione Industriale, Progettata per un'Ispezione Affidabile",
     heroBody:
       "Dalle barre LED alle illuminazioni coassiali e a cupola, aiutiamo integratori e produttori a scegliere, cablare e implementare l'illuminazione giusta per ogni sfida di ispezione.",
@@ -164,12 +152,16 @@ const RICH_HOME: Record<RichLocale, RichHomeContent> = {
   },
 };
 
+function findCatalogPage() {
+  return catalog.pages.find((p) => p.slug === "home");
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  const t = COPY[locale];
+  const content = findCatalogPage()?.content[locale];
   return {
-    title: { absolute: t.metaTitle },
-    description: t.metaDescription,
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
     alternates: buildLanguageAlternates("/", locale),
   };
 }

@@ -2,11 +2,14 @@ import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
+import { THIN_CONTENT_LOCALES, THIN_CONTENT_ROUTE_KEYS } from "@/lib/thin-content";
 
 function alternatesFor(path: string) {
   const cleanPath = path === "/" ? "" : path;
+  const excluded: readonly string[] = THIN_CONTENT_ROUTE_KEYS.includes(path) ? THIN_CONTENT_LOCALES : [];
   const languages: Record<string, string> = {};
   for (const locale of routing.locales) {
+    if (excluded.includes(locale)) continue;
     languages[locale] = `${SITE_URL}/${locale}${cleanPath}`;
   }
   languages["x-default"] = languages[routing.defaultLocale];

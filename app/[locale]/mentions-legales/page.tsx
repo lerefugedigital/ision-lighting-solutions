@@ -1,35 +1,19 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { routing, type Locale } from "@/i18n/routing";
+import { catalog } from "@/data/catalog";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 
 const ROUTE_KEY = "/mentions-legales";
 
 type RichLocale = "en" | "fr";
 
-const META: Record<Locale, { metaTitle: string; metaDescription: string; h1: string }> = {
-  en: {
-    metaTitle: "Legal Notice & Privacy Policy | Vision Lighting Solutions",
-    metaDescription:
-      "Legal notice, GDPR data protection policy, cookie declaration and technical liability limitation for vision-lighting-solutions.com — read details.",
-    h1: "Legal Notice & Privacy Policy",
-  },
-  fr: {
-    metaTitle: "Mentions Légales & Confidentialité | Vision Lighting",
-    metaDescription:
-      "Mentions légales, politique de protection des données RGPD, déclaration cookies et limitation de responsabilité technique — consultez les détails.",
-    h1: "Mentions Légales & Politique de Confidentialité",
-  },
-  de: {
-    metaTitle: "Impressum & Datenschutz | Vision Lighting Solutions",
-    metaDescription: "Impressum, DSGVO-Datenschutzerklärung und Cookie-Hinweis für vision-lighting-solutions.com.",
-    h1: "Impressum & Datenschutzerklärung",
-  },
-  it: {
-    metaTitle: "Note Legali & Privacy | Vision Lighting Solutions",
-    metaDescription: "Note legali, informativa privacy GDPR e dichiarazione cookie per vision-lighting-solutions.com.",
-    h1: "Note Legali & Informativa sulla Privacy",
-  },
+const COPY: Record<Locale, { h1: string }> = {
+  en: { h1: "Legal Notice & Privacy Policy" },
+  fr: { h1: "Mentions Légales & Politique de Confidentialité" },
+  de: { h1: "Impressum & Datenschutzerklärung" },
+  it: { h1: "Note Legali & Informativa sulla Privacy" },
 };
 
 const PLACEHOLDER_COMING_SOON: Record<"de" | "it", string> = {
@@ -113,13 +97,18 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+function findCatalogPage() {
+  return catalog.pages.find((p) => p.slug === "mentions-legales");
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  const m = META[locale];
+  const content = findCatalogPage()?.content[locale];
   return {
-    title: { absolute: m.metaTitle },
-    description: m.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES }),
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -127,7 +116,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const m = META[locale];
+  const m = COPY[locale];
   const rich = locale === "en" || locale === "fr" ? RICH_CONTENT[locale] : null;
 
   if (!rich) {

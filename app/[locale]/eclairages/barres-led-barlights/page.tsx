@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildProductModelJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
@@ -128,19 +129,6 @@ const ROUTE_KEY = "/eclairages/barres-led-barlights";
 const PUBLISHED_DATE = "2026-07-20";
 const MODIFIED_DATE = "2026-07-20";
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "LED Bar Lights | Industrial Machine Vision Illumination",
-    metaDescription:
-      "Industrial LED bar lights: aluminum body, M12 connector, 24VDC electronics, uniform field illumination in White, Red, Blue or IR — get a quote.",
-  },
-  fr: {
-    metaTitle: "Barres LED Barlights | Éclairage Vision Industrielle",
-    metaDescription:
-      "Barres LED industrielles : corps aluminium, connecteur M12, électronique 24VDC, éclairage uniforme en Blanc, Rouge, Bleu ou IR — demandez un devis.",
-  },
-};
-
 const ROWS: Record<RichLocale, ProductConfigRow[]> = {
   en: [
     {
@@ -227,6 +215,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
   en: {
     h1: "LED Bar Lights for Machine Vision",
     lead: "Linear LED bar lights delivering uniform, high-output illumination across a wide flat field — the workhorse lighting format for line-scan and area-scan inspection.",
+    principlesTitle: "Industrial Machine Vision Bar Lighting: Principles and Advantages",
     introTitle: "What Is an LED Bar Light Used For?",
     introParagraph:
       "A bar light is a linear array of LEDs behind an optical diffuser, mounted at a direct or grazing angle to illuminate a flat or gently curved field of view. It's the default choice for conveyor-line inspection, label and print verification, and any application needing even illumination across a wide, elongated area — where a dome light would be used instead for reflective or curved parts, and a coaxial light for specular, mirror-like surfaces.",
@@ -259,6 +248,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
   fr: {
     h1: "Barres LED (Barlights) pour la Vision Industrielle",
     lead: "Barres LED linéaires délivrant un éclairage uniforme et haute intensité sur un champ plat et large — le format d'éclairage de référence pour l'inspection en ligne et en zone.",
+    principlesTitle: "Éclairage à Barre LED Vision Industrielle : Principes et Avantages",
     introTitle: "À Quoi Sert une Barre LED ?",
     introParagraph:
       "Une barre LED est un alignement linéaire de LED derrière un diffuseur optique, monté en incidence directe ou rasante pour éclairer un champ de vision plat ou légèrement courbe. C'est le choix par défaut pour l'inspection sur ligne de convoyage, la vérification d'étiquettes et d'impression, et toute application nécessitant un éclairage homogène sur une zone large et allongée — là où un dôme diffus serait plutôt utilisé pour des pièces réfléchissantes ou courbes, et un éclairage coaxial pour des surfaces spéculaires de type miroir.",
@@ -300,19 +290,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -355,7 +339,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         name: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         category: "Machine Vision LED Bar Lights",
         additionalProperties: [

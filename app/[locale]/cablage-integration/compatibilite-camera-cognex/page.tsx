@@ -7,6 +7,7 @@ import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildTechArticleWithHowToJsonLd, buildFaqPageJsonLd, type HowToStepInput } from "@/lib/jsonld";
 import { ContactForm } from "@/components/ContactForm";
+import { WiringFastTracks } from "@/components/WiringFastTracks";
 import { CameraCompatibility, type CameraCompatInfo, type CameraCompatibilityLabels } from "@/components/CameraCompatibility";
 
 const ROUTE_KEY = "/cablage-integration/compatibilite-camera-cognex";
@@ -195,9 +196,6 @@ const LABELS: Record<Locale, CameraCompatibilityLabels> = {
 
 export const ARTICLE = {
   en: {
-    metaTitle: "Cognex Camera Compatibility | Vision Lighting Solutions",
-    metaDescription:
-      "Compatible lighting, I/O configuration and trigger wiring for integrating our machine vision lights with Cognex In-Sight and DataMan cameras.",
     h1: "Vision Lighting Compatibility with Cognex Cameras",
     lead: "Cognex In-Sight and DataMan cameras drive their trigger and strobe signals through software-configurable, opto-isolated digital I/O. Click a camera series below to see its I/O type, voltage, and exactly how to wire it to our lighting.",
     expertTitle: "Synchronizing Trigger and Exposure",
@@ -211,9 +209,6 @@ export const ARTICLE = {
     relatedTitle: "Related wiring guides",
   },
   fr: {
-    metaTitle: "Compatibilité Caméra Cognex | Vision Lighting Solutions",
-    metaDescription:
-      "Éclairages compatibles, configuration des E/S et câblage du trigger pour intégrer nos éclairages vision aux caméras Cognex In-Sight et DataMan.",
     h1: "Compatibilité des Éclairages Vision avec les Caméras Cognex",
     lead: "Les caméras Cognex In-Sight et DataMan pilotent leurs signaux de trigger et de strobe via des E/S numériques optocouplées configurables par logiciel. Cliquez sur une série de caméra ci-dessous pour voir son type d'E/S, sa tension, et comment la câbler exactement à notre éclairage.",
     expertTitle: "Synchroniser Trigger et Exposition",
@@ -227,9 +222,6 @@ export const ARTICLE = {
     relatedTitle: "Guides de câblage associés",
   },
   de: {
-    metaTitle: "Cognex Kamera-Kompatibilität | Vision Lighting Solutions",
-    metaDescription:
-      "Kompatible Beleuchtung, I/O-Konfiguration und Triggerverdrahtung zur Integration unserer Vision-Beleuchtung mit Cognex In-Sight und DataMan Kameras.",
     h1: "Kompatibilität von Vision-Beleuchtung mit Cognex-Kameras",
     lead: "Cognex In-Sight und DataMan Kameras steuern ihre Trigger- und Blitzsignale über softwarekonfigurierbare, optogekoppelte digitale I/O. Klicken Sie unten auf eine Kameraserie, um deren I/O-Typ, Spannung und die genaue Verkabelung mit unserer Beleuchtung zu sehen.",
     expertTitle: "Trigger und Belichtung Synchronisieren",
@@ -243,9 +235,6 @@ export const ARTICLE = {
     relatedTitle: "Verwandte Verkabelungsleitfäden",
   },
   it: {
-    metaTitle: "Compatibilità Camera Cognex | Vision Lighting Solutions",
-    metaDescription:
-      "Illuminazioni compatibili, configurazione I/O e cablaggio del trigger per integrare le nostre illuminazioni vision con le camere Cognex In-Sight e DataMan.",
     h1: "Compatibilità dell'Illuminazione Vision con le Camere Cognex",
     lead: "Le camere Cognex In-Sight e DataMan pilotano i segnali di trigger e strobo tramite I/O digitali optoaccoppiati configurabili via software. Clicca su una serie di camere qui sotto per vedere il suo tipo di I/O, la tensione e come cablarla esattamente alla nostra illuminazione.",
     expertTitle: "Sincronizzare Trigger ed Esposizione",
@@ -261,8 +250,6 @@ export const ARTICLE = {
 } satisfies Record<
   Locale,
   {
-    metaTitle: string;
-    metaDescription: string;
     h1: string;
     lead: string;
     expertTitle: string;
@@ -308,12 +295,16 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+function findCatalogSegment() {
+  return catalog.segments.find((s) => s.slug === "compatibilite-camera-cognex");
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  const t = ARTICLE[locale];
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: { absolute: t.metaTitle },
-    description: t.metaDescription,
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
     alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
@@ -323,6 +314,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   setRequestLocale(locale);
 
   const t = ARTICLE[locale];
+  const content = findCatalogSegment()?.content[locale];
   const relatedSegments = RELATED_SLUGS.map((slug) => catalog.segments.find((s) => s.slug === slug)).filter(
     (s): s is NonNullable<typeof s> => Boolean(s)
   );
@@ -333,7 +325,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
     path: `/${locale}${ROUTE_KEY}`,
     locale,
     headline: t.h1,
-    description: t.metaDescription,
+    description: content?.metaDescription ?? t.lead,
     image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
     datePublished: PUBLISHED_DATE,
     dateModified: MODIFIED_DATE,
@@ -370,6 +362,12 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       </h1>
       <p className="mt-4 text-slate-600 dark:text-slate-300">{t.lead}</p>
 
+      {(locale === "en" || locale === "fr") && (
+        <div className="mt-8">
+          <WiringFastTracks locale={locale} />
+        </div>
+      )}
+
       <div className="mt-10">
         <CameraCompatibility cameras={CAMERAS[locale]} labels={LABELS[locale]} />
       </div>
@@ -391,7 +389,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       </section>
 
       {(locale === "en" || locale === "fr") && (
-        <div className="mt-14">
+        <div id="contact-form" className="mt-14 scroll-mt-8">
           <ContactForm locale={locale} contextType="wiring" subjectContext={t.h1} />
         </div>
       )}

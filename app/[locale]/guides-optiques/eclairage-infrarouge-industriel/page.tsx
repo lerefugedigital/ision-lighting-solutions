@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
@@ -15,18 +16,6 @@ const MODIFIED_DATE = "2026-07-20";
 const PRODUCT_SLUGS = ["barres-led-barlights", "retroeclairages-backlights"];
 const TOOL_SLUGS = ["brochage-m12-5-pins", "eclairage-stroboscopique-overdrive"];
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "Industrial Infrared (IR) Lighting | Machine Vision Guide",
-    metaDescription:
-      "Why infrared lighting sees through materials that look opaque under visible light, and how to apply it in machine vision — read our full guide.",
-  },
-  fr: {
-    metaTitle: "Éclairage Infrarouge Industriel | Guide Vision Industrielle",
-    metaDescription:
-      "Pourquoi l'éclairage infrarouge traverse des matériaux qui semblent opaques en lumière visible, et comment l'appliquer en inspection industrielle.",
-  },
-};
 
 function WiringContent({ locale }: { locale: RichLocale }) {
   if (locale === "fr") {
@@ -63,6 +52,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   en: {
     h1: "Industrial Infrared (IR) Lighting for Machine Vision",
     lead: "Infrared illumination sees past what visible light cannot: it passes through materials that look opaque to the human eye, without ever disturbing a human operator standing next to the line.",
+    principlesTitle: "Industrial Infrared Lighting: Understanding the Problem and the Solution",
     problemTitle: "The Physical Problem",
     problemParagraph:
       "A vision system often needs to inspect a feature that visible light simply cannot reach — fill level through a dark plastic bottle, a weld seam under a coating, print hidden beneath an opaque film. Under standard white or colored illumination, the outer material absorbs the light before it ever reaches the feature of interest, and the camera sees nothing but a uniformly dark or saturated surface. Adding more visible light doesn't help: the material blocks it regardless of intensity.",
@@ -77,6 +67,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   fr: {
     h1: "Éclairage Infrarouge (IR) Industriel pour la Vision Industrielle",
     lead: "L'éclairage infrarouge voit au-delà de ce que la lumière visible ne peut pas atteindre : il traverse des matériaux qui semblent opaques à l'œil humain, sans jamais gêner un opérateur posté à côté de la ligne.",
+    principlesTitle: "Éclairage Infrarouge Industriel : Comprendre le Problème et la Solution",
     problemTitle: "Le Problème Physique",
     problemParagraph:
       "Un système de vision doit souvent inspecter un détail que la lumière visible ne peut tout simplement pas atteindre : un niveau de remplissage à travers une bouteille plastique sombre, un cordon de soudure sous un revêtement, une impression cachée sous un film opaque. Sous un éclairage blanc ou coloré standard, le matériau externe absorbe la lumière avant qu'elle n'atteigne le détail recherché, et la caméra ne voit qu'une surface uniformément sombre ou saturée. Augmenter la lumière visible n'aide en rien : le matériau la bloque quelle que soit son intensité.",
@@ -100,19 +91,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -136,7 +121,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         headline: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         datePublished: PUBLISHED_DATE,
         dateModified: MODIFIED_DATE,

@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
@@ -15,18 +16,6 @@ const MODIFIED_DATE = "2026-07-20";
 const PRODUCT_SLUGS = ["barres-led-barlights", "projecteurs-spots-led"];
 const TOOL_SLUGS = ["brochage-m12-5-pins"];
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "UV Lighting Guide | Machine Vision Fluorescence Detection",
-    metaDescription:
-      "Why some defects are invisible under any normal light, and how UV-excited fluorescence reveals them in machine vision inspection — full guide.",
-  },
-  fr: {
-    metaTitle: "Guide Éclairage UV | Détection Fluorescence Vision",
-    metaDescription:
-      "Pourquoi certains défauts sont invisibles sous toute lumière normale, et comment la fluorescence excitée par UV les révèle en inspection vision.",
-  },
-};
 
 function WiringContent({ locale }: { locale: RichLocale }) {
   if (locale === "fr") {
@@ -55,6 +44,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   en: {
     h1: "Ultraviolet (UV) Lighting for Machine Vision Applications",
     lead: "Some defects don't just have low contrast — they are genuinely invisible under any normal lighting. UV excitation is the only optical technique that can make them appear at all.",
+    principlesTitle: "Ultraviolet (UV) Lighting: Understanding the Problem and the Solution",
     problemTitle: "The Physical Problem",
     problemParagraph:
       "Certain features share the exact same color and reflectance as their surroundings under visible or infrared light: a hairline crack in clear plastic, a residue of adhesive, a trace of contaminating oil, or a security marking designed to be undetectable under normal light. No amount of repositioning, filtering or intensity adjustment under white, colored or IR illumination will ever separate these features from their background — the light reflected back to the camera from the defect and from the surrounding material is simply identical.",
@@ -69,6 +59,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   fr: {
     h1: "Éclairage Ultraviolet (UV) pour les Applications de Vision Industrielle",
     lead: "Certains défauts n'ont pas simplement un faible contraste : ils sont réellement invisibles sous tout éclairage normal. L'excitation UV est la seule technique optique capable de les faire apparaître.",
+    principlesTitle: "Éclairage Ultraviolet (UV) : Comprendre le Problème et la Solution",
     problemTitle: "Le Problème Physique",
     problemParagraph:
       "Certains détails partagent exactement la même couleur et la même réflectance que leur environnement en lumière visible ou infrarouge : une fissure capillaire dans un plastique transparent, un résidu de colle, une trace d'huile contaminante, ou un marquage de sécurité conçu pour rester indétectable en lumière normale. Aucun repositionnement, filtrage ou ajustement d'intensité en lumière blanche, colorée ou IR ne séparera jamais ces détails de leur fond — la lumière renvoyée à la caméra depuis le défaut et depuis le matériau environnant est tout simplement identique.",
@@ -92,19 +83,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -128,7 +113,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         headline: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         datePublished: PUBLISHED_DATE,
         dateModified: MODIFIED_DATE,

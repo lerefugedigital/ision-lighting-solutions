@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
@@ -15,18 +16,6 @@ const MODIFIED_DATE = "2026-07-20";
 const PRODUCT_SLUGS = ["retroeclairages-backlights", "domes-diffus-rainlights"];
 const TOOL_SLUGS = ["eclairage-stroboscopique-overdrive", "brochage-m12-5-pins"];
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "Medical & Pharma Vision Lighting Guide | Vision Lighting",
-    metaDescription:
-      "Why translucent tablets and reflective blister foil defeat generic lighting, and how backlight silhouettes and diffuse domes solve it — full guide.",
-  },
-  fr: {
-    metaTitle: "Vision Médicale & Pharmaceutique | Guide Éclairage",
-    metaDescription:
-      "Pourquoi comprimés translucides et blister réfléchissant mettent en échec un éclairage générique, et comment silhouette et dôme diffus y répondent.",
-  },
-};
 
 function WiringContent({ locale }: { locale: RichLocale }) {
   if (locale === "fr") {
@@ -63,6 +52,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   en: {
     h1: "Machine Vision Lighting for Medical & Pharmaceutical Applications",
     lead: "A translucent tablet and a crinkled foil blister fail for opposite optical reasons — and patient safety leaves no room for an unreliable inspection either way.",
+    principlesTitle: "Medical & Pharmaceutical Vision Lighting: Understanding the Problem and the Solution",
     problemTitle: "The Physical Problem",
     problemParagraph:
       "Two very different optical failures show up constantly in pharmaceutical inspection. Tablets and capsules are often translucent or share a near-identical color with the tray or belt beneath them, so under front lighting their outline blends into the background and a vision system struggles to count or measure them reliably. Blister pack foil, meanwhile, is a crinkled, highly reflective surface: under direct lighting it throws back sharp, position-dependent hot spots that saturate the image and hide the very cavity or seal defect the inspection is meant to catch. Both problems occur on lines running at very high speed, where patient safety and regulatory compliance leave essentially no tolerance for a missed or double-counted unit.",
@@ -77,6 +67,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   fr: {
     h1: "Éclairage Vision Industrielle pour les Applications Médicales et Pharmaceutiques",
     lead: "Un comprimé translucide et un film de blister froissé échouent pour des raisons optiques opposées — et la sécurité du patient ne laisse aucune place à une inspection peu fiable, dans un cas comme dans l'autre.",
+    principlesTitle: "Éclairage Vision Médicale et Pharmaceutique : Comprendre le Problème et la Solution",
     problemTitle: "Le Problème Physique",
     problemParagraph:
       "Deux échecs optiques très différents reviennent constamment en inspection pharmaceutique. Les comprimés et gélules sont souvent translucides ou partagent une couleur quasi identique à celle du plateau ou du tapis sous eux : sous un éclairage frontal, leur contour se fond dans le fond et le système de vision peine à les compter ou les mesurer de façon fiable. Le film de blister, de son côté, est une surface froissée et très réfléchissante : sous éclairage direct, il renvoie des points chauds nets et dépendants de la position qui saturent l'image et masquent précisément le défaut d'alvéole ou de scellage que l'inspection doit détecter. Ces deux problèmes surviennent sur des lignes à très grande vitesse, où la sécurité du patient et la conformité réglementaire ne tolèrent quasiment aucune unité manquée ou comptée en double.",
@@ -100,19 +91,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -136,7 +121,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         headline: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         datePublished: PUBLISHED_DATE,
         dateModified: MODIFIED_DATE,

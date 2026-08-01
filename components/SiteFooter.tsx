@@ -102,7 +102,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
 
           {/* Column 2: Products & Ranges (Silo 1) */}
           <div>
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t.columnProducts}</h2>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t.columnProducts}</p>
             <ul className="mt-3 space-y-2">
               {productSegments.map((segment) => (
                 <li key={segment.slug}>
@@ -119,7 +119,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
 
           {/* Column 3: R&D & Tools (Silo 3 highlights + Silo 4 hub) */}
           <div>
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t.columnTools}</h2>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t.columnTools}</p>
             <ul className="mt-3 space-y-2">
               {TOOL_SLUGS.map((slug) => {
                 const segment = findSegment(slug);
@@ -147,7 +147,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
 
           {/* Column 4: Sourcing & Contact (Silo 2 + contact + legal) */}
           <div>
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t.columnSourcing}</h2>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t.columnSourcing}</p>
             <ul className="mt-3 space-y-2">
               <li>
                 <Link

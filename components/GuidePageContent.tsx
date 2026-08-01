@@ -9,6 +9,8 @@ import { CaseStudies } from "./CaseStudies";
 export interface GuideRichContent {
   h1: string;
   lead: string;
+  /** Optional wrapper H2 grouping problemTitle + solutionTitle + wiringTitle as H3s underneath. Omit to keep all three as top-level H2s. */
+  principlesTitle?: string;
   problemTitle: string;
   problemParagraph: string;
   solutionTitle: string;
@@ -78,28 +80,57 @@ export function GuidePageContent({
       </h1>
       <p className="mt-4 text-slate-600 dark:text-slate-300">{rich.lead}</p>
 
-      <section className="mt-10">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-          {rich.problemTitle}
-        </h2>
-        <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">{rich.problemParagraph}</p>
-      </section>
+      {rich.principlesTitle ? (
+        <section className="mt-10">
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            {rich.principlesTitle}
+          </h2>
 
-      <section className="mt-10">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-          {rich.solutionTitle}
-        </h2>
-        <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">{rich.solutionParagraph}</p>
-      </section>
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{rich.problemTitle}</h3>
+            <p className="mt-3 leading-relaxed text-slate-600 dark:text-slate-300">{rich.problemParagraph}</p>
+          </div>
 
-      {rich.diagram && <div className="mt-8">{rich.diagram}</div>}
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{rich.solutionTitle}</h3>
+            <p className="mt-3 leading-relaxed text-slate-600 dark:text-slate-300">{rich.solutionParagraph}</p>
+          </div>
 
-      {rich.interactiveTool && <div className="mt-10">{rich.interactiveTool}</div>}
+          {rich.diagram && <div className="mt-8">{rich.diagram}</div>}
 
-      <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm leading-relaxed text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
-        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{rich.wiringTitle}</h2>
-        <div className="mt-3">{rich.wiringContent}</div>
-      </section>
+          {rich.interactiveTool && <div className="mt-8">{rich.interactiveTool}</div>}
+
+          <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm leading-relaxed text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{rich.wiringTitle}</h3>
+            <div className="mt-3">{rich.wiringContent}</div>
+          </div>
+        </section>
+      ) : (
+        <>
+          <section className="mt-10">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+              {rich.problemTitle}
+            </h2>
+            <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">{rich.problemParagraph}</p>
+          </section>
+
+          <section className="mt-10">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+              {rich.solutionTitle}
+            </h2>
+            <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">{rich.solutionParagraph}</p>
+          </section>
+
+          {rich.diagram && <div className="mt-8">{rich.diagram}</div>}
+
+          {rich.interactiveTool && <div className="mt-10">{rich.interactiveTool}</div>}
+
+          <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm leading-relaxed text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{rich.wiringTitle}</h2>
+            <div className="mt-3">{rich.wiringContent}</div>
+          </section>
+        </>
+      )}
 
       <div className="mt-14">
         <SampleTestCTA locale={locale as "en" | "fr"} />

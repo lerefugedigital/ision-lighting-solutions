@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
@@ -16,18 +17,6 @@ const MODIFIED_DATE = "2026-07-20";
 const PRODUCT_SLUGS = ["domes-diffus-rainlights", "barres-led-barlights", "eclairages-coaxiaux"];
 const TOOL_SLUGS = ["brochage-m12-5-pins"];
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "Brightfield vs Darkfield Lighting | Vision Lighting Guide",
-    metaDescription:
-      "Why the same scratch can appear bright or dark depending on lighting angle, and how to choose between brightfield and darkfield illumination.",
-  },
-  fr: {
-    metaTitle: "Brightfield vs Darkfield | Comparatif Éclairage Vision",
-    metaDescription:
-      "Pourquoi une même rayure apparaît claire ou sombre selon l'angle d'éclairage, et comment choisir entre brightfield et darkfield en inspection.",
-  },
-};
 
 function WiringContent({ locale }: { locale: RichLocale }) {
   if (locale === "fr") {
@@ -56,6 +45,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   en: {
     h1: "Brightfield vs Darkfield Lighting: Which to Choose?",
     lead: "The exact same scratch can appear as a bright line on a dark background, or a dark line on a bright background — the difference is entirely the lighting angle, not the defect itself.",
+    principlesTitle: "Brightfield vs Darkfield Lighting: Understanding the Problem and the Solution",
     problemTitle: "The Physical Problem",
     problemParagraph:
       "A scratch, engraving or embossed mark is a small, local discontinuity in a surface's angle relative to the surrounding flat area. A single, arbitrarily chosen lighting angle often fails specifically on this class of defect: the same discontinuity that reflects light one way toward the camera at one lighting angle reflects it a completely different way — or not at all — the moment the angle changes, and choosing the wrong one can hide the very defect the inspection is meant to find.",
@@ -84,6 +74,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   fr: {
     h1: "Éclairage Brightfield vs Darkfield : Lequel Choisir ?",
     lead: "Exactement la même rayure peut apparaître comme une ligne claire sur fond sombre, ou une ligne sombre sur fond clair — la différence tient entièrement à l'angle d'éclairage, pas au défaut lui-même.",
+    principlesTitle: "Éclairage Brightfield vs Darkfield : Comprendre le Problème et la Solution",
     problemTitle: "Le Problème Physique",
     problemParagraph:
       "Une rayure, une gravure ou un marquage embossé est une discontinuité locale de l'angle de surface par rapport à la zone plate environnante. Un angle d'éclairage unique, choisi arbitrairement, échoue souvent précisément sur cette classe de défaut : la même discontinuité qui réfléchit la lumière vers la caméra sous un angle donné la réfléchit de façon complètement différente — ou pas du tout — dès que l'angle change, et choisir le mauvais angle peut masquer le défaut même que l'inspection est censée détecter.",
@@ -121,19 +112,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -157,7 +142,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         headline: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         datePublished: PUBLISHED_DATE,
         dateModified: MODIFIED_DATE,

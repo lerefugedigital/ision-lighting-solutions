@@ -7,6 +7,7 @@ import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildTechArticleWithHowToJsonLd, buildFaqPageJsonLd, type HowToStepInput } from "@/lib/jsonld";
 import { ContactForm } from "@/components/ContactForm";
+import { WiringFastTracks } from "@/components/WiringFastTracks";
 import { CameraCompatibility, type CameraCompatInfo, type CameraCompatibilityLabels } from "@/components/CameraCompatibility";
 
 const ROUTE_KEY = "/cablage-integration/compatibilite-camera-keyence";
@@ -196,9 +197,6 @@ const LABELS: Record<Locale, CameraCompatibilityLabels> = {
 
 export const ARTICLE = {
   en: {
-    metaTitle: "Keyence Camera Compatibility | Vision Lighting Solutions",
-    metaDescription:
-      "Compatible lighting, I/O terminals and trigger wiring for integrating our machine vision lights with Keyence CV-X, XG-X, IV and SR-2000 cameras.",
     h1: "Vision Lighting Compatibility with Keyence Cameras",
     lead: "Keyence vision controllers expose digital I/O through a terminal block or connector supporting both NPN and PNP wiring, and most models include a terminal dedicated to strobe output. Click a camera series below to see its I/O type, voltage, and exactly how to wire it to our lighting.",
     expertTitle: "Trigger Modes & the Dedicated STROBE Terminal",
@@ -212,9 +210,6 @@ export const ARTICLE = {
     relatedTitle: "Related wiring guides",
   },
   fr: {
-    metaTitle: "Compatibilité Caméra Keyence | Vision Lighting Solutions",
-    metaDescription:
-      "Éclairages compatibles, bornes d'E/S et câblage du trigger pour intégrer nos éclairages vision aux caméras Keyence CV-X, XG-X, IV et SR-2000.",
     h1: "Compatibilité des Éclairages Vision avec les Caméras Keyence",
     lead: "Les contrôleurs de vision Keyence exposent leurs E/S numériques via un bornier ou un connecteur supportant le câblage NPN et PNP, et la plupart des modèles disposent d'une borne dédiée à la sortie stroboscopique. Cliquez sur une série de caméra ci-dessous pour voir son type d'E/S, sa tension, et comment la câbler exactement à notre éclairage.",
     expertTitle: "Modes de Trigger & Borne STROBE Dédiée",
@@ -228,9 +223,6 @@ export const ARTICLE = {
     relatedTitle: "Guides de câblage associés",
   },
   de: {
-    metaTitle: "Keyence Kamera-Kompatibilität | Vision Lighting Solutions",
-    metaDescription:
-      "Kompatible Beleuchtung, I/O-Klemmen und Triggerverdrahtung zur Integration unserer Vision-Beleuchtung mit Keyence CV-X, XG-X, IV und SR-2000 Kameras.",
     h1: "Kompatibilität von Vision-Beleuchtung mit Keyence-Kameras",
     lead: "Keyence Bildverarbeitungscontroller stellen ihre digitale I/O über einen Klemmenblock oder Steckverbinder bereit, der sowohl NPN- als auch PNP-Verdrahtung unterstützt, und die meisten Modelle verfügen über eine dedizierte Klemme für den Blitz-Ausgang. Klicken Sie unten auf eine Kameraserie, um deren I/O-Typ, Spannung und die genaue Verkabelung mit unserer Beleuchtung zu sehen.",
     expertTitle: "Triggermodi & die Dedizierte STROBE-Klemme",
@@ -244,9 +236,6 @@ export const ARTICLE = {
     relatedTitle: "Verwandte Verkabelungsleitfäden",
   },
   it: {
-    metaTitle: "Compatibilità Camera Keyence | Vision Lighting Solutions",
-    metaDescription:
-      "Illuminazioni compatibili, morsetti I/O e cablaggio del trigger per integrare le nostre illuminazioni vision con le camere Keyence CV-X, XG-X, IV e SR-2000.",
     h1: "Compatibilità dell'Illuminazione Vision con le Camere Keyence",
     lead: "I controller di visione Keyence espongono i loro I/O digitali tramite una morsettiera o un connettore che supporta il cablaggio sia NPN che PNP, e la maggior parte dei modelli include un morsetto dedicato all'uscita stroboscopica. Clicca su una serie di camere qui sotto per vedere il suo tipo di I/O, la tensione e come cablarla esattamente alla nostra illuminazione.",
     expertTitle: "Modalità Trigger & Morsetto STROBE Dedicato",
@@ -262,8 +251,6 @@ export const ARTICLE = {
 } satisfies Record<
   Locale,
   {
-    metaTitle: string;
-    metaDescription: string;
     h1: string;
     lead: string;
     expertTitle: string;
@@ -309,12 +296,16 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+function findCatalogSegment() {
+  return catalog.segments.find((s) => s.slug === "compatibilite-camera-keyence");
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  const t = ARTICLE[locale];
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: { absolute: t.metaTitle },
-    description: t.metaDescription,
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
     alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
@@ -324,6 +315,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   setRequestLocale(locale);
 
   const t = ARTICLE[locale];
+  const content = findCatalogSegment()?.content[locale];
   const relatedSegments = RELATED_SLUGS.map((slug) => catalog.segments.find((s) => s.slug === slug)).filter(
     (s): s is NonNullable<typeof s> => Boolean(s)
   );
@@ -334,7 +326,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
     path: `/${locale}${ROUTE_KEY}`,
     locale,
     headline: t.h1,
-    description: t.metaDescription,
+    description: content?.metaDescription ?? t.lead,
     image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
     datePublished: PUBLISHED_DATE,
     dateModified: MODIFIED_DATE,
@@ -371,6 +363,12 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       </h1>
       <p className="mt-4 text-slate-600 dark:text-slate-300">{t.lead}</p>
 
+      {(locale === "en" || locale === "fr") && (
+        <div className="mt-8">
+          <WiringFastTracks locale={locale} />
+        </div>
+      )}
+
       <div className="mt-10">
         <CameraCompatibility cameras={CAMERAS[locale]} labels={LABELS[locale]} />
       </div>
@@ -392,7 +390,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       </section>
 
       {(locale === "en" || locale === "fr") && (
-        <div className="mt-14">
+        <div id="contact-form" className="mt-14 scroll-mt-8">
           <ContactForm locale={locale} contextType="wiring" subjectContext={t.h1} />
         </div>
       )}

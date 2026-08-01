@@ -1,33 +1,27 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { routing, type Locale } from "@/i18n/routing";
+import { catalog } from "@/data/catalog";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { ContactForm } from "@/components/ContactForm";
 
 const ROUTE_KEY = "/contact";
 
-const META: Record<Locale, { metaTitle: string; metaDescription: string; h1: string; lead: string }> = {
+const COPY: Record<Locale, { h1: string; lead: string }> = {
   en: {
-    metaTitle: "Contact Us | Vision Lighting Solutions Engineering Team",
-    metaDescription: "Get in touch with our machine vision lighting engineers for product specifications, technical quotes, or wiring and integration questions today.",
     h1: "Contact Our Team",
     lead: "Whichever silo your question belongs to, this form reaches the same team of application engineers.",
   },
   fr: {
-    metaTitle: "Contactez Nos Ingénieurs | Vision Lighting Solutions",
-    metaDescription: "Contactez nos ingénieurs en éclairage vision industrielle pour vos spécifications produit, devis technique, ou questions de câblage et d'intégration.",
     h1: "Contacter Notre Équipe",
     lead: "Quel que soit le silo concerné par votre question, ce formulaire atteint la même équipe d'ingénieurs d'application.",
   },
   de: {
-    metaTitle: "Kontakt | Vision Lighting Solutions",
-    metaDescription: "Kontaktieren Sie unsere Ingenieure für Bildverarbeitungsbeleuchtung für Spezifikationen, Angebote oder technische Fragen.",
     h1: "Unser Team Kontaktieren",
     lead: "Kontaktieren Sie unser Team für Spezifikationen, Angebote oder technische Fragen.",
   },
   it: {
-    metaTitle: "Contatti | Vision Lighting Solutions",
-    metaDescription: "Contatta i nostri ingegneri per l'illuminazione della visione industriale per specifiche, preventivi o domande tecniche.",
     h1: "Contatta il Nostro Team",
     lead: "Contatta il nostro team per specifiche, preventivi o domande tecniche.",
   },
@@ -42,20 +36,25 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+function findCatalogPage() {
+  return catalog.pages.find((p) => p.slug === "contact");
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  const m = META[locale];
+  const content = findCatalogPage()?.content[locale];
   return {
-    title: { absolute: m.metaTitle },
-    description: m.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates: buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES }),
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
 export default async function Page({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const m = META[locale];
+  const m = COPY[locale];
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">

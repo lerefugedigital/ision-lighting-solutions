@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
@@ -15,18 +16,6 @@ const MODIFIED_DATE = "2026-07-20";
 const PRODUCT_SLUGS = ["eclairages-coaxiaux", "domes-diffus-rainlights", "barres-led-barlights"];
 const TOOL_SLUGS = ["eclairage-stroboscopique-overdrive", "brochage-m12-5-pins"];
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "Automotive Machine Vision Lighting | Guide & Applications",
-    metaDescription:
-      "Why metallic and painted automotive parts defeat generic lighting, and how to match lighting geometry to weld and surface defects — full guide.",
-  },
-  fr: {
-    metaTitle: "Vision Industrielle Automobile | Guide d'Éclairage",
-    metaDescription:
-      "Pourquoi les pièces automobiles métalliques et peintes mettent en échec un éclairage générique, et comment adapter la géométrie aux défauts.",
-  },
-};
 
 function WiringContent({ locale }: { locale: RichLocale }) {
   if (locale === "fr") {
@@ -63,6 +52,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   en: {
     h1: "Machine Vision Lighting for the Automotive Industry",
     lead: "Metallic, machined and painted automotive parts are among the hardest surfaces in machine vision to light consistently — and a single lighting geometry rarely works for both a weld seam and a body panel.",
+    principlesTitle: "Automotive Vision Lighting: Understanding the Problem and the Solution",
     problemTitle: "The Physical Problem",
     problemParagraph:
       "Most automotive components are specular or semi-specular: bare metal, machined surfaces, welds and painted panels all reflect light in a fairly narrow, mirror-like cone rather than scattering it evenly in every direction. Under generic diffuse lighting, the exact reflection the camera sees depends heavily on the part's precise angle and position — a slight shift from one cycle to the next on a conveyor or robotic cell can turn a strong, usable signal into a saturated hot spot or a dark dropout, making a single fixed threshold unreliable across the run.",
@@ -77,6 +67,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   fr: {
     h1: "Éclairage Vision Industrielle pour le Secteur Automobile",
     lead: "Les pièces automobiles métalliques, usinées et peintes comptent parmi les surfaces les plus difficiles à éclairer de manière homogène en vision industrielle — et une géométrie d'éclairage unique fonctionne rarement à la fois pour un cordon de soudure et un panneau de carrosserie.",
+    principlesTitle: "Éclairage Vision Automobile : Comprendre le Problème et la Solution",
     problemTitle: "Le Problème Physique",
     problemParagraph:
       "La plupart des composants automobiles sont spéculaires ou semi-spéculaires : métal nu, surfaces usinées, soudures et panneaux peints réfléchissent tous la lumière dans un cône assez étroit, de type miroir, plutôt que de la diffuser uniformément dans toutes les directions. Sous un éclairage diffus générique, le reflet exact perçu par la caméra dépend fortement de l'angle et de la position précis de la pièce — un léger décalage d'un cycle à l'autre sur un convoyeur ou une cellule robotisée peut transformer un signal fort et exploitable en un point chaud saturé ou une zone sombre, rendant un seuil fixe unique peu fiable sur toute la série.",
@@ -100,19 +91,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -136,7 +121,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         headline: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         datePublished: PUBLISHED_DATE,
         dateModified: MODIFIED_DATE,

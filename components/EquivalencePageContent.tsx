@@ -8,6 +8,8 @@ import { ReassuranceBar } from "./ReassuranceBar";
 export interface EquivalenceRichContent {
   h1: string;
   lead: string;
+  /** Optional hero "fast tracks" quick-access cards, rendered right under the lead paragraph. */
+  heroFastTracks?: React.ReactNode;
   compatibilityTitle: string;
   electricalTitle: string;
   electricalText: string;
@@ -61,6 +63,8 @@ export function EquivalencePageContent({
       </h1>
       <p className="mt-4 text-slate-600 dark:text-slate-300">{rich.lead}</p>
 
+      {rich.heroFastTracks && <div className="mt-8">{rich.heroFastTracks}</div>}
+
       <section className="mt-10">
         <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
           {rich.compatibilityTitle}
@@ -77,7 +81,7 @@ export function EquivalencePageContent({
         </div>
       </section>
 
-      <section className="mt-10">
+      <section id="table-correspondance" className="mt-10 scroll-mt-20">
         <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
           {rich.tableTitle}
         </h2>
@@ -101,7 +105,7 @@ export function EquivalencePageContent({
         </div>
       </section>
 
-      <div className="mt-14">
+      <div id="contact-form" className="mt-14 scroll-mt-8">
         <ContactForm
           locale={locale as "en" | "fr"}
           contextType="equivalence"

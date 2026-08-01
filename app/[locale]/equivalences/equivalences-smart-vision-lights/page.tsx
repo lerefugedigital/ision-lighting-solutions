@@ -4,6 +4,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildEquivalenceItemPageJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
@@ -23,6 +24,7 @@ import {
   type RichLocale,
 } from "@/lib/equivalence-shared-content";
 import { EquivalencePageContent, type EquivalenceRichContent } from "@/components/EquivalencePageContent";
+import { EquivalenceFastTracks } from "@/components/EquivalenceFastTracks";
 import type { EquivalenceRow } from "@/components/EquivalenceTable";
 
 const ROUTE_KEY = "/equivalences/equivalences-smart-vision-lights";
@@ -31,18 +33,6 @@ const MODIFIED_DATE = "2026-07-22";
 const COMPETITOR_NAME = "Smart Vision Lights";
 const COMPETITOR_RANGE_LABEL = "Smart Vision Lights — L Series / RM Series";
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "Smart Vision Lights Equivalent: Lighting Alternatives | Vision Lighting",
-    metaDescription:
-      "Find a compatible alternative to your Smart Vision Lights spotlights and bars (S75, Brick Light...). Standard M12 connectivity and 24h support.",
-  },
-  fr: {
-    metaTitle: "Équivalence Smart Vision Lights : Alternatives Éclairage | Vision Lighting",
-    metaDescription:
-      "Trouvez une alternative compatible à vos projecteurs et barres Smart Vision Lights (S75, Brick Light...). Connectique standard M12 et support 24h.",
-  },
-};
 
 /** Named references only where explicitly known; generic range label otherwise (never a fabricated model code). */
 const COMPETITOR_REFS: Record<RichLocale, [string, string, string, string]> = {
@@ -101,19 +91,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -126,7 +110,9 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   );
 
   const isRich = locale === "en" || locale === "fr";
-  const rich = isRich ? RICH_CONTENT[locale as RichLocale] : null;
+  const rich = isRich
+    ? { ...RICH_CONTENT[locale as RichLocale], heroFastTracks: <EquivalenceFastTracks locale={locale as RichLocale} /> }
+    : null;
   const fallback = findCatalogSegment()?.content[locale];
 
   const jsonLd = rich
@@ -134,7 +120,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         name: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         competitorBrand: COMPETITOR_NAME,
         competitorRanges: [COMPETITOR_RANGE_LABEL],

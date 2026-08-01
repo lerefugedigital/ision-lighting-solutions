@@ -32,9 +32,18 @@ export interface Silo {
   content: LocalizedContent;
 }
 
+/** A standalone route that belongs to no silo (home, contact, legal, lead-gen pages). */
+export interface StandalonePage {
+  slug: string;
+  /** Path relative to the locale prefix, e.g. "/contact", or "/" for the home page. */
+  routeKey: string;
+  content: LocalizedContent;
+}
+
 export interface Catalog {
   silos: Silo[];
   segments: Segment[];
+  pages: StandalonePage[];
 }
 
 export const catalog: Catalog = {
@@ -194,16 +203,16 @@ export const catalog: Catalog = {
         en: {
           name: "LED Bar Lights",
           h1: "LED Bar Lights for Machine Vision",
-          metaTitle: "LED Bar Lights | Machine Vision Illumination",
+          metaTitle: "LED Bar Lights | Industrial Machine Vision Illumination",
           metaDescription:
-            "High-output LED bar lights for line-scan and area-scan inspection, available in multiple lengths, angles and colors for uniform field illumination.",
+            "Industrial LED bar lights: aluminum body, M12 connector, 24VDC electronics, uniform field illumination in White, Red, Blue or IR — get a quote.",
         },
         fr: {
           name: "Barres LED (Barlights)",
           h1: "Barres LED (Barlights) pour la Vision Industrielle",
           metaTitle: "Barres LED Barlights | Éclairage Vision Industrielle",
           metaDescription:
-            "Barres LED haute intensité pour l'inspection en ligne et en zone, disponibles en plusieurs longueurs, angles et couleurs pour un éclairage de champ uniforme.",
+            "Barres LED industrielles : corps aluminium, connecteur M12, électronique 24VDC, éclairage uniforme en Blanc, Rouge, Bleu ou IR — demandez un devis.",
         },
         de: {
           name: "LED-Balkenleuchten (Barlights)",
@@ -229,16 +238,16 @@ export const catalog: Catalog = {
         en: {
           name: "Backlights",
           h1: "Backlights for Contour & Dimensional Inspection",
-          metaTitle: "LED Backlights | Contour & Dimensional Machine Vision",
+          metaTitle: "Backlight & Industrial Machine Vision Backlighting 24V | Vision Lighting",
           metaDescription:
-            "Uniform LED backlights for silhouette, contour and dimensional measurement applications, maximizing contrast for edge detection and gauging.",
+            "High-uniformity LED backlights for silhouette control, dimensional measurement and liquid level inspection. Compact formats, large formats and IP69K.",
         },
         fr: {
           name: "Rétroéclairages (Backlights)",
           h1: "Rétroéclairages pour le Contrôle Dimensionnel et de Contour",
-          metaTitle: "Rétroéclairages LED | Contrôle Dimensionnel Vision Industrielle",
+          metaTitle: "Rétroéclairage & Backlight Vision Industrielle 24V | Vision Lighting",
           metaDescription:
-            "Rétroéclairages LED uniformes pour la mesure de silhouette, de contour et de dimensions, maximisant le contraste pour la détection de bords.",
+            "Rétroéclairages LED haute homogénéité pour contrôle de silhouettes, mesure dimensionnelle et niveau de liquide. Formats compacts, grands formats et IP69K.",
         },
         de: {
           name: "Hintergrundbeleuchtung (Backlights)",
@@ -266,14 +275,14 @@ export const catalog: Catalog = {
           h1: "Diffuse Dome Lights for Reflective & Curved Surfaces",
           metaTitle: "Diffuse Dome Lights | Shadow-Free Vision Illumination",
           metaDescription:
-            "Diffuse dome lighting delivers omnidirectional, shadow-free illumination for reflective, curved or textured surfaces where direct lighting causes glare.",
+            "Industrial diffuse dome lights: aluminum housing, M12 connector, 24VDC electronics, omnidirectional shadow-free illumination — request a quote.",
         },
         fr: {
           name: "Dômes Diffus (Rainlights)",
           h1: "Dômes Diffus pour Surfaces Réfléchissantes et Courbes",
-          metaTitle: "Dômes Diffus LED | Éclairage Vision Sans Ombre",
+          metaTitle: "Dômes Diffus LED | Éclairage Vision Sans Ombre Industriel",
           metaDescription:
-            "L'éclairage par dôme diffus offre un éclairage omnidirectionnel sans ombre pour les surfaces réfléchissantes, courbes ou texturées sensibles aux reflets.",
+            "Dômes diffus industriels : corps aluminium, connecteur M12, électronique 24VDC, éclairage omnidirectionnel sans ombre — demandez un devis gratuit.",
         },
         de: {
           name: "Diffuse Kuppelleuchten (Rainlights)",
@@ -301,14 +310,14 @@ export const catalog: Catalog = {
           h1: "Coaxial Lighting for Specular & Etched Surfaces",
           metaTitle: "Coaxial LED Lighting | Specular Surface Machine Vision",
           metaDescription:
-            "Coaxial lighting projects light along the camera's optical axis, revealing surface defects, etchings and codes on shiny or mirror-like parts.",
+            "Industrial coaxial LED lighting: aluminum housing, M12 connector, 24VDC electronics, homogeneous on-axis illumination — request a free quote.",
         },
         fr: {
           name: "Éclairages Coaxiaux",
           h1: "Éclairages Coaxiaux pour Surfaces Spéculaires et Gravées",
           metaTitle: "Éclairage Coaxial LED | Vision sur Surfaces Spéculaires",
           metaDescription:
-            "L'éclairage coaxial projette la lumière dans l'axe optique de la caméra, révélant défauts, gravures et codes sur des pièces brillantes ou miroir.",
+            "Éclairage coaxial LED industriel : corps aluminium, connecteur M12, électronique 24VDC, éclairage homogène dans l'axe optique — demandez un devis.",
         },
         de: {
           name: "Koaxialbeleuchtung",
@@ -336,14 +345,14 @@ export const catalog: Catalog = {
           h1: "LED Spotlights & Floodlights for Long-Range Inspection",
           metaTitle: "LED Spotlights | Long-Range Machine Vision Illumination",
           metaDescription:
-            "High-intensity LED spotlights and floodlights for long working distances, large fields of view and outdoor or high-ambient-light inspection.",
+            "Industrial LED spotlights and floodlights: aluminum housing, M12 connector, 24VDC electronics, narrow and wide beam optics for long working distances.",
         },
         fr: {
           name: "Projecteurs & Spots LED",
           h1: "Projecteurs et Spots LED pour l'Inspection Longue Distance",
           metaTitle: "Projecteurs Spots LED | Éclairage Vision Longue Distance",
           metaDescription:
-            "Projecteurs et spots LED haute intensité pour les grandes distances de travail, les larges champs de vision et l'inspection en lumière ambiante forte.",
+            "Projecteurs et spots LED industriels : corps aluminium, connecteur M12, électronique 24VDC, optiques faisceau étroit et large — demandez un devis.",
         },
         de: {
           name: "LED-Strahler & Spots",
@@ -371,16 +380,16 @@ export const catalog: Catalog = {
         en: {
           name: "TPL Vision Equivalents",
           h1: "TPL Vision Lighting Equivalents & Cross-References",
-          metaTitle: "TPL Vision Equivalents | LED Lighting Cross-Reference",
+          metaTitle: "TPL Vision Equivalent: LED Lighting Alternatives | Vision Lighting",
           metaDescription:
-            "Cross-reference guide mapping TPL Vision lighting references to compatible, drop-in alternatives with matching specifications and mounting.",
+            "Find the direct equivalent to your TPL Vision lighting (Essential Bar, M-TBAL...). Mechanical and electrical 24V M12 compatibility. Quote within 2h.",
         },
         fr: {
           name: "Équivalences TPL Vision",
           h1: "Équivalences et Correspondances aux Éclairages TPL Vision",
-          metaTitle: "Équivalences TPL Vision | Correspondance Éclairage LED",
+          metaTitle: "Équivalence TPL Vision : Alternatives Éclairage LED | Vision Lighting",
           metaDescription:
-            "Guide de correspondance faisant le lien entre les références TPL Vision et des alternatives compatibles, aux spécifications et fixations identiques.",
+            "Trouvez l'équivalent direct à vos éclairages TPL Vision (Essential Bar, M-TBAL...). Compatibilité mécanique et électrique 24V M12. Devis sous 2h.",
         },
         de: {
           name: "TPL Vision Äquivalente",
@@ -406,16 +415,16 @@ export const catalog: Catalog = {
         en: {
           name: "Advanced Illumination Equivalents",
           h1: "Advanced Illumination Lighting Equivalents & Cross-References",
-          metaTitle: "Advanced Illumination Equivalents | LED Lighting Cross-Reference",
+          metaTitle: "Advanced Illumination Equivalent: LED Alternatives | Vision Lighting",
           metaDescription:
-            "Cross-reference guide mapping Advanced Illumination references to compatible, drop-in alternatives with matching specifications and mounting.",
+            "Replace your Advanced Illumination lighting (Bar lights, Backlights...). Direct 1:1 replacement for machine vision and integrators.",
         },
         fr: {
           name: "Équivalences Advanced Illumination",
           h1: "Équivalences et Correspondances aux Éclairages Advanced Illumination",
-          metaTitle: "Équivalences Advanced Illumination | Correspondance Éclairage LED",
+          metaTitle: "Équivalence Advanced Illumination : Alternatives LED | Vision Lighting",
           metaDescription:
-            "Guide de correspondance faisant le lien entre les références Advanced Illumination et des alternatives compatibles, aux spécifications identiques.",
+            "Remplacez vos éclairages Advanced Illumination (Bar lights, Backlights...). Remplacement direct 1:1 pour vision industrielle et intégrateurs.",
         },
         de: {
           name: "Advanced Illumination Äquivalente",
@@ -441,16 +450,16 @@ export const catalog: Catalog = {
         en: {
           name: "Smart Vision Lights Equivalents",
           h1: "Smart Vision Lights Equivalents & Cross-References",
-          metaTitle: "Smart Vision Lights Equivalents | LED Lighting Cross-Reference",
+          metaTitle: "Smart Vision Lights Equivalent: Lighting Alternatives | Vision Lighting",
           metaDescription:
-            "Cross-reference guide mapping Smart Vision Lights references to compatible, drop-in alternatives with matching specifications and mounting.",
+            "Find a compatible alternative to your Smart Vision Lights spotlights and bars (S75, Brick Light...). Standard M12 connectivity and 24h support.",
         },
         fr: {
           name: "Équivalences Smart Vision Lights",
           h1: "Équivalences et Correspondances aux Éclairages Smart Vision Lights",
-          metaTitle: "Équivalences Smart Vision Lights | Correspondance Éclairage LED",
+          metaTitle: "Équivalence Smart Vision Lights : Alternatives Éclairage | Vision Lighting",
           metaDescription:
-            "Guide de correspondance faisant le lien entre les références Smart Vision Lights et des alternatives compatibles, aux spécifications identiques.",
+            "Trouvez une alternative compatible à vos projecteurs et barres Smart Vision Lights (S75, Brick Light...). Connectique standard M12 et support 24h.",
         },
         de: {
           name: "Smart Vision Lights Äquivalente",
@@ -475,17 +484,17 @@ export const catalog: Catalog = {
       content: {
         en: {
           name: "LED Interchangeability Guide",
-          h1: "How to Choose an Interchangeable LED Lighting Alternative",
-          metaTitle: "LED Interchangeability Guide | Machine Vision Lighting",
+          h1: "LED Lighting Interchangeability and Replacement Guide",
+          metaTitle: "LED Interchangeability Guide | Replacement Method & Equivalence",
           metaDescription:
-            "A practical guide to comparing wavelength, beam angle, mounting and connector specs across brands before swapping a machine vision light.",
+            "How to replace a machine vision LED light with a compatible equivalent: single-module format, 24V DC supply, M12 connector and luminous flux equivalence.",
         },
         fr: {
           name: "Guide d'Interchangeabilité LED",
-          h1: "Comment Choisir une Alternative LED Interchangeable",
-          metaTitle: "Guide d'Interchangeabilité LED | Éclairage Vision Industrielle",
+          h1: "Guide d'Interchangeabilité et Remplacement des Éclairages LED",
+          metaTitle: "Guide d'Interchangeabilité LED | Méthode de Remplacement",
           metaDescription:
-            "Un guide pratique pour comparer longueur d'onde, angle de faisceau, fixation et connectique entre marques avant de remplacer un éclairage vision.",
+            "Comment remplacer un éclairage LED vision industrielle par un équivalent compatible : format monomodule, alimentation 24V DC, connectique M12 et calcul de flux lumineux.",
         },
         de: {
           name: "LED-Austauschleitfaden",
@@ -512,31 +521,29 @@ export const catalog: Catalog = {
       content: {
         en: {
           name: "M12 5-Pin Wiring Diagram",
-          h1: "M12 5-Pin Connector Wiring Diagram for Vision Lighting",
-          metaTitle: "M12 5-Pin Pinout | Vision Lighting Wiring Diagram",
+          h1: "M12 5-Pin (A-Coded) Wiring Diagram for Machine Vision Lighting",
+          metaTitle: "M12 5-Pin Wiring Diagram | Vision Lighting Solutions",
           metaDescription:
-            "Full M12 5-pin connector pinout and wiring diagram for machine vision lighting: power, ground, trigger and strobe signal assignments.",
+            "Standard M12 5-pin A-coded pinout for industrial machine vision lighting — wire colors, roles and common wiring mistakes explained pin by pin.",
         },
         fr: {
           name: "Brochage M12 5 Broches",
-          h1: "Brochage du Connecteur M12 5 Broches pour l'Éclairage Vision",
-          metaTitle: "Brochage M12 5 Broches | Schéma de Câblage Éclairage Vision",
+          h1: "Brochage M12 5 Broches (Codage A) pour Éclairage de Vision Industrielle",
+          metaTitle: "Brochage M12 5 Broches | Vision Lighting Solutions",
           metaDescription:
-            "Brochage complet du connecteur M12 5 broches et schéma de câblage pour éclairage vision : alimentation, masse, trigger et signal stroboscopique.",
+            "Brochage M12 5 broches (codage A) pour éclairage vision industrielle : couleurs de fils, rôles et erreurs courantes expliqués broche par broche.",
         },
         de: {
           name: "M12-5-Pin-Pinbelegung",
-          h1: "M12-5-Pin-Steckverbinder-Pinbelegung für Vision-Beleuchtung",
-          metaTitle: "M12-5-Pin-Pinbelegung | Verkabelungsplan Vision-Beleuchtung",
-          metaDescription:
-            "Vollständige M12-5-Pin-Pinbelegung und Verkabelungsplan für Vision-Beleuchtung: Versorgung, Masse, Trigger- und Blitzsignal-Zuordnung.",
+          h1: "M12-5-polige (A-kodierte) Pinbelegung für Vision-Beleuchtung",
+          metaTitle: "M12 5-polig A-kodiert Pinbelegung | Vision Lighting Solutions",
+          metaDescription: "M12 5-polig A-kodiert Pinbelegung für industrielle Bildverarbeitung.",
         },
         it: {
           name: "Piedinatura M12 5 Pin",
-          h1: "Piedinatura del Connettore M12 5 Pin per l'Illuminazione Vision",
-          metaTitle: "Piedinatura M12 5 Pin | Schema di Cablaggio Illuminazione Vision",
-          metaDescription:
-            "Piedinatura completa del connettore M12 a 5 pin e schema di cablaggio per illuminazione vision: alimentazione, massa, trigger e segnale strobo.",
+          h1: "Piedinatura M12 a 5 Pin (Codifica A) per Illuminazione Visione Industriale",
+          metaTitle: "Piedinatura M12 a 5 Pin (Codifica A) | Vision Lighting Solutions",
+          metaDescription: "Piedinatura M12 a 5 pin (Codifica A) per illuminazione visione industriale.",
         },
       },
     },
@@ -548,28 +555,28 @@ export const catalog: Catalog = {
         en: {
           name: "Strobe & Overdrive Lighting",
           h1: "Strobe & Overdrive Lighting Setup for High-Speed Inspection",
-          metaTitle: "Strobe & Overdrive Lighting | High-Speed Machine Vision",
+          metaTitle: "Strobe & Overdrive Lighting | Vision Lighting Solutions",
           metaDescription:
-            "How to configure strobe and overdrive modes to boost peak LED brightness and freeze motion on fast-moving lines without motion blur.",
+            "How to configure strobe and overdrive modes to boost peak LED brightness and freeze motion on fast lines — calculate your safe duty cycle now.",
         },
         fr: {
           name: "Éclairage Stroboscopique & Overdrive",
           h1: "Configurer un Éclairage Stroboscopique et Overdrive pour l'Inspection Rapide",
-          metaTitle: "Éclairage Stroboscopique Overdrive | Vision Industrielle Haute Cadence",
+          metaTitle: "Éclairage Stroboscopique & Overdrive | Vision Lighting",
           metaDescription:
             "Comment configurer les modes stroboscopique et overdrive pour augmenter la luminosité crête LED et figer le mouvement sur des lignes rapides.",
         },
         de: {
           name: "Blitz- & Overdrive-Beleuchtung",
           h1: "Blitz- und Overdrive-Beleuchtung für Hochgeschwindigkeits-Inspektion Einrichten",
-          metaTitle: "Blitz- & Overdrive-Beleuchtung | Hochgeschwindigkeits Machine Vision",
+          metaTitle: "Blitz- & Overdrive-Beleuchtung | Vision Lighting Solutions",
           metaDescription:
             "So konfigurieren Sie Blitz- und Overdrive-Modi, um die maximale LED-Helligkeit zu erhöhen und Bewegungen auf schnellen Linien einzufrieren.",
         },
         it: {
           name: "Illuminazione Stroboscopica & Overdrive",
           h1: "Configurare un'Illuminazione Stroboscopica e Overdrive per l'Ispezione Rapida",
-          metaTitle: "Illuminazione Stroboscopica Overdrive | Visione Industriale ad Alta Velocità",
+          metaTitle: "Illuminazione Stroboscopica & Overdrive | Vision Lighting Solutions",
           metaDescription:
             "Come configurare le modalità stroboscopica e overdrive per aumentare la luminosità di picco dei LED e bloccare il movimento su linee veloci.",
         },
@@ -583,28 +590,28 @@ export const catalog: Catalog = {
         en: {
           name: "PNP/NPN Converter",
           h1: "PNP/NPN Signal Converter for Vision Lighting Integration",
-          metaTitle: "PNP/NPN Converter | Vision Lighting Signal Compatibility",
+          metaTitle: "PNP/NPN Signal Converter | Vision Lighting Solutions",
           metaDescription:
-            "How to convert between PNP (sourcing) and NPN (sinking) trigger signals to integrate vision lighting with any PLC or camera I/O.",
+            "How to convert PNP (sourcing) and NPN (sinking) trigger signals to wire vision lighting to any PLC or camera I/O — request a free quote today.",
         },
         fr: {
           name: "Convertisseur PNP/NPN",
           h1: "Convertisseur de Signal PNP/NPN pour l'Intégration Éclairage Vision",
-          metaTitle: "Convertisseur PNP/NPN | Compatibilité Signal Éclairage Vision",
+          metaTitle: "Convertisseur de Signal PNP/NPN | Vision Lighting Solutions",
           metaDescription:
             "Comment convertir un signal trigger PNP (source) en NPN (drain) et inversement pour intégrer l'éclairage vision à n'importe quel automate ou caméra.",
         },
         de: {
           name: "PNP/NPN-Wandler",
           h1: "PNP/NPN-Signalwandler für die Integration von Vision-Beleuchtung",
-          metaTitle: "PNP/NPN-Wandler | Signalkompatibilität Vision-Beleuchtung",
+          metaTitle: "PNP/NPN-Wandler | Vision Lighting Solutions",
           metaDescription:
             "So wandeln Sie PNP- (Sourcing) und NPN- (Sinking) Triggersignale um, um Vision-Beleuchtung mit jeder SPS oder Kamera-I/O zu integrieren.",
         },
         it: {
           name: "Convertitore PNP/NPN",
           h1: "Convertitore di Segnale PNP/NPN per l'Integrazione dell'Illuminazione Vision",
-          metaTitle: "Convertitore PNP/NPN | Compatibilità Segnale Illuminazione Vision",
+          metaTitle: "Convertitore PNP/NPN | Vision Lighting Solutions",
           metaDescription:
             "Come convertire un segnale trigger PNP (source) in NPN (sink) e viceversa per integrare l'illuminazione vision con qualsiasi PLC o camera.",
         },
@@ -618,30 +625,30 @@ export const catalog: Catalog = {
         en: {
           name: "Cognex Camera Compatibility",
           h1: "Vision Lighting Compatibility with Cognex Cameras",
-          metaTitle: "Cognex Camera Compatibility | Vision Lighting Integration",
+          metaTitle: "Cognex Camera Compatibility | Vision Lighting Solutions",
           metaDescription:
-            "Compatible lighting, connectors and trigger configurations for integrating our machine vision lights with Cognex In-Sight and DataMan cameras.",
+            "Compatible lighting, I/O configuration and trigger wiring for integrating our machine vision lights with Cognex In-Sight and DataMan cameras.",
         },
         fr: {
           name: "Compatibilité Caméras Cognex",
           h1: "Compatibilité des Éclairages Vision avec les Caméras Cognex",
-          metaTitle: "Compatibilité Caméra Cognex | Intégration Éclairage Vision",
+          metaTitle: "Compatibilité Caméra Cognex | Vision Lighting Solutions",
           metaDescription:
-            "Éclairages, connecteurs et configurations de trigger compatibles pour intégrer nos éclairages vision aux caméras Cognex In-Sight et DataMan.",
+            "Éclairages compatibles, configuration des E/S et câblage du trigger pour intégrer nos éclairages vision aux caméras Cognex In-Sight et DataMan.",
         },
         de: {
           name: "Kompatibilität mit Cognex-Kameras",
           h1: "Kompatibilität von Vision-Beleuchtung mit Cognex-Kameras",
-          metaTitle: "Cognex Kamera-Kompatibilität | Integration Vision-Beleuchtung",
+          metaTitle: "Cognex Kamera-Kompatibilität | Vision Lighting Solutions",
           metaDescription:
-            "Kompatible Beleuchtung, Steckverbinder und Triggerkonfigurationen zur Integration unserer Vision-Beleuchtung mit Cognex In-Sight und DataMan.",
+            "Kompatible Beleuchtung, I/O-Konfiguration und Triggerverdrahtung zur Integration unserer Vision-Beleuchtung mit Cognex In-Sight und DataMan Kameras.",
         },
         it: {
           name: "Compatibilità Camere Cognex",
           h1: "Compatibilità dell'Illuminazione Vision con le Camere Cognex",
-          metaTitle: "Compatibilità Camera Cognex | Integrazione Illuminazione Vision",
+          metaTitle: "Compatibilità Camera Cognex | Vision Lighting Solutions",
           metaDescription:
-            "Illuminazioni, connettori e configurazioni di trigger compatibili per integrare le nostre illuminazioni vision con le camere Cognex In-Sight e DataMan.",
+            "Illuminazioni compatibili, configurazione I/O e cablaggio del trigger per integrare le nostre illuminazioni vision con le camere Cognex In-Sight e DataMan.",
         },
       },
     },
@@ -653,30 +660,30 @@ export const catalog: Catalog = {
         en: {
           name: "Keyence Camera Compatibility",
           h1: "Vision Lighting Compatibility with Keyence Cameras",
-          metaTitle: "Keyence Camera Compatibility | Vision Lighting Integration",
+          metaTitle: "Keyence Camera Compatibility | Vision Lighting Solutions",
           metaDescription:
-            "Compatible lighting, connectors and trigger configurations for integrating our machine vision lights with Keyence CV-X and XG series cameras.",
+            "Compatible lighting, I/O terminals and trigger wiring for integrating our machine vision lights with Keyence CV-X, XG-X, IV and SR-2000 cameras.",
         },
         fr: {
           name: "Compatibilité Caméras Keyence",
           h1: "Compatibilité des Éclairages Vision avec les Caméras Keyence",
-          metaTitle: "Compatibilité Caméra Keyence | Intégration Éclairage Vision",
+          metaTitle: "Compatibilité Caméra Keyence | Vision Lighting Solutions",
           metaDescription:
-            "Éclairages, connecteurs et configurations de trigger compatibles pour intégrer nos éclairages vision aux caméras Keyence CV-X et série XG.",
+            "Éclairages compatibles, bornes d'E/S et câblage du trigger pour intégrer nos éclairages vision aux caméras Keyence CV-X, XG-X, IV et SR-2000.",
         },
         de: {
           name: "Kompatibilität mit Keyence-Kameras",
           h1: "Kompatibilität von Vision-Beleuchtung mit Keyence-Kameras",
-          metaTitle: "Keyence Kamera-Kompatibilität | Integration Vision-Beleuchtung",
+          metaTitle: "Keyence Kamera-Kompatibilität | Vision Lighting Solutions",
           metaDescription:
-            "Kompatible Beleuchtung, Steckverbinder und Triggerkonfigurationen zur Integration unserer Vision-Beleuchtung mit Keyence CV-X und XG-Serie.",
+            "Kompatible Beleuchtung, I/O-Klemmen und Triggerverdrahtung zur Integration unserer Vision-Beleuchtung mit Keyence CV-X, XG-X, IV und SR-2000 Kameras.",
         },
         it: {
           name: "Compatibilità Camere Keyence",
           h1: "Compatibilità dell'Illuminazione Vision con le Camere Keyence",
-          metaTitle: "Compatibilità Camera Keyence | Integrazione Illuminazione Vision",
+          metaTitle: "Compatibilità Camera Keyence | Vision Lighting Solutions",
           metaDescription:
-            "Illuminazioni, connettori e configurazioni di trigger compatibili per integrare le nostre illuminazioni vision con le camere Keyence CV-X e serie XG.",
+            "Illuminazioni compatibili, morsetti I/O e cablaggio del trigger per integrare le nostre illuminazioni vision con le camere Keyence CV-X, XG-X, IV e SR-2000.",
         },
       },
     },
@@ -690,16 +697,16 @@ export const catalog: Catalog = {
         en: {
           name: "Industrial Infrared Lighting",
           h1: "Industrial Infrared (IR) Lighting for Machine Vision",
-          metaTitle: "Industrial Infrared Lighting | Machine Vision Guide",
+          metaTitle: "Industrial Infrared (IR) Lighting | Machine Vision Guide",
           metaDescription:
-            "When and how to use infrared (IR) lighting in machine vision: penetrating packaging, reducing glare, and working discreetly alongside visible light.",
+            "Why infrared lighting sees through materials that look opaque under visible light, and how to apply it in machine vision — read our full guide.",
         },
         fr: {
           name: "Éclairage Infrarouge Industriel",
           h1: "Éclairage Infrarouge (IR) Industriel pour la Vision Industrielle",
           metaTitle: "Éclairage Infrarouge Industriel | Guide Vision Industrielle",
           metaDescription:
-            "Quand et comment utiliser l'éclairage infrarouge (IR) en vision industrielle : pénétration d'emballage, réduction des reflets et discrétion visuelle.",
+            "Pourquoi l'éclairage infrarouge traverse des matériaux qui semblent opaques en lumière visible, et comment l'appliquer en inspection industrielle.",
         },
         de: {
           name: "Industrielle Infrarotbeleuchtung",
@@ -727,14 +734,14 @@ export const catalog: Catalog = {
           h1: "Ultraviolet (UV) Lighting for Machine Vision Applications",
           metaTitle: "UV Lighting Guide | Machine Vision Fluorescence Detection",
           metaDescription:
-            "Using UV lighting to reveal fluorescent markings, detect contamination, cracks and adhesive traces invisible under standard visible light.",
+            "Why some defects are invisible under any normal light, and how UV-excited fluorescence reveals them in machine vision inspection — full guide.",
         },
         fr: {
           name: "Éclairage Ultraviolet (UV)",
           h1: "Éclairage Ultraviolet (UV) pour les Applications de Vision Industrielle",
-          metaTitle: "Guide Éclairage UV | Détection par Fluorescence Vision Industrielle",
+          metaTitle: "Guide Éclairage UV | Détection Fluorescence Vision",
           metaDescription:
-            "Utiliser l'éclairage UV pour révéler marquages fluorescents, contaminations, fissures et traces de colle invisibles en lumière visible standard.",
+            "Pourquoi certains défauts sont invisibles sous toute lumière normale, et comment la fluorescence excitée par UV les révèle en inspection vision.",
         },
         de: {
           name: "Ultraviolett (UV) Beleuchtung",
@@ -762,14 +769,14 @@ export const catalog: Catalog = {
           h1: "How to Choose the Right LED Color for Machine Vision",
           metaTitle: "Choosing LED Color | Machine Vision Wavelength Guide",
           metaDescription:
-            "A practical guide to choosing red, blue, green, white or IR LED wavelengths based on target color, surface texture and contrast requirements.",
+            "Why a monochrome camera can miss a color-coded defect entirely, and how choosing the right LED wavelength restores contrast — read our full guide.",
         },
         fr: {
           name: "Choisir la Couleur LED",
           h1: "Comment Choisir la Bonne Couleur LED en Vision Industrielle",
-          metaTitle: "Choisir la Couleur LED | Guide Longueur d'Onde Vision Industrielle",
+          metaTitle: "Choisir la Couleur LED | Guide Vision Industrielle",
           metaDescription:
-            "Un guide pratique pour choisir une longueur d'onde LED rouge, bleue, verte, blanche ou IR selon la couleur de la cible et le contraste recherché.",
+            "Pourquoi une caméra monochrome peut manquer un défaut pourtant visible en couleur, et comment la bonne longueur d'onde LED restaure le contraste.",
         },
         de: {
           name: "LED-Farbe Wählen",
@@ -797,14 +804,14 @@ export const catalog: Catalog = {
           h1: "IP69K Stainless Steel Lighting for the Food Industry",
           metaTitle: "IP69K Stainless Lighting | Food & Beverage Machine Vision",
           metaDescription:
-            "IP69K-rated stainless steel lighting built to survive high-pressure washdown, hygienic design standards, and harsh food and beverage environments.",
+            "Why standard aluminum lighting fails in food and beverage washdown environments, and what an IP69K rating actually certifies — full guide inside.",
         },
         fr: {
           name: "Éclairage Inox IP69K Agroalimentaire",
           h1: "Éclairage Inox IP69K pour l'Industrie Agroalimentaire",
           metaTitle: "Éclairage Inox IP69K | Vision Industrielle Agroalimentaire",
           metaDescription:
-            "Éclairages en acier inoxydable certifiés IP69K, conçus pour résister au lavage haute pression et aux normes d'hygiène de l'agroalimentaire.",
+            "Pourquoi un éclairage aluminium standard échoue en environnement de lavage agroalimentaire, et ce que certifie réellement un indice IP69K — le guide.",
         },
         de: {
           name: "IP69K-Edelstahlbeleuchtung für die Lebensmittelindustrie",
@@ -832,14 +839,14 @@ export const catalog: Catalog = {
           h1: "Machine Vision Lighting for the Automotive Industry",
           metaTitle: "Automotive Machine Vision Lighting | Guide & Applications",
           metaDescription:
-            "Lighting strategies for automotive inspection: weld seam control, surface defect detection, assembly verification and robust in-line durability.",
+            "Why metallic and painted automotive parts defeat generic lighting, and how to match lighting geometry to weld and surface defects — full guide.",
         },
         fr: {
           name: "Vision Industrielle Automobile",
           h1: "Éclairage Vision Industrielle pour le Secteur Automobile",
-          metaTitle: "Vision Industrielle Automobile | Guide et Applications Éclairage",
+          metaTitle: "Vision Industrielle Automobile | Guide d'Éclairage",
           metaDescription:
-            "Stratégies d'éclairage pour l'inspection automobile : contrôle de soudure, détection de défauts de surface, vérification d'assemblage en ligne.",
+            "Pourquoi les pièces automobiles métalliques et peintes mettent en échec un éclairage générique, et comment adapter la géométrie aux défauts.",
         },
         de: {
           name: "Automobil Machine Vision",
@@ -865,16 +872,16 @@ export const catalog: Catalog = {
         en: {
           name: "Medical & Pharmaceutical Vision",
           h1: "Machine Vision Lighting for Medical & Pharmaceutical Applications",
-          metaTitle: "Medical & Pharma Machine Vision Lighting | Guide",
+          metaTitle: "Medical & Pharma Vision Lighting Guide | Vision Lighting",
           metaDescription:
-            "Lighting for pill counting, blister pack inspection, label verification and cleanroom-compatible machine vision in medical and pharma lines.",
+            "Why translucent tablets and reflective blister foil defeat generic lighting, and how backlight silhouettes and diffuse domes solve it — full guide.",
         },
         fr: {
           name: "Vision Médicale & Pharmaceutique",
           h1: "Éclairage Vision Industrielle pour les Applications Médicales et Pharmaceutiques",
           metaTitle: "Vision Médicale & Pharmaceutique | Guide Éclairage",
           metaDescription:
-            "Éclairage pour le comptage de comprimés, l'inspection de blisters, la vérification d'étiquettes et la vision compatible salle blanche.",
+            "Pourquoi comprimés translucides et blister réfléchissant mettent en échec un éclairage générique, et comment silhouette et dôme diffus y répondent.",
         },
         de: {
           name: "Medizin- & Pharma-Vision",
@@ -900,16 +907,16 @@ export const catalog: Catalog = {
         en: {
           name: "Brightfield vs Darkfield",
           h1: "Brightfield vs Darkfield Lighting: Which to Choose?",
-          metaTitle: "Brightfield vs Darkfield Lighting | Machine Vision Comparison",
+          metaTitle: "Brightfield vs Darkfield Lighting | Vision Lighting Guide",
           metaDescription:
-            "A side-by-side comparison of brightfield and darkfield illumination techniques and when each one reveals surface defects best.",
+            "Why the same scratch can appear bright or dark depending on lighting angle, and how to choose between brightfield and darkfield illumination.",
         },
         fr: {
           name: "Brightfield vs Darkfield",
           h1: "Éclairage Brightfield vs Darkfield : Lequel Choisir ?",
-          metaTitle: "Brightfield vs Darkfield | Comparatif Éclairage Vision Industrielle",
+          metaTitle: "Brightfield vs Darkfield | Comparatif Éclairage Vision",
           metaDescription:
-            "Un comparatif détaillé des techniques d'éclairage brightfield et darkfield, et dans quels cas chacune révèle le mieux les défauts de surface.",
+            "Pourquoi une même rayure apparaît claire ou sombre selon l'angle d'éclairage, et comment choisir entre brightfield et darkfield en inspection.",
         },
         de: {
           name: "Hellfeld vs Dunkelfeld",
@@ -937,14 +944,14 @@ export const catalog: Catalog = {
           h1: "Eliminating Reflections & Glare with Polarized Lighting",
           metaTitle: "Polarized Lighting | Eliminating Glare in Machine Vision",
           metaDescription:
-            "How polarizing filters on lights and lenses remove specular reflections and glare from metallic, glass or wet surfaces during inspection.",
+            "Why a saturated glare hot spot destroys image data no exposure setting can recover, and how crossed polarizing filters remove it — full guide.",
         },
         fr: {
           name: "Éliminer les Reflets par Polarisation",
           h1: "Éliminer les Reflets et Éblouissements par Éclairage Polarisé",
-          metaTitle: "Éclairage Polarisé | Éliminer les Reflets en Vision Industrielle",
+          metaTitle: "Éclairage Polarisé | Éliminer les Reflets en Vision",
           metaDescription:
-            "Comment des filtres polarisants sur éclairages et optiques suppriment les reflets spéculaires sur surfaces métalliques, vitrées ou humides.",
+            "Pourquoi un reflet saturé détruit une donnée image qu'aucun réglage d'exposition ne récupère, et comment des filtres polarisants croisés le retirent.",
         },
         de: {
           name: "Reflexionen mit Polarisation Eliminieren",
@@ -959,6 +966,141 @@ export const catalog: Catalog = {
           metaTitle: "Illuminazione Polarizzata | Eliminare i Riflessi in Visione Industriale",
           metaDescription:
             "Come i filtri polarizzanti su illuminazioni e ottiche eliminano i riflessi speculari su superfici metalliche, vetrate o bagnate durante l'ispezione.",
+        },
+      },
+    },
+  ],
+
+  pages: [
+    {
+      slug: "home",
+      routeKey: "/",
+      content: {
+        en: {
+          name: "Home",
+          h1: "Machine Vision Lighting, Engineered for Reliable Inspection",
+          metaTitle: "Machine Vision Lighting Solutions | LED Illumination",
+          metaDescription:
+            "Vision Lighting Solutions designs and supplies LED lighting for machine vision: bar lights, backlights, coaxial and dome lights — request a quote.",
+        },
+        fr: {
+          name: "Accueil",
+          h1: "L'Éclairage Vision Industrielle, Pensé pour une Inspection Fiable",
+          metaTitle: "Solutions d'Éclairage Vision Industrielle | Éclairage LED",
+          metaDescription:
+            "Vision Lighting Solutions conçoit des éclairages LED pour la vision industrielle : barres, rétroéclairages, dômes et coaxiaux — demandez un devis.",
+        },
+        de: {
+          name: "Startseite",
+          h1: "Vision-Beleuchtung, Konzipiert für Zuverlässige Inspektion",
+          metaTitle: "Beleuchtungslösungen für die Bildverarbeitung | LED-Beleuchtung",
+          metaDescription:
+            "Vision Lighting Solutions entwickelt und liefert LED-Beleuchtung für die Bildverarbeitung: Balkenleuchten, Hintergrundbeleuchtung, Koaxial- und Kuppelleuchten, Äquivalente und Integrationsleitfäden.",
+        },
+        it: {
+          name: "Home",
+          h1: "Illuminazione per la Visione Industriale, Progettata per un'Ispezione Affidabile",
+          metaTitle: "Soluzioni di Illuminazione per la Visione Industriale | Illuminazione LED",
+          metaDescription:
+            "Vision Lighting Solutions progetta e fornisce illuminazioni LED per la visione industriale: barre, retroilluminazioni, cupole e illuminazioni coassiali, equivalenze e guide di integrazione.",
+        },
+      },
+    },
+    {
+      slug: "contact",
+      routeKey: "/contact",
+      content: {
+        en: {
+          name: "Contact",
+          h1: "Contact Our Team",
+          metaTitle: "Contact Us | Vision Lighting Solutions Engineering Team",
+          metaDescription:
+            "Get in touch with our machine vision lighting engineers for product specifications, technical quotes, or wiring and integration questions today.",
+        },
+        fr: {
+          name: "Contact",
+          h1: "Contacter Notre Équipe",
+          metaTitle: "Contactez Nos Ingénieurs | Vision Lighting Solutions",
+          metaDescription:
+            "Contactez nos ingénieurs en éclairage vision industrielle pour vos spécifications produit, devis technique, ou questions de câblage et d'intégration.",
+        },
+        de: {
+          name: "Kontakt",
+          h1: "Unser Team Kontaktieren",
+          metaTitle: "Kontakt | Vision Lighting Solutions",
+          metaDescription:
+            "Kontaktieren Sie unsere Ingenieure für Bildverarbeitungsbeleuchtung für Spezifikationen, Angebote oder technische Fragen.",
+        },
+        it: {
+          name: "Contatti",
+          h1: "Contatta il Nostro Team",
+          metaTitle: "Contatti | Vision Lighting Solutions",
+          metaDescription:
+            "Contatta i nostri ingegneri per l'illuminazione della visione industriale per specifiche, preventivi o domande tecniche.",
+        },
+      },
+    },
+    {
+      slug: "test-sur-echantillon",
+      routeKey: "/test-sur-echantillon",
+      content: {
+        en: {
+          name: "Sample Test Request",
+          h1: "Validate your optical feasibility before buying — No commitment",
+          metaTitle: "Sample Test & Demo Loan Request | Vision Lighting Solutions",
+          metaDescription:
+            "Borrow a demo lighting kit within 48h or send us a sample for a free optical lab analysis with a complete image report — request yours today.",
+        },
+        fr: {
+          name: "Test sur Échantillon",
+          h1: "Validez votre faisabilité optique avant achat — Sans engagement",
+          metaTitle: "Test sur Échantillon & Prêt de Matériel | Vision Lighting",
+          metaDescription:
+            "Empruntez une valise de démonstration sous 48h ou envoyez-nous un échantillon pour une analyse optique gratuite en laboratoire avec rapport d'images.",
+        },
+        de: {
+          name: "Musterprüfung",
+          h1: "Validieren Sie Ihre optische Machbarkeit vor dem Kauf — Unverbindlich",
+          metaTitle: "Musterprüfung & Testgerät Anfragen | Vision Lighting Solutions",
+          metaDescription: "Leihen Sie ein Demo-Kit oder senden Sie uns ein Muster für einen kostenlosen Labortest.",
+        },
+        it: {
+          name: "Test su Campione",
+          h1: "Valida la tua fattibilità ottica prima dell'acquisto — Senza impegno",
+          metaTitle: "Richiedi un Test su Campione o un Kit Demo | Vision Lighting Solutions",
+          metaDescription: "Prendi in prestito un kit demo o inviaci un campione per un'analisi di laboratorio gratuita.",
+        },
+      },
+    },
+    {
+      slug: "mentions-legales",
+      routeKey: "/mentions-legales",
+      content: {
+        en: {
+          name: "Legal Notice",
+          h1: "Legal Notice & Privacy Policy",
+          metaTitle: "Legal Notice & Privacy Policy | Vision Lighting Solutions",
+          metaDescription:
+            "Legal notice, GDPR data protection policy, cookie declaration and technical liability limitation for vision-lighting-solutions.com — read details.",
+        },
+        fr: {
+          name: "Mentions Légales",
+          h1: "Mentions Légales & Politique de Confidentialité",
+          metaTitle: "Mentions Légales & Confidentialité | Vision Lighting",
+          metaDescription:
+            "Mentions légales, politique de protection des données RGPD, déclaration cookies et limitation de responsabilité technique — consultez les détails.",
+        },
+        de: {
+          name: "Impressum",
+          h1: "Impressum & Datenschutzerklärung",
+          metaTitle: "Impressum & Datenschutz | Vision Lighting Solutions",
+          metaDescription: "Impressum, DSGVO-Datenschutzerklärung und Cookie-Hinweis für vision-lighting-solutions.com.",
+        },
+        it: {
+          name: "Note Legali",
+          h1: "Note Legali & Informativa sulla Privacy",
+          metaTitle: "Note Legali & Privacy | Vision Lighting Solutions",
+          metaDescription: "Note legali, informativa privacy GDPR e dichiarazione cookie per vision-lighting-solutions.com.",
         },
       },
     },

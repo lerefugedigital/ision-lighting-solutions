@@ -1,9 +1,9 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
-import { trackEvent } from "@/lib/gtag";
+import { trackLeadGenerated } from "@/lib/gtag";
 
-type SubmitStatus = "idle" | "submitting" | "error";
+type SubmitStatus = "idle" | "submitting" | "success" | "error";
 
 export interface DatasheetDownloadModalProps {
   locale: "en" | "fr";
@@ -29,6 +29,8 @@ const TEXT = {
     placeholders: { email: "jane.smith@company.com", company: "Your company" },
     submit: "Get the PDF Datasheet",
     submitting: "Sending…",
+    success:
+      "Your request has been sent to our application lab. An engineer will get back to you within 2 business hours — your download has started.",
     error: "Something went wrong. Please try again, or contact us directly.",
     close: "Close",
     requiredField: "This field is required.",
@@ -41,6 +43,8 @@ const TEXT = {
     placeholders: { email: "jean.dupont@entreprise.com", company: "Votre entreprise" },
     submit: "Obtenir la Datasheet PDF",
     submitting: "Envoi en cours…",
+    success:
+      "Votre demande a bien été transmise à notre laboratoire d'application. Un ingénieur vous recontacte sous 2h ouvrées — votre téléchargement a démarré.",
     error: "Une erreur est survenue. Réessayez, ou contactez-nous directement.",
     close: "Fermer",
     requiredField: "Ce champ est requis.",
@@ -94,6 +98,7 @@ export function DatasheetDownloadModal({ locale, productName, isOpen, onClose, o
     if (Object.keys(errors).length > 0) return;
 
     setStatus("submitting");
+    const sourceUrl = window.location.href;
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -106,14 +111,13 @@ export function DatasheetDownloadModal({ locale, productName, isOpen, onClose, o
           contextType: "datasheet_download",
           subjectContext: `${SUBJECT_PREFIX[locale]} - ${productName}`,
           locale,
+          source_url: sourceUrl,
         }),
       });
       if (!res.ok) throw new Error("Request failed");
-      trackEvent("download_datasheet", { product: productName, locale });
-      setState(INITIAL_STATE);
-      setStatus("idle");
+      trackLeadGenerated({ silo: "eclairages", formType: "datasheet_download", subject: productName, locale, sourceUrl });
       onUnlocked();
-      onClose();
+      setStatus("success");
     } catch {
       setStatus("error");
     }
@@ -152,6 +156,21 @@ export function DatasheetDownloadModal({ locale, productName, isOpen, onClose, o
           </button>
         </div>
 
+        {status === "success" ? (
+          <>
+            <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/20 dark:text-emerald-300">
+              {t.success}
+            </p>
+            <button
+              type="button"
+              onClick={handleClose}
+              className="mt-4 w-full rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-amber-400"
+            >
+              {t.close}
+            </button>
+          </>
+        ) : (
+          <>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{t.subtitle}</p>
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-4" noValidate>
@@ -220,6 +239,8 @@ export function DatasheetDownloadModal({ locale, productName, isOpen, onClose, o
             {status === "submitting" ? t.submitting : t.submit}
           </button>
         </form>
+          </>
+        )}
       </div>
     </div>
   );

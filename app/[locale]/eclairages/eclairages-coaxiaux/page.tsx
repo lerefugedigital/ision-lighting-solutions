@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildProductModelJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
@@ -25,18 +26,6 @@ const ROUTE_KEY = "/eclairages/eclairages-coaxiaux";
 const PUBLISHED_DATE = "2026-07-20";
 const MODIFIED_DATE = "2026-07-20";
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "Coaxial LED Lighting | Specular Surface Machine Vision",
-    metaDescription:
-      "Industrial coaxial LED lighting: aluminum housing, M12 connector, 24VDC electronics, homogeneous on-axis illumination — request a free quote.",
-  },
-  fr: {
-    metaTitle: "Éclairage Coaxial LED | Vision sur Surfaces Spéculaires",
-    metaDescription:
-      "Éclairage coaxial LED industriel : corps aluminium, connecteur M12, électronique 24VDC, éclairage homogène dans l'axe optique — demandez un devis.",
-  },
-};
 
 const ROWS: Record<RichLocale, ProductConfigRow[]> = {
   en: [
@@ -112,6 +101,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
   en: {
     h1: "Coaxial Lighting for Specular & Etched Surfaces",
     lead: "Light projected through a beamsplitter along the camera's exact optical axis — the reference format for revealing defects, engravings and codes on shiny or mirror-like parts.",
+    principlesTitle: "Coaxial Lighting for Machine Vision: Principles and Advantages",
     introTitle: "What Is Coaxial Lighting Used For?",
     introParagraph:
       "Coaxial lighting sends light through a beamsplitter so it travels along precisely the same axis as the camera's lens. Only surfaces perpendicular to that axis reflect light straight back into the lens — flat areas appear bright and uniform, while any scratch, engraving, dent or laser-marked code that breaks that perpendicularity appears dark by contrast. That makes it the reference choice for flat, mirror-like or etched metal parts, where a dome light (built for curved or irregular reflective surfaces) or a bar light (built for flat matte surfaces) would instead wash the same defects out.",
@@ -145,6 +135,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
   fr: {
     h1: "Éclairages Coaxiaux pour Surfaces Spéculaires et Gravées",
     lead: "Lumière projetée à travers un diviseur optique dans l'axe optique exact de la caméra — le format de référence pour révéler défauts, gravures et codes sur des pièces brillantes ou de type miroir.",
+    principlesTitle: "Éclairage Coaxial Vision Industrielle : Principes et Avantages",
     introTitle: "À Quoi Sert un Éclairage Coaxial ?",
     introParagraph:
       "L'éclairage coaxial envoie la lumière à travers un diviseur optique de sorte qu'elle parcoure exactement le même axe que l'objectif de la caméra. Seules les surfaces perpendiculaires à cet axe renvoient la lumière directement vers l'objectif — les zones plates apparaissent lumineuses et uniformes, tandis qu'une rayure, une gravure, un choc ou un code marqué au laser qui rompt cette perpendicularité apparaît sombre par contraste. C'est ce qui en fait le choix de référence pour les pièces métalliques plates, de type miroir ou gravées, là où un dôme diffus (conçu pour les surfaces réfléchissantes courbes ou irrégulières) ou une barre LED (conçue pour les surfaces plates mates) effaceraient au contraire ces mêmes défauts.",
@@ -187,19 +178,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -229,7 +214,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         name: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         category: "Machine Vision Coaxial Lighting",
         additionalProperties: [

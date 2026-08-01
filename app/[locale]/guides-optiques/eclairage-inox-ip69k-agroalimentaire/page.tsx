@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
@@ -15,18 +16,6 @@ const MODIFIED_DATE = "2026-07-20";
 const PRODUCT_SLUGS = ["barres-led-barlights", "domes-diffus-rainlights"];
 const TOOL_SLUGS = ["brochage-m12-5-pins"];
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "IP69K Stainless Lighting | Food & Beverage Machine Vision",
-    metaDescription:
-      "Why standard aluminum lighting fails in food and beverage washdown environments, and what an IP69K rating actually certifies — full guide inside.",
-  },
-  fr: {
-    metaTitle: "Éclairage Inox IP69K | Vision Industrielle Agroalimentaire",
-    metaDescription:
-      "Pourquoi un éclairage aluminium standard échoue en environnement de lavage agroalimentaire, et ce que certifie réellement un indice IP69K — le guide.",
-  },
-};
 
 function WiringContent({ locale }: { locale: RichLocale }) {
   if (locale === "fr") {
@@ -55,6 +44,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   en: {
     h1: "IP69K Stainless Steel Lighting for the Food Industry",
     lead: "A washdown hose is a far harsher test than any splash or dust an office or warehouse camera will ever see — and most industrial lighting was never built to survive it.",
+    principlesTitle: "IP69K Stainless Lighting: Understanding the Problem and the Solution",
     problemTitle: "The Physical Problem",
     problemParagraph:
       "Food and beverage production lines are washed down daily with high-pressure, high-temperature water combined with detergents and sometimes corrosive cleaning agents. A standard aluminum enclosure rated for dust and light splashing (typical IP54 or IP65 ratings) is not validated against a close-range, high-pressure, high-temperature jet — repeated washdown cycles force water past seals never designed for that stress, corrode the aluminum body over cleaning-chemical exposure, and eventually reach the electronics inside. Worse, a housing with crevices, sharp internal corners or dead zones becomes a place where cleaning residue and bacteria can accumulate — turning the light itself into a contamination risk on a hygienic line.",
@@ -69,6 +59,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   fr: {
     h1: "Éclairage Inox IP69K pour l'Industrie Agroalimentaire",
     lead: "Un lavage au jet est un test bien plus sévère que la moindre éclaboussure ou poussière que verra jamais une caméra de bureau ou d'entrepôt — et la plupart des éclairages industriels n'ont jamais été conçus pour y survivre.",
+    principlesTitle: "Éclairage Inox IP69K : Comprendre le Problème et la Solution",
     problemTitle: "Le Problème Physique",
     problemParagraph:
       "Les lignes de production agroalimentaires sont lavées quotidiennement à l'eau haute pression et haute température, combinée à des détergents et parfois des produits de nettoyage corrosifs. Un boîtier aluminium standard classé pour la poussière et les projections légères (indices IP54 ou IP65 typiques) n'est pas validé face à un jet haute pression et haute température à courte distance — les cycles de lavage répétés forcent l'eau à travers des joints jamais conçus pour cette contrainte, corrodent le corps aluminium au contact des produits de nettoyage, et finissent par atteindre l'électronique interne. Pire encore, un boîtier présentant des recoins, des arêtes internes vives ou des zones mortes devient un endroit où résidus de nettoyage et bactéries peuvent s'accumuler — transformant l'éclairage lui-même en risque de contamination sur une ligne hygiénique.",
@@ -92,19 +83,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -128,7 +113,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         headline: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         datePublished: PUBLISHED_DATE,
         dateModified: MODIFIED_DATE,

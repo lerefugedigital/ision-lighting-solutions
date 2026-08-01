@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
+import { trackLeadGenerated } from "@/lib/gtag";
 
 type SubmitStatus = "idle" | "submitting" | "success" | "error";
 
@@ -25,7 +26,8 @@ const TEXT = {
     placeholders: { email: "jane.smith@company.com", company: "Your company", reference: "e.g. 300mm length, or ref. BAR-LED-300-W" },
     submit: "Request the File",
     submitting: "Sending…",
-    success: "Thank you — your request has been recorded. Our engineering office will send you the CAD file within 24 business hours.",
+    success:
+      "Your request has been sent to our application lab. An engineer will get back to you within 2 business hours with your CAD file.",
     error: "Something went wrong. Please try again, or contact us directly.",
     close: "Close",
     requiredField: "This field is required.",
@@ -39,7 +41,8 @@ const TEXT = {
     placeholders: { email: "jean.dupont@entreprise.com", company: "Votre entreprise", reference: "ex : longueur 300mm, ou réf. BAR-LED-300-B" },
     submit: "Demander le Fichier",
     submitting: "Envoi en cours…",
-    success: "Merci — votre demande a été enregistrée. Notre bureau d'études vous transmettra le fichier CAD sous 24h ouvrées.",
+    success:
+      "Votre demande a bien été transmise à notre laboratoire d'application. Un ingénieur vous recontacte sous 2h ouvrées avec votre fichier CAD.",
     error: "Une erreur est survenue. Réessayez, ou contactez-nous directement.",
     close: "Fermer",
     requiredField: "Ce champ est requis.",
@@ -96,6 +99,7 @@ export function CadRequestModal({ locale, productName, isOpen, onClose }: CadReq
     // Immediate, non-blocking confirmation — the request is fired and the modal
     // switches to the success view without waiting on further user action.
     setStatus("submitting");
+    const sourceUrl = window.location.href;
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -109,9 +113,11 @@ export function CadRequestModal({ locale, productName, isOpen, onClose }: CadReq
           contextType: "cad_request",
           subjectContext: `${SUBJECT_PREFIX[locale]} - ${productName}`,
           locale,
+          source_url: sourceUrl,
         }),
       });
       if (!res.ok) throw new Error("Request failed");
+      trackLeadGenerated({ silo: "eclairages", formType: "cad_request", subject: productName, locale, sourceUrl });
       setStatus("success");
     } catch {
       setStatus("error");

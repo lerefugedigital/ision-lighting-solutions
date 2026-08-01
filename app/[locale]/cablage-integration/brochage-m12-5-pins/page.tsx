@@ -7,6 +7,7 @@ import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildTechArticleWithHowToJsonLd, buildFaqPageJsonLd, type HowToStepInput } from "@/lib/jsonld";
 import { ContactForm } from "@/components/ContactForm";
+import { WiringFastTracks } from "@/components/WiringFastTracks";
 import { M12Interactive, type M12PinInfo, type M12InteractiveLabels } from "@/components/M12Interactive";
 
 const ROUTE_KEY = "/cablage-integration/brochage-m12-5-pins";
@@ -250,8 +251,6 @@ const LABELS: Record<Locale, M12InteractiveLabels> = {
 
 export const ARTICLE = {
   en: {
-    metaTitle: "M12 5-Pin Wiring Diagram | Vision Lighting Solutions",
-    metaDescription: "Standard M12 5-pin A-coded pinout for industrial machine vision lighting — wire colors, roles and common wiring mistakes explained pin by pin.",
     h1: "M12 5-Pin (A-Coded) Wiring Diagram for Machine Vision Lighting",
     lead: "Standard M12 5-pin A-coded pinout for industrial machine vision lighting: click a pin below — or a row in the table — to see its exact role, wire color, and the wiring mistakes automation engineers make most often.",
     expertTitle: "PNP vs NPN & Strobe Mode",
@@ -265,8 +264,6 @@ export const ARTICLE = {
     relatedTitle: "Related wiring guides",
   },
   fr: {
-    metaTitle: "Brochage M12 5 Broches | Vision Lighting Solutions",
-    metaDescription: "Brochage M12 5 broches (codage A) pour éclairage vision industrielle : couleurs de fils, rôles et erreurs courantes expliqués broche par broche.",
     h1: "Brochage M12 5 Broches (Codage A) pour Éclairage de Vision Industrielle",
     lead: "Brochage M12 5 broches (codage A) pour éclairage de vision industrielle : cliquez sur un pin ci-dessous — ou sur une ligne du tableau — pour voir son rôle exact, la couleur du fil, et les erreurs de câblage les plus fréquentes chez les automaticiens.",
     expertTitle: "PNP vs NPN & Mode Stroboscopique",
@@ -280,8 +277,6 @@ export const ARTICLE = {
     relatedTitle: "Guides de câblage associés",
   },
   de: {
-    metaTitle: "M12 5-polig A-kodiert Pinbelegung | Vision Lighting Solutions",
-    metaDescription: "M12 5-polig A-kodiert Pinbelegung für industrielle Bildverarbeitung.",
     h1: "M12-5-polige (A-kodierte) Pinbelegung für Vision-Beleuchtung",
     lead: "M12 5-polig A-kodiert Pinbelegung für industrielle Bildverarbeitung: Klicken Sie auf einen Pin unten — oder auf eine Tabellenzeile — um seine genaue Funktion, Aderfarbe und die häufigsten Verdrahtungsfehler von Automatisierungstechnikern zu sehen.",
     expertTitle: "PNP vs NPN & Blitzmodus",
@@ -295,8 +290,6 @@ export const ARTICLE = {
     relatedTitle: "Verwandte Verkabelungsleitfäden",
   },
   it: {
-    metaTitle: "Piedinatura M12 a 5 Pin (Codifica A) | Vision Lighting Solutions",
-    metaDescription: "Piedinatura M12 a 5 pin (Codifica A) per illuminazione visione industriale.",
     h1: "Piedinatura M12 a 5 Pin (Codifica A) per Illuminazione Visione Industriale",
     lead: "Piedinatura M12 a 5 pin (codifica A) per illuminazione visione industriale: clicca su un pin qui sotto — o su una riga della tabella — per vedere il suo ruolo esatto, il colore del filo e gli errori di cablaggio più comuni tra gli automatori.",
     expertTitle: "PNP vs NPN & Modalità Stroboscopica",
@@ -312,8 +305,6 @@ export const ARTICLE = {
 } satisfies Record<
   Locale,
   {
-    metaTitle: string;
-    metaDescription: string;
     h1: string;
     lead: string;
     expertTitle: string;
@@ -354,12 +345,16 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+function findCatalogSegment() {
+  return catalog.segments.find((s) => s.slug === "brochage-m12-5-pins");
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  const t = ARTICLE[locale];
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: { absolute: t.metaTitle },
-    description: t.metaDescription,
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
     alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
@@ -369,6 +364,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   setRequestLocale(locale);
 
   const t = ARTICLE[locale];
+  const content = findCatalogSegment()?.content[locale];
   const relatedSegments = RELATED_SLUGS.map((slug) => catalog.segments.find((s) => s.slug === slug)).filter(
     (s): s is NonNullable<typeof s> => Boolean(s)
   );
@@ -377,7 +373,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
     path: `/${locale}${ROUTE_KEY}`,
     locale,
     headline: t.h1,
-    description: t.metaDescription,
+    description: content?.metaDescription ?? t.lead,
     image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
     datePublished: PUBLISHED_DATE,
     dateModified: MODIFIED_DATE,
@@ -414,6 +410,12 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       </h1>
       <p className="mt-4 text-slate-600 dark:text-slate-300">{t.lead}</p>
 
+      {(locale === "en" || locale === "fr") && (
+        <div className="mt-8">
+          <WiringFastTracks locale={locale} />
+        </div>
+      )}
+
       <div className="mt-10">
         <M12Interactive pins={PINS[locale]} labels={LABELS[locale]} />
       </div>
@@ -435,7 +437,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       </section>
 
       {(locale === "en" || locale === "fr") && (
-        <div className="mt-14">
+        <div id="contact-form" className="mt-14 scroll-mt-8">
           <ContactForm locale={locale} contextType="wiring" subjectContext={t.h1} />
         </div>
       )}

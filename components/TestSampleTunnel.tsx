@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
-import { trackEvent } from "@/lib/gtag";
+import { trackLeadGenerated } from "@/lib/gtag";
 
 export interface TestSampleTunnelProps {
   locale: "en" | "fr";
@@ -54,7 +54,7 @@ const TEXT = {
       submit: "Request the Loan Kit",
       submitting: "Sending…",
       success:
-        "Your loan request has been submitted. An engineer will confirm equipment availability and get back to you within 4 hours.",
+        "Your request has been sent to our application team. An engineer will confirm equipment availability and get back to you within 4 business hours.",
       error: "Something went wrong sending your request. Please try again, or contact us directly.",
       requiredField: "This field is required.",
       invalidEmail: "Please enter a valid professional email address.",
@@ -94,7 +94,7 @@ const TEXT = {
       submit: "Send My Sample Test Request",
       submitting: "Sending…",
       success:
-        "Your request has been recorded. A shipping voucher / label and sending instructions have been emailed to you.",
+        "Your study/quote request has been sent to our application lab. An engineer will get back to you within 2 business hours.",
       error: "Something went wrong sending your request. Please try again, or contact us directly.",
       requiredField: "This field is required.",
       invalidEmail: "Please enter a valid professional email address.",
@@ -137,7 +137,7 @@ const TEXT = {
       submit: "Demander la Valise de Prêt",
       submitting: "Envoi en cours…",
       success:
-        "Votre demande de prêt a été transmise. Un ingénieur valide la disponibilité du matériel et vous recontacte sous 4h.",
+        "Votre demande a bien été transmise à notre équipe. Un ingénieur valide la disponibilité du matériel et vous recontacte sous 4h ouvrées.",
       error: "Une erreur est survenue lors de l'envoi. Réessayez, ou contactez-nous directement.",
       requiredField: "Ce champ est requis.",
       invalidEmail: "Merci de saisir une adresse email professionnelle valide.",
@@ -177,7 +177,7 @@ const TEXT = {
       submit: "Envoyer ma Demande d'Essai",
       submitting: "Envoi en cours…",
       success:
-        "Formulaire enregistré. Un bon de transport / étiquette d'expédition et les consignes d'envoi vous ont été transmis par e-mail.",
+        "Votre demande d'étude/devis a bien été transmise à notre laboratoire d'application. Un ingénieur vous recontacte sous 2h ouvrées.",
       error: "Une erreur est survenue lors de l'envoi. Réessayez, ou contactez-nous directement.",
       requiredField: "Ce champ est requis.",
       invalidEmail: "Merci de saisir une adresse email professionnelle valide.",
@@ -271,6 +271,7 @@ function LoanForm({ locale }: { locale: "en" | "fr" }) {
     if (Object.keys(errors).length > 0) return;
 
     setStatus("submitting");
+    const sourceUrl = window.location.href;
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -289,11 +290,12 @@ function LoanForm({ locale }: { locale: "en" | "fr" }) {
           contextType: "demo_loan",
           subjectContext: locale === "fr" ? "Demande de Valise de Prêt" : "Demo Kit Loan Request",
           locale,
+          source_url: sourceUrl,
         }),
       });
       if (!res.ok) throw new Error("Request failed");
       setStatus("success");
-      trackEvent("request_demo_loan", { product: state.product, duration: state.duration, locale });
+      trackLeadGenerated({ silo: "test-sur-echantillon", formType: "demo_loan", subject: state.product, locale, sourceUrl });
     } catch {
       setStatus("error");
     }
@@ -517,6 +519,7 @@ function LabForm({ locale }: { locale: "en" | "fr" }) {
     if (Object.keys(errors).length > 0) return;
 
     setStatus("submitting");
+    const sourceUrl = window.location.href;
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -533,11 +536,12 @@ function LabForm({ locale }: { locale: "en" | "fr" }) {
           contextType: "lab_analysis",
           subjectContext: locale === "fr" ? "Demande d'Analyse en Laboratoire" : "Lab Sample Analysis Request",
           locale,
+          source_url: sourceUrl,
         }),
       });
       if (!res.ok) throw new Error("Request failed");
       setStatus("success");
-      trackEvent("request_sample_test", { material_type: state.materialType, operating_mode: state.operatingMode, locale });
+      trackLeadGenerated({ silo: "test-sur-echantillon", formType: "lab_analysis", subject: state.materialType, locale, sourceUrl });
     } catch {
       setStatus("error");
     }

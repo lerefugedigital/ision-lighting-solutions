@@ -10,11 +10,22 @@ import { routing, type Locale } from "@/i18n/routing";
  * so each entry is a simple `/${locale}${path}` join — no per-locale slug
  * translation. "x-default" points at the default locale's URL. Both resolve to
  * absolute apex URLs (SITE_URL, no www) via metadataBase on the root layout.
+ *
+ * `excludeLocales` drops locales from the `languages` map entirely — used on
+ * pages where those locales are still untranslated placeholders, so no page
+ * (including the FR/EN ones) advertises an hreflang link to a noindex'd
+ * placeholder.
  */
-export function buildLanguageAlternates(path: string, currentLocale: Locale): { canonical: string; languages: Record<string, string> } {
+export function buildLanguageAlternates(
+  path: string,
+  currentLocale: Locale,
+  options?: { excludeLocales?: readonly Locale[] }
+): { canonical: string; languages: Record<string, string> } {
   const cleanPath = path === "/" ? "" : path;
+  const excluded = new Set<Locale>(options?.excludeLocales ?? []);
   const languages: Record<string, string> = {};
   for (const locale of routing.locales) {
+    if (excluded.has(locale)) continue;
     languages[locale] = `/${locale}${cleanPath}`;
   }
   languages["x-default"] = languages[routing.defaultLocale];

@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
@@ -16,18 +17,6 @@ const MODIFIED_DATE = "2026-07-20";
 const PRODUCT_SLUGS = ["domes-diffus-rainlights", "eclairages-coaxiaux", "barres-led-barlights"];
 const TOOL_SLUGS = ["brochage-m12-5-pins"];
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "Polarized Lighting | Eliminating Glare in Machine Vision",
-    metaDescription:
-      "Why a saturated glare hot spot destroys image data no exposure setting can recover, and how crossed polarizing filters remove it — full guide.",
-  },
-  fr: {
-    metaTitle: "Éclairage Polarisé | Éliminer les Reflets en Vision",
-    metaDescription:
-      "Pourquoi un reflet saturé détruit une donnée image qu'aucun réglage d'exposition ne récupère, et comment des filtres polarisants croisés le retirent.",
-  },
-};
 
 function WiringContent({ locale }: { locale: RichLocale }) {
   if (locale === "fr") {
@@ -56,6 +45,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   en: {
     h1: "Eliminating Reflections & Glare with Polarized Lighting",
     lead: "A saturated glare hot spot isn't just \"too bright\" — it's a pixel with no information left in it, and no exposure or gain adjustment can bring back data that was never captured.",
+    principlesTitle: "Polarized Lighting for Reflections & Glare: Understanding the Problem and the Solution",
     problemTitle: "The Physical Problem",
     problemParagraph:
       "Metallic, glass and wet surfaces reflect a large fraction of incident light specularly, in a narrow, mirror-like cone. When that reflection points straight into the camera's lens, it clips the sensor at those pixels — the region reads as pure white regardless of what feature, defect or code sits underneath the glare. Because a clipped pixel carries no information, no amount of re-exposing, re-gaining or re-processing the image afterward can recover what the sensor never actually measured; the only fix has to happen at the light itself, before the reflection ever reaches the lens.",
@@ -85,6 +75,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   fr: {
     h1: "Éliminer les Reflets et Éblouissements par Éclairage Polarisé",
     lead: "Un point de reflet saturé n'est pas simplement « trop lumineux » — c'est un pixel qui ne contient plus aucune information, et aucun réglage d'exposition ou de gain ne peut restituer une donnée qui n'a jamais été capturée.",
+    principlesTitle: "Éclairage Polarisé pour Reflets et Éblouissements : Comprendre le Problème et la Solution",
     problemTitle: "Le Problème Physique",
     problemParagraph:
       "Les surfaces métalliques, vitrées ou humides réfléchissent une grande partie de la lumière incidente de façon spéculaire, dans un cône étroit de type miroir. Lorsque ce reflet pointe directement vers l'objectif de la caméra, il sature le capteur sur ces pixels — la zone apparaît blanc pur, quel que soit le détail, défaut ou code situé sous le reflet. Un pixel saturé ne portant plus aucune information, aucun réajustement d'exposition, de gain ou de traitement d'image a posteriori ne peut récupérer ce que le capteur n'a en réalité jamais mesuré ; la correction doit se faire au niveau de l'éclairage lui-même, avant même que le reflet n'atteigne l'objectif.",
@@ -123,19 +114,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -159,7 +144,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         headline: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         datePublished: PUBLISHED_DATE,
         dateModified: MODIFIED_DATE,

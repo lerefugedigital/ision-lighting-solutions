@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
-import { trackEvent } from "@/lib/gtag";
+import { trackLeadGenerated } from "@/lib/gtag";
 
 export type ContactFormContextType = "product" | "equivalence" | "wiring" | "optical_guide" | "general";
 
@@ -121,7 +121,8 @@ const TEXT = {
     },
     submit: "Send My Request",
     submitting: "Sending…",
-    success: "Thank you — your request has been sent. An engineer will get back to you shortly.",
+    success:
+      "Your study/quote request has been sent to our application lab. An engineer will get back to you within 2 business hours.",
     sendAnother: "Send another request",
     error: "Something went wrong sending your request. Please try again, or use the direct email option below.",
     gdpr: "By submitting this form, you agree that your data will be processed to respond to your industrial inquiry.",
@@ -191,7 +192,8 @@ const TEXT = {
     },
     submit: "Envoyer Ma Demande",
     submitting: "Envoi en cours…",
-    success: "Merci — votre demande a été envoyée. Un ingénieur vous recontactera rapidement.",
+    success:
+      "Votre demande d'étude/devis a bien été transmise à notre laboratoire d'application. Un ingénieur vous recontacte sous 2h ouvrées.",
     sendAnother: "Envoyer une nouvelle demande",
     error: "Une erreur est survenue lors de l'envoi. Réessayez, ou utilisez l'option d'e-mail direct ci-dessous.",
     gdpr:
@@ -260,6 +262,8 @@ export function ContactForm({ locale, contextType, subjectContext, titleOverride
     if (Object.keys(errors).length > 0) return;
 
     setStatus("submitting");
+    const resolvedSubject = subjectContext ?? t.context[contextType].title;
+    const sourceUrl = window.location.href;
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -267,17 +271,19 @@ export function ContactForm({ locale, contextType, subjectContext, titleOverride
         body: JSON.stringify({
           ...state,
           contextType,
-          subjectContext: subjectContext ?? t.context[contextType].title,
+          subjectContext: resolvedSubject,
           locale,
+          source_url: sourceUrl,
         }),
       });
       if (!res.ok) throw new Error("Request failed");
       setStatus("success");
-      trackEvent("contact_form_submit", {
-        form_silo: CONTEXT_TO_SILO[contextType],
-        form_context: contextType,
-        form_subject: subjectContext ?? t.context[contextType].title,
+      trackLeadGenerated({
+        silo: CONTEXT_TO_SILO[contextType],
+        formType: contextType,
+        subject: resolvedSubject,
         locale,
+        sourceUrl,
       });
     } catch {
       setStatus("error");

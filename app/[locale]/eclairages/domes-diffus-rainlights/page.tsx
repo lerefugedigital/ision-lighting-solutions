@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildProductModelJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
@@ -25,18 +26,6 @@ const ROUTE_KEY = "/eclairages/domes-diffus-rainlights";
 const PUBLISHED_DATE = "2026-07-20";
 const MODIFIED_DATE = "2026-07-20";
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "Diffuse Dome Lights | Shadow-Free Vision Illumination",
-    metaDescription:
-      "Industrial diffuse dome lights: aluminum housing, M12 connector, 24VDC electronics, omnidirectional shadow-free illumination — request a quote.",
-  },
-  fr: {
-    metaTitle: "Dômes Diffus LED | Éclairage Vision Sans Ombre Industriel",
-    metaDescription:
-      "Dômes diffus industriels : corps aluminium, connecteur M12, électronique 24VDC, éclairage omnidirectionnel sans ombre — demandez un devis gratuit.",
-  },
-};
 
 const ROWS: Record<RichLocale, ProductConfigRow[]> = {
   en: [
@@ -112,6 +101,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
   en: {
     h1: "Diffuse Dome Lights for Reflective & Curved Surfaces",
     lead: "Hemispherical diffuse illuminators that light the target from every angle at once — the reference format for shiny, curved or textured surfaces where direct lighting causes glare.",
+    principlesTitle: "Diffuse Dome Lighting for Machine Vision: Principles and Advantages",
     introTitle: "What Is a Diffuse Dome Light Used For?",
     introParagraph:
       "A dome light illuminates the target from a hemisphere of diffuse directions simultaneously rather than from one fixed angle. Where a bar light on a shiny, curved or crinkled surface produces a single hard reflection that can blind the camera, a dome surrounds the part with light so no single glare point dominates — ideal for metal caps, blister packs, curved glass or embossed surfaces. For flat, mirror-like or etched surfaces viewed straight-on, a coaxial light is generally the better-suited choice instead.",
@@ -144,6 +134,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
   fr: {
     h1: "Dômes Diffus pour Surfaces Réfléchissantes et Courbes",
     lead: "Éclairages hémisphériques diffus qui illuminent la cible depuis tous les angles à la fois — le format de référence pour les surfaces brillantes, courbes ou texturées où un éclairage direct provoque des reflets.",
+    principlesTitle: "Éclairage Dôme Diffus Vision Industrielle : Principes et Avantages",
     introTitle: "À Quoi Sert un Dôme Diffus ?",
     introParagraph:
       "Un dôme diffus éclaire la cible depuis un hémisphère de directions diffuses simultanément, plutôt que depuis un angle fixe unique. Là où une barre LED sur une surface brillante, courbe ou froissée produit un reflet dur unique pouvant aveugler la caméra, un dôme entoure la pièce de lumière de sorte qu'aucun point de reflet ne domine — idéal pour les capsules métalliques, les blisters, le verre courbe ou les surfaces embossées. Pour des surfaces plates, de type miroir ou gravées, observées de face, un éclairage coaxial est généralement le choix plus adapté.",
@@ -185,19 +176,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -227,7 +212,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         name: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         category: "Machine Vision Diffuse Dome Lights",
         additionalProperties: [

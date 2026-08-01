@@ -52,6 +52,7 @@ function buildEmailHtml(params: {
   company: string;
   phone: string;
   localeLabel: string;
+  sourceUrl: string;
   contextLines: string[];
   message: string;
 }): string {
@@ -66,6 +67,7 @@ function buildEmailHtml(params: {
     row("Société", params.company || "—"),
     row("Téléphone", params.phone || "—"),
     row("Langue", params.localeLabel),
+    row("Page source", params.sourceUrl || "—"),
   ].join("");
 
   const needRows = params.contextLines.map((line) => {
@@ -169,6 +171,8 @@ interface ContactPayload {
   deliveryAddress?: unknown;
   opticalProblem?: unknown;
   productName?: unknown;
+  /** Page the form was submitted from — lets the sales team see which silo/page generated the lead. */
+  source_url?: unknown;
   /** Honeypot — must stay empty. If a bot fills it, we accept silently and skip sending. */
   website?: unknown;
 }
@@ -212,6 +216,7 @@ export async function POST(request: Request) {
   const deliveryAddress = asString(body.deliveryAddress);
   const opticalProblem = asString(body.opticalProblem);
   const datasheetProductName = asString(body.productName);
+  const sourceUrl = asString(body.source_url);
   const productValue = product === "other" ? productOther : PRODUCT_LABEL[product] ?? product;
 
   // The CAD request modal, the datasheet lead gate and the sample-test tunnel each have
@@ -298,6 +303,7 @@ export async function POST(request: Request) {
     `Company: ${company}`,
     phone ? `Phone: ${phone}` : null,
     `Language: ${localeLabel}`,
+    sourceUrl ? `Source page: ${sourceUrl}` : null,
     ...contextLines,
     "",
     "Message:",
@@ -314,6 +320,7 @@ export async function POST(request: Request) {
     company,
     phone,
     localeLabel,
+    sourceUrl,
     contextLines,
     message: effectiveMessage,
   });
@@ -322,7 +329,7 @@ export async function POST(request: Request) {
     // No email provider configured yet — validate and acknowledge, but log so the
     // submission isn't silently lost. Set RESEND_API_KEY in the environment to send for real.
     console.warn("[contact] RESEND_API_KEY is not set — logging submission instead of sending email.");
-    console.info("[contact] submission:", { name, email, company, contextType, subjectContext });
+    console.info("[contact] submission:", { name, email, company, contextType, subjectContext, sourceUrl });
     await logSubmissionLocally({
       timestamp: new Date().toISOString(),
       contextType,

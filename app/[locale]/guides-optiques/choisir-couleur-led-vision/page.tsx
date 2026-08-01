@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildTechArticleJsonLd, buildFaqPageJsonLd } from "@/lib/jsonld";
 import { PRODUCTS_TITLE, TOOLS_TITLE, PLACEHOLDER_COMING_SOON, type RichLocale } from "@/lib/guide-shared-content";
 import { GuidePageContent, type GuideRichContent } from "@/components/GuidePageContent";
@@ -16,18 +17,6 @@ const MODIFIED_DATE = "2026-07-20";
 const PRODUCT_SLUGS = ["barres-led-barlights", "domes-diffus-rainlights", "eclairages-coaxiaux"];
 const TOOL_SLUGS = ["brochage-m12-5-pins"];
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "Choosing LED Color | Machine Vision Wavelength Guide",
-    metaDescription:
-      "Why a monochrome camera can miss a color-coded defect entirely, and how choosing the right LED wavelength restores contrast — read our full guide.",
-  },
-  fr: {
-    metaTitle: "Choisir la Couleur LED | Guide Vision Industrielle",
-    metaDescription:
-      "Pourquoi une caméra monochrome peut manquer un défaut pourtant visible en couleur, et comment la bonne longueur d'onde LED restaure le contraste.",
-  },
-};
 
 function WiringContent({ locale }: { locale: RichLocale }) {
   if (locale === "fr") {
@@ -56,6 +45,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   en: {
     h1: "How to Choose the Right LED Color for Machine Vision",
     lead: "Two features that look clearly different to a human eye can produce the exact same gray level to a monochrome camera — and the wrong LED color is usually why.",
+    principlesTitle: "LED Color Selection: Understanding the Problem and the Solution",
     problemTitle: "The Physical Problem",
     problemParagraph:
       "Most machine vision cameras are monochrome sensors: they measure light intensity, not hue. Under a given illumination wavelength, a red feature on a green background might reflect almost identically to how the green background reflects, producing two regions of nearly the same gray level in the image — even though a human eye, with its three types of color receptors, would separate them instantly. Pick the wrong wavelength, and a perfectly visible color-coded defect, print, or component simply disappears into the background as far as the camera is concerned.",
@@ -71,6 +61,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   fr: {
     h1: "Comment Choisir la Bonne Couleur LED en Vision Industrielle",
     lead: "Deux détails clairement différents à l'œil humain peuvent produire exactement le même niveau de gris pour une caméra monochrome — et le mauvais choix de couleur LED en est généralement la cause.",
+    principlesTitle: "Choix de la Couleur LED : Comprendre le Problème et la Solution",
     problemTitle: "Le Problème Physique",
     problemParagraph:
       "La plupart des caméras de vision industrielle sont des capteurs monochromes : ils mesurent l'intensité lumineuse, pas la teinte. Sous une longueur d'onde d'éclairage donnée, un détail rouge sur un fond vert peut réfléchir presque aussi bien que le fond vert lui-même, produisant deux zones de niveau de gris quasi identique dans l'image — alors qu'un œil humain, avec ses trois types de récepteurs colorés, les séparerait instantanément. Choisissez la mauvaise longueur d'onde, et un défaut, une impression ou un composant pourtant parfaitement visible en couleur disparaît purement et simplement dans le fond pour la caméra.",
@@ -95,19 +86,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -131,7 +116,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         headline: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         datePublished: PUBLISHED_DATE,
         dateModified: MODIFIED_DATE,

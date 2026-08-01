@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { catalog } from "@/data/catalog";
 import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
+import { THIN_CONTENT_LOCALES, NOINDEX_FOLLOW, isThinContentLocale } from "@/lib/thin-content";
 import { buildProductModelJsonLd } from "@/lib/jsonld";
 import {
   TABLE_LABELS,
@@ -25,18 +26,6 @@ const ROUTE_KEY = "/eclairages/projecteurs-spots-led";
 const PUBLISHED_DATE = "2026-07-20";
 const MODIFIED_DATE = "2026-07-20";
 
-const META: Record<RichLocale, { metaTitle: string; metaDescription: string }> = {
-  en: {
-    metaTitle: "LED Spotlights | Long-Range Machine Vision Illumination",
-    metaDescription:
-      "Industrial LED spotlights and floodlights: aluminum housing, M12 connector, 24VDC electronics, narrow and wide beam optics for long working distances.",
-  },
-  fr: {
-    metaTitle: "Projecteurs Spots LED | Éclairage Vision Longue Distance",
-    metaDescription:
-      "Projecteurs et spots LED industriels : corps aluminium, connecteur M12, électronique 24VDC, optiques faisceau étroit et large — demandez un devis.",
-  },
-};
 
 const ROWS: Record<RichLocale, ProductConfigRow[]> = {
   en: [
@@ -112,6 +101,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
   en: {
     h1: "LED Spotlights & Floodlights for Long-Range Inspection",
     lead: "Focused directional illuminators built for long working distances and large fields of view — the format of choice when the target can't be lit at close range.",
+    principlesTitle: "LED Spotlights & Floodlights for Machine Vision: Principles and Advantages",
     introTitle: "What Are LED Spotlights & Floodlights Used For?",
     introParagraph:
       "Spotlights and floodlights use a focusing lens or reflector to project light over long working distances, well beyond what a close-mounted bar, dome, backlight or coaxial light is built for. A narrow-beam spot concentrates light on a distant, contained field; a wide-beam flood covers a large area instead — both suited to outdoor inspection, large-object scanning, or any high-ambient-light environment where the camera needs to out-compete sunlight or factory floor lighting rather than simply illuminate a nearby part.",
@@ -145,6 +135,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
   fr: {
     h1: "Projecteurs et Spots LED pour l'Inspection Longue Distance",
     lead: "Éclairages directionnels focalisés conçus pour les longues distances de travail et les larges champs de vision — le format de choix lorsque la cible ne peut pas être éclairée à courte distance.",
+    principlesTitle: "Projecteurs et Spots LED Vision Industrielle : Principes et Avantages",
     introTitle: "À Quoi Servent les Projecteurs et Spots LED ?",
     introParagraph:
       "Les projecteurs et spots utilisent une lentille de focalisation ou un réflecteur pour projeter la lumière sur de longues distances de travail, bien au-delà de ce pour quoi une barre LED, un dôme, un rétroéclairage ou un éclairage coaxial monté à courte distance sont conçus. Un spot à faisceau étroit concentre la lumière sur un champ distant et contenu ; un projecteur à faisceau large couvre au contraire une grande surface — tous deux adaptés à l'inspection en extérieur, au scan de grands objets, ou à tout environnement en forte lumière ambiante où la caméra doit primer sur la lumière du soleil ou l'éclairage d'atelier plutôt que simplement éclairer une pièce proche.",
@@ -187,19 +178,13 @@ function findCatalogSegment() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  if (locale === "en" || locale === "fr") {
-    const m = META[locale];
-    return {
-      title: { absolute: m.metaTitle },
-      description: m.metaDescription,
-      alternates: buildLanguageAlternates(ROUTE_KEY, locale),
-    };
-  }
-  const fallback = findCatalogSegment()?.content[locale];
+  const alternates = buildLanguageAlternates(ROUTE_KEY, locale, { excludeLocales: THIN_CONTENT_LOCALES });
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: fallback ? { absolute: fallback.metaTitle } : undefined,
-    description: fallback?.metaDescription,
-    alternates: buildLanguageAlternates(ROUTE_KEY, locale),
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
+    alternates,
+    ...(isThinContentLocale(locale) ? { robots: NOINDEX_FOLLOW } : {}),
   };
 }
 
@@ -229,7 +214,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         path: `/${locale}${ROUTE_KEY}`,
         locale,
         name: rich.h1,
-        description: META[locale as RichLocale].metaDescription,
+        description: fallback?.metaDescription ?? rich.lead,
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         category: "Machine Vision LED Spotlights & Floodlights",
         additionalProperties: [

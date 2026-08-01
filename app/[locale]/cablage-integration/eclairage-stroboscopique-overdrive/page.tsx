@@ -7,6 +7,7 @@ import { SITE_URL } from "@/lib/site-config";
 import { buildLanguageAlternates } from "@/lib/hreflang";
 import { buildTechArticleWithHowToJsonLd, buildFaqPageJsonLd, type HowToStepInput } from "@/lib/jsonld";
 import { ContactForm } from "@/components/ContactForm";
+import { WiringFastTracks } from "@/components/WiringFastTracks";
 import { StrobeOverdriveSimulator, type StrobeOverdriveLabels } from "@/components/StrobeOverdriveSimulator";
 
 const ROUTE_KEY = "/cablage-integration/eclairage-stroboscopique-overdrive";
@@ -69,9 +70,6 @@ const LABELS: Record<Locale, StrobeOverdriveLabels> = {
 
 export const ARTICLE = {
   en: {
-    metaTitle: "Strobe & Overdrive Lighting | Vision Lighting Solutions",
-    metaDescription:
-      "How to configure strobe and overdrive modes to boost peak LED brightness and freeze motion on fast lines — calculate your safe duty cycle now.",
     h1: "Strobe & Overdrive Lighting Setup for High-Speed Inspection",
     lead: "Adjust the pulse width and trigger frequency below to see the resulting duty cycle in real time — the single number that determines whether an overdrive setup is safe or headed for LED failure.",
     whatTitle: "What Overdrive Lighting Actually Is",
@@ -86,9 +84,6 @@ export const ARTICLE = {
     relatedTitle: "Related wiring guides",
   },
   fr: {
-    metaTitle: "Éclairage Stroboscopique & Overdrive | Vision Lighting",
-    metaDescription:
-      "Comment configurer les modes stroboscopique et overdrive pour augmenter la luminosité crête LED et figer le mouvement sur des lignes rapides.",
     h1: "Configurer un Éclairage Stroboscopique et Overdrive pour l'Inspection Rapide",
     lead: "Ajustez la largeur d'impulsion et la fréquence de trigger ci-dessous pour voir le rapport cyclique résultant en temps réel — le chiffre unique qui détermine si un montage overdrive est sûr ou promis à la défaillance des LED.",
     whatTitle: "Ce Qu'est Réellement l'Éclairage Overdrive",
@@ -103,9 +98,6 @@ export const ARTICLE = {
     relatedTitle: "Guides de câblage associés",
   },
   de: {
-    metaTitle: "Blitz- & Overdrive-Beleuchtung | Vision Lighting Solutions",
-    metaDescription:
-      "So konfigurieren Sie Blitz- und Overdrive-Modi, um die maximale LED-Helligkeit zu erhöhen und Bewegungen auf schnellen Linien einzufrieren.",
     h1: "Blitz- und Overdrive-Beleuchtung für Hochgeschwindigkeits-Inspektion Einrichten",
     lead: "Passen Sie unten Impulsbreite und Trigger-Frequenz an, um das resultierende Tastverhältnis in Echtzeit zu sehen — die eine Zahl, die entscheidet, ob ein Overdrive-Setup sicher ist oder auf einen LED-Ausfall zusteuert.",
     whatTitle: "Was Overdrive-Beleuchtung Wirklich Ist",
@@ -120,9 +112,6 @@ export const ARTICLE = {
     relatedTitle: "Verwandte Verkabelungsleitfäden",
   },
   it: {
-    metaTitle: "Illuminazione Stroboscopica & Overdrive | Vision Lighting Solutions",
-    metaDescription:
-      "Come configurare le modalità stroboscopica e overdrive per aumentare la luminosità di picco dei LED e bloccare il movimento su linee veloci.",
     h1: "Configurare un'Illuminazione Stroboscopica e Overdrive per l'Ispezione Rapida",
     lead: "Regola la larghezza dell'impulso e la frequenza di trigger qui sotto per vedere il duty cycle risultante in tempo reale — il singolo numero che determina se una configurazione overdrive è sicura o destinata al guasto dei LED.",
     whatTitle: "Cos'è Realmente l'Illuminazione Overdrive",
@@ -139,8 +128,6 @@ export const ARTICLE = {
 } satisfies Record<
   Locale,
   {
-    metaTitle: string;
-    metaDescription: string;
     h1: string;
     lead: string;
     whatTitle: string;
@@ -188,12 +175,16 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+function findCatalogSegment() {
+  return catalog.segments.find((s) => s.slug === "eclairage-stroboscopique-overdrive");
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  const t = ARTICLE[locale];
+  const content = findCatalogSegment()?.content[locale];
   return {
-    title: { absolute: t.metaTitle },
-    description: t.metaDescription,
+    title: content ? { absolute: content.metaTitle } : undefined,
+    description: content?.metaDescription,
     alternates: buildLanguageAlternates(ROUTE_KEY, locale),
   };
 }
@@ -203,6 +194,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
   setRequestLocale(locale);
 
   const t = ARTICLE[locale];
+  const content = findCatalogSegment()?.content[locale];
   const relatedSegments = RELATED_SLUGS.map((slug) => catalog.segments.find((s) => s.slug === slug)).filter(
     (s): s is NonNullable<typeof s> => Boolean(s)
   );
@@ -213,7 +205,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
     path: `/${locale}${ROUTE_KEY}`,
     locale,
     headline: t.h1,
-    description: t.metaDescription,
+    description: content?.metaDescription ?? t.lead,
     image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
     datePublished: PUBLISHED_DATE,
     dateModified: MODIFIED_DATE,
@@ -250,6 +242,12 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       </h1>
       <p className="mt-4 text-slate-600 dark:text-slate-300">{t.lead}</p>
 
+      {(locale === "en" || locale === "fr") && (
+        <div className="mt-8">
+          <WiringFastTracks locale={locale} />
+        </div>
+      )}
+
       <div className="mt-10">
         <StrobeOverdriveSimulator labels={LABELS[locale]} />
       </div>
@@ -270,7 +268,7 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
       </section>
 
       {(locale === "en" || locale === "fr") && (
-        <div className="mt-14">
+        <div id="contact-form" className="mt-14 scroll-mt-8">
           <ContactForm locale={locale} contextType="wiring" subjectContext={t.h1} />
         </div>
       )}
