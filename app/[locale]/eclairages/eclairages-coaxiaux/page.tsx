@@ -133,12 +133,12 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     relatedTitle: RELATED_TITLE.en,
   },
   fr: {
-    h1: "Éclairages Coaxiaux pour Surfaces Spéculaires et Gravées",
+    h1: "Éclairage Coaxial pour la Vision Industrielle : Suppression des Reflets",
     lead: "Lumière projetée à travers un diviseur optique dans l'axe optique exact de la caméra — le format de référence pour révéler défauts, gravures et codes sur des pièces brillantes ou de type miroir.",
     principlesTitle: "Éclairage Coaxial Vision Industrielle : Principes et Avantages",
     introTitle: "À Quoi Sert un Éclairage Coaxial ?",
     introParagraph:
-      "L'éclairage coaxial envoie la lumière à travers un diviseur optique de sorte qu'elle parcoure exactement le même axe que l'objectif de la caméra. Seules les surfaces perpendiculaires à cet axe renvoient la lumière directement vers l'objectif — les zones plates apparaissent lumineuses et uniformes, tandis qu'une rayure, une gravure, un choc ou un code marqué au laser qui rompt cette perpendicularité apparaît sombre par contraste. C'est ce qui en fait le choix de référence pour les pièces métalliques plates, de type miroir ou gravées, là où un dôme diffus (conçu pour les surfaces réfléchissantes courbes ou irrégulières) ou une barre LED (conçue pour les surfaces plates mates) effaceraient au contraire ces mêmes défauts.",
+      "Cette source lumineuse coaxiale envoie la lumière à travers un diviseur optique de sorte qu'elle parcoure exactement le même axe que l'objectif de la caméra. Seules les surfaces perpendiculaires à cet axe renvoient la lumière directement vers l'objectif — les zones plates apparaissent lumineuses et uniformes, tandis qu'une rayure, une gravure, un choc ou un code marqué au laser qui rompt cette perpendicularité apparaît sombre par contraste. C'est ce qui en fait le choix de référence pour l'inspection de surfaces brillantes et le contrôle miroir sur pièces métalliques plates ou gravées, là où un dôme diffus (conçu pour les surfaces réfléchissantes courbes ou irrégulières) ou une barre LED (conçue pour les surfaces plates mates) effaceraient au contraire ces mêmes défauts.",
     diagram: (
       <CoaxialDiagram
         labels={{
@@ -153,7 +153,7 @@ const RICH_CONTENT: Record<RichLocale, ProductRichContent> = {
     ),
     highlightsTitle: "Points Forts Techniques",
     highlights: [
-      "Diviseur optique intégré dirigeant la lumière exactement dans l'axe optique de la caméra.",
+      "Diviseur optique intégré (lame séparatrice 50/50) dirigeant la lumière exactement dans l'axe optique de la caméra.",
       "Boîtier industriel compact, connecteur M12 intégré, électronique durcie 24VDC.",
       "Champ coaxial homogène, sans les points chauds liés à l'angle de montage courants avec un éclairage hors axe.",
       "Plusieurs options de longueur d'onde LED : Blanc, Rouge, Bleu, Infrarouge (disponibilité selon configuration).",

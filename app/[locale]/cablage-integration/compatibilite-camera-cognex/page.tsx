@@ -206,6 +206,9 @@ export const ARTICLE = {
     overdriveTitle: "Cable routing warning",
     overdriveParagraph:
       "Keep the trigger/strobe cable short and shielded, especially when it runs alongside VFD or servo drive cabling. A long, unshielded run between the camera's output and the light's Pin 4 picks up electrical noise that can cause false triggers or jitter in the strobe timing — tie the cable shield to Pin 5 (FE) at the lighting end, not to the camera's signal ground.",
+    visionProTitle: "Configuring Strobe / Overdrive Outputs Under VisionPro",
+    visionProParagraph:
+      "Cognex VisionPro deployments drive strobe and overdrive outputs through the same opto-isolated digital I/O described above, but the assignment happens in the VisionPro QuickBuild or .NET tool instead of In-Sight Explorer: map the digital output wired to the light's Pin 4 to the trigger/strobe event in your CogIOControllerBoard configuration, keep the output polarity (PNP/NPN) consistent with the M12 5-pin wiring used on In-Sight cameras, and raise the overdrive pulse width only within the duty cycle your light's datasheet allows — overdriving beyond spec shortens LED lifetime.",
     relatedTitle: "Related wiring guides",
   },
   fr: {
@@ -219,6 +222,9 @@ export const ARTICLE = {
     overdriveTitle: "Avertissement sur le cheminement du câble",
     overdriveParagraph:
       "Gardez le câble trigger/strobe court et blindé, surtout s'il chemine à proximité de câbles de variateur ou de servomoteur. Un câble long et non blindé entre la sortie caméra et le Pin 4 de l'éclairage capte du bruit électrique pouvant provoquer des déclenchements intempestifs ou de la gigue sur le timing du strobe — reliez le blindage du câble au Pin 5 (FE) côté éclairage, pas à la masse signal de la caméra.",
+    visionProTitle: "Configuration des Sorties Strobe / Overdrive sous VisionPro",
+    visionProParagraph:
+      "Sur les déploiements Cognex VisionPro, les sorties strobe et overdrive sont pilotées par les mêmes E/S numériques optocouplées que celles décrites ci-dessus, mais l'assignation se fait dans l'outil QuickBuild ou .NET de VisionPro plutôt que dans In-Sight Explorer : associez la sortie numérique câblée au Pin 4 de l'éclairage à l'événement trigger/strobe dans la configuration du CogIOControllerBoard, conservez une polarité de sortie (PNP/NPN) cohérente avec le câblage M12 5 broches utilisé sur les caméras In-Sight, et n'augmentez la largeur d'impulsion overdrive que dans la limite du duty cycle autorisé par la fiche technique de l'éclairage — un overdrive hors spécifications réduit la durée de vie des LED.",
     relatedTitle: "Guides de câblage associés",
   },
   de: {
@@ -232,6 +238,9 @@ export const ARTICLE = {
     overdriveTitle: "Warnung zur Kabelführung",
     overdriveParagraph:
       "Halten Sie das Trigger-/Blitzkabel kurz und geschirmt, besonders wenn es entlang von Frequenzumrichter- oder Servoantriebskabeln verläuft. Eine lange, ungeschirmte Strecke zwischen dem Kameraausgang und Pin 4 der Beleuchtung nimmt elektrische Störungen auf, die Fehlauslösungen oder Jitter im Blitz-Timing verursachen können — verbinden Sie den Kabelschirm mit Pin 5 (FE) auf der Beleuchtungsseite, nicht mit der Signalmasse der Kamera.",
+    visionProTitle: "Konfiguration der Strobe-/Overdrive-Ausgänge unter VisionPro",
+    visionProParagraph:
+      "Bei Cognex-VisionPro-Implementierungen werden Blitz- und Overdrive-Ausgänge über dieselbe optogekoppelte digitale I/O wie oben beschrieben gesteuert, die Zuweisung erfolgt jedoch im QuickBuild- oder .NET-Tool von VisionPro statt in In-Sight Explorer: Weisen Sie den mit Pin 4 der Beleuchtung verdrahteten digitalen Ausgang dem Trigger-/Blitzereignis in der CogIOControllerBoard-Konfiguration zu, halten Sie die Ausgangspolarität (PNP/NPN) konsistent mit der M12-5-Pin-Verdrahtung der In-Sight-Kameras, und erhöhen Sie die Overdrive-Pulsbreite nur innerhalb des im Datenblatt der Beleuchtung zulässigen Tastverhältnisses — Overdrive außerhalb der Spezifikation verkürzt die LED-Lebensdauer.",
     relatedTitle: "Verwandte Verkabelungsleitfäden",
   },
   it: {
@@ -245,6 +254,9 @@ export const ARTICLE = {
     overdriveTitle: "Avvertenza sul percorso del cavo",
     overdriveParagraph:
       "Mantieni il cavo trigger/strobo corto e schermato, specialmente quando corre insieme a cavi di inverter o servoazionamenti. Un percorso lungo e non schermato tra l'uscita della camera e il Pin 4 dell'illuminazione capta disturbi elettrici che possono causare trigger falsi o jitter nel timing dello strobo — collega la schermatura del cavo al Pin 5 (FE) lato illuminazione, non alla massa segnale della camera.",
+    visionProTitle: "Configurazione delle Uscite Strobo / Overdrive con VisionPro",
+    visionProParagraph:
+      "Nelle implementazioni Cognex VisionPro, le uscite strobo e overdrive sono pilotate dagli stessi I/O digitali optoaccoppiati descritti sopra, ma l'assegnazione avviene nello strumento QuickBuild o .NET di VisionPro anziché in In-Sight Explorer: associa l'uscita digitale cablata al Pin 4 dell'illuminazione all'evento trigger/strobo nella configurazione del CogIOControllerBoard, mantieni una polarità di uscita (PNP/NPN) coerente con il cablaggio M12 a 5 pin usato sulle camere In-Sight, e aumenta la larghezza dell'impulso overdrive solo entro il duty cycle consentito dalla scheda tecnica dell'illuminazione — un overdrive fuori specifica riduce la durata dei LED.",
     relatedTitle: "Guide di cablaggio correlate",
   },
 } satisfies Record<
@@ -256,6 +268,8 @@ export const ARTICLE = {
     expertParagraphs: [string, string];
     overdriveTitle: string;
     overdriveParagraph: string;
+    visionProTitle: string;
+    visionProParagraph: string;
     relatedTitle: string;
   }
 >;
@@ -386,6 +400,11 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
           <h3 className="font-semibold text-red-900 dark:text-red-300">{t.overdriveTitle}</h3>
           <p className="mt-2 text-sm leading-relaxed text-red-800 dark:text-red-300/90">{t.overdriveParagraph}</p>
         </div>
+
+        <h3 className="mt-8 text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+          {t.visionProTitle}
+        </h3>
+        <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">{t.visionProParagraph}</p>
       </section>
 
       {(locale === "en" || locale === "fr") && (

@@ -22,6 +22,8 @@ export interface GuideRichContent {
   wiringTitle: string;
   /** Built per-page as JSX so it can embed contextual <Link>s to Silo 3 guides. */
   wiringContent: ReactNode;
+  /** Optional extra section (e.g. comparison table, per-material use cases) rendered after wiring, before the sample CTA. */
+  extraContent?: ReactNode;
   productsTitle: string;
   toolsTitle: string;
 }
@@ -131,6 +133,8 @@ export function GuidePageContent({
           </section>
         </>
       )}
+
+      {rich.extraContent && <div className="mt-10">{rich.extraContent}</div>}
 
       <div className="mt-14">
         <SampleTestCTA locale={locale as "en" | "fr"} />

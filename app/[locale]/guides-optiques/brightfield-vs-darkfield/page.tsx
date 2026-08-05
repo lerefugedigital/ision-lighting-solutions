@@ -41,6 +41,115 @@ function WiringContent({ locale }: { locale: RichLocale }) {
   );
 }
 
+interface ComparisonRow {
+  criterion: string;
+  brightfield: string;
+  darkfield: string;
+}
+
+interface MaterialUseCase {
+  material: string;
+  recommendation: string;
+}
+
+const COMPARISON_ROWS: Record<RichLocale, ComparisonRow[]> = {
+  en: [
+    { criterion: "Lighting angle", brightfield: "Direct / on-axis (0°), often coaxial", darkfield: "Low, grazing angle (typically 10-30°)" },
+    { criterion: "Default background", brightfield: "Bright — flat surfaces reflect straight into the lens", darkfield: "Dark — specular reflection never reaches the lens" },
+    { criterion: "Defect appearance", brightfield: "Dark mark against a bright field", darkfield: "Bright mark against a dark field" },
+    { criterion: "Detects best", brightfield: "Flat, mirror-like or etched surfaces, printed codes", darkfield: "Surface-relief defects: scratches, embossing, raised edges" },
+    { criterion: "Typical hardware", brightfield: "Coaxial light, ring light mounted on-axis", darkfield: "Bar light or dome light mounted at a shallow angle" },
+  ],
+  fr: [
+    { criterion: "Angle d'éclairage", brightfield: "Direct / dans l'axe (0°), souvent coaxial", darkfield: "Angle bas et rasant (typiquement 10-30°)" },
+    { criterion: "Fond par défaut", brightfield: "Fond clair — les surfaces plates réfléchissent droit vers l'objectif", darkfield: "Fond noir — la réflexion spéculaire n'atteint jamais l'objectif" },
+    { criterion: "Aspect du défaut", brightfield: "Marque sombre sur fond clair", darkfield: "Marque claire sur fond noir" },
+    { criterion: "Détecte le mieux", brightfield: "Surfaces plates, type miroir ou gravées, codes imprimés", darkfield: "Défauts de relief : rayures, embossage, arêtes surélevées" },
+    { criterion: "Matériel typique", brightfield: "Éclairage coaxial, anneau lumineux monté dans l'axe", darkfield: "Barre LED ou dôme monté à angle rasant" },
+  ],
+};
+
+const MATERIAL_USE_CASES: Record<RichLocale, MaterialUseCase[]> = {
+  en: [
+    {
+      material: "Glass",
+      recommendation:
+        "Brightfield (coaxial) for flat glass to reveal chips and cracks against a uniform bright background; darkfield for surface scratch detection where a low grazing angle scatters light off the scratch itself.",
+    },
+    {
+      material: "Polished metal",
+      recommendation:
+        "Darkfield is usually the default on polished or mirror-like metal, since brightfield on a highly specular surface tends to wash out shallow surface-relief defects like fine scratches or tool marks.",
+    },
+    {
+      material: "Plastic",
+      recommendation:
+        "Brightfield for molded plastic parts with printed or laser-marked codes and flat inspection zones; darkfield when checking for sink marks, flow lines or surface scuffs on matte or semi-gloss plastic.",
+    },
+  ],
+  fr: [
+    {
+      material: "Verre",
+      recommendation:
+        "Brightfield (coaxial) sur du verre plat pour révéler éclats et fissures sur fond clair uniforme ; darkfield pour la détection de rayures surface, où l'angle rasant disperse la lumière sur la rayure elle-même.",
+    },
+    {
+      material: "Métal poli",
+      recommendation:
+        "Le darkfield est en général le choix par défaut sur un métal poli ou de type miroir, car le brightfield sur une surface très spéculaire tend à effacer les défauts de relief peu profonds comme les micro-rayures ou traces d'outil.",
+    },
+    {
+      material: "Plastique",
+      recommendation:
+        "Brightfield pour les pièces plastiques moulées avec codes imprimés ou marqués laser et zones d'inspection planes ; darkfield pour détecter marques de retassure, lignes d'écoulement ou éraflures de surface sur plastique mat ou semi-brillant.",
+    },
+  ],
+};
+
+function ExtraContent({ locale }: { locale: RichLocale }) {
+  const rows = COMPARISON_ROWS[locale];
+  const useCases = MATERIAL_USE_CASES[locale];
+  const title = locale === "fr" ? "Tableau Comparatif Brightfield vs Darkfield" : "Brightfield vs Darkfield Comparison Table";
+  const useCasesTitle = locale === "fr" ? "Cas d'Usage par Matériau" : "Use Cases by Material";
+  const colCriterion = locale === "fr" ? "Critère" : "Criterion";
+
+  return (
+    <>
+      <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{title}</h2>
+      <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+        <table className="w-full min-w-[560px] border-collapse text-sm">
+          <thead>
+            <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+              <th className="px-4 py-3">{colCriterion}</th>
+              <th className="px-4 py-3">Brightfield</th>
+              <th className="px-4 py-3">Darkfield</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.criterion} className="border-b border-slate-100 last:border-0 dark:border-slate-800">
+                <td className="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{row.criterion}</td>
+                <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{row.brightfield}</td>
+                <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{row.darkfield}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 className="mt-10 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{useCasesTitle}</h2>
+      <dl className="mt-4 grid gap-4 sm:grid-cols-3">
+        {useCases.map((useCase) => (
+          <div key={useCase.material} className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
+            <dt className="font-semibold text-slate-900 dark:text-slate-100">{useCase.material}</dt>
+            <dd className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{useCase.recommendation}</dd>
+          </div>
+        ))}
+      </dl>
+    </>
+  );
+}
+
 const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   en: {
     h1: "Brightfield vs Darkfield Lighting: Which to Choose?",
@@ -68,19 +177,20 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
     ),
     wiringTitle: "Wiring & Integration Recommendations",
     wiringContent: <WiringContent locale="en" />,
+    extraContent: <ExtraContent locale="en" />,
     productsTitle: PRODUCTS_TITLE.en,
     toolsTitle: TOOLS_TITLE.en,
   },
   fr: {
-    h1: "Éclairage Brightfield vs Darkfield : Lequel Choisir ?",
-    lead: "Exactement la même rayure peut apparaître comme une ligne claire sur fond sombre, ou une ligne sombre sur fond clair — la différence tient entièrement à l'angle d'éclairage, pas au défaut lui-même.",
+    h1: "Fond Clair vs Fond Noir (Brightfield vs Darkfield) en Vision Industrielle",
+    lead: "Exactement la même rayure peut apparaître comme une ligne claire sur fond noir, ou une ligne sombre sur fond clair — la différence tient entièrement à l'angle d'éclairage fond clair fond noir choisi, pas au défaut lui-même.",
     principlesTitle: "Éclairage Brightfield vs Darkfield : Comprendre le Problème et la Solution",
     problemTitle: "Le Problème Physique",
     problemParagraph:
       "Une rayure, une gravure ou un marquage embossé est une discontinuité locale de l'angle de surface par rapport à la zone plate environnante. Un angle d'éclairage unique, choisi arbitrairement, échoue souvent précisément sur cette classe de défaut : la même discontinuité qui réfléchit la lumière vers la caméra sous un angle donné la réfléchit de façon complètement différente — ou pas du tout — dès que l'angle change, et choisir le mauvais angle peut masquer le défaut même que l'inspection est censée détecter.",
     solutionTitle: "La Solution Optique",
     solutionParagraph:
-      "C'est exactement la distinction entre l'éclairage brightfield et darkfield, un principe bien établi issu de l'optique et de la microscopie qui s'applique directement à la vision industrielle. En brightfield, la source est positionnée de sorte que sa lumière soit réfléchie directement vers la caméra par la surface plate et intacte — l'image est claire par défaut, et une rayure ou un défaut qui disperse cette lumière hors de l'objectif apparaît comme une marque sombre. En darkfield, la source est au contraire placée selon un angle rasant et oblique choisi pour que la réflexion spéculaire de la surface plate n'atteigne jamais l'objectif — l'image est sombre par défaut, et seul un bord surélevé, une rayure ou une gravure qui disperse la lumière vers l'objectif sous cet angle précis apparaît comme une marque claire sur fond sombre. Le brightfield convient aux surfaces plates de type miroir observées dans l'axe (le rôle d'un éclairage coaxial) ; le darkfield convient aux défauts de relief comme les rayures et embossages, et s'obtient généralement avec une barre LED ou un dôme monté selon un angle bas et rasant plutôt que de face.",
+      "C'est exactement la distinction entre l'éclairage brightfield et darkfield, un principe bien établi issu de l'optique et de la microscopie qui s'applique directement à la vision industrielle. En brightfield, la source est positionnée de sorte que sa lumière soit réfléchie directement vers la caméra par la surface plate et intacte — l'image est claire par défaut, et une rayure ou un défaut qui disperse cette lumière hors de l'objectif apparaît comme une marque sombre. En darkfield, la source est au contraire placée selon un angle rasant et oblique choisi pour que la réflexion spéculaire de la surface plate n'atteigne jamais l'objectif — l'image est sombre par défaut, et seul un bord surélevé, une rayure ou une gravure qui disperse la lumière vers l'objectif sous cet angle précis apparaît comme une marque claire sur fond sombre. Le brightfield convient aux surfaces plates de type miroir observées dans l'axe (le rôle d'un éclairage coaxial) ; le darkfield convient à la détection de rayures surface et autres défauts de relief comme les embossages, et s'obtient généralement avec une barre LED ou un dôme monté selon un angle bas et rasant plutôt que de face.",
     diagram: (
       <BrightfieldDarkfieldDiagram
         labels={{
@@ -97,6 +207,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
     ),
     wiringTitle: "Recommandations de Câblage et d'Intégration",
     wiringContent: <WiringContent locale="fr" />,
+    extraContent: <ExtraContent locale="fr" />,
     productsTitle: PRODUCTS_TITLE.fr,
     toolsTitle: TOOLS_TITLE.fr,
   },

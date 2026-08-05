@@ -314,8 +314,8 @@ export const catalog: Catalog = {
         },
         fr: {
           name: "Éclairages Coaxiaux",
-          h1: "Éclairages Coaxiaux pour Surfaces Spéculaires et Gravées",
-          metaTitle: "Éclairage Coaxial LED | Vision sur Surfaces Spéculaires",
+          h1: "Éclairage Coaxial pour la Vision Industrielle : Suppression des Reflets",
+          metaTitle: "Éclairage Coaxial Vision Industrielle | Source Lumineuse Sans Reflet",
           metaDescription:
             "Éclairage coaxial LED industriel : corps aluminium, connecteur M12, électronique 24VDC, éclairage homogène dans l'axe optique — demandez un devis.",
         },
@@ -387,7 +387,7 @@ export const catalog: Catalog = {
         fr: {
           name: "Équivalences TPL Vision",
           h1: "Équivalences et Correspondances aux Éclairages TPL Vision",
-          metaTitle: "Équivalence TPL Vision : Alternatives Éclairage LED | Vision Lighting",
+          metaTitle: "Équivalences & Remplacement Éclairages TPL Vision | Dual Sourcing B2B",
           metaDescription:
             "Trouvez l'équivalent direct à vos éclairages TPL Vision (Essential Bar, M-TBAL...). Compatibilité mécanique et électrique 24V M12. Devis sous 2h.",
         },
@@ -561,7 +561,7 @@ export const catalog: Catalog = {
         },
         fr: {
           name: "Éclairage Stroboscopique & Overdrive",
-          h1: "Configurer un Éclairage Stroboscopique et Overdrive pour l'Inspection Rapide",
+          h1: "Éclairage Stroboscopique & Mode Overdrive pour la Vision Industrielle",
           metaTitle: "Éclairage Stroboscopique & Overdrive | Vision Lighting",
           metaDescription:
             "Comment configurer les modes stroboscopique et overdrive pour augmenter la luminosité crête LED et figer le mouvement sur des lignes rapides.",
@@ -632,7 +632,7 @@ export const catalog: Catalog = {
         fr: {
           name: "Compatibilité Caméras Cognex",
           h1: "Compatibilité des Éclairages Vision avec les Caméras Cognex",
-          metaTitle: "Compatibilité Caméra Cognex | Vision Lighting Solutions",
+          metaTitle: "Compatibilité Éclairage Caméra Cognex In-Sight & VisionPro | Câblage M12",
           metaDescription:
             "Éclairages compatibles, configuration des E/S et câblage du trigger pour intégrer nos éclairages vision aux caméras Cognex In-Sight et DataMan.",
         },
@@ -800,18 +800,18 @@ export const catalog: Catalog = {
       routeKey: "/guides-optiques/eclairage-inox-ip69k-agroalimentaire",
       content: {
         en: {
-          name: "IP69K Stainless Lighting for Food",
-          h1: "IP69K Stainless Steel Lighting for the Food Industry",
-          metaTitle: "IP69K Stainless Lighting | Food & Beverage Machine Vision",
+          name: "IP69K Stainless Lighting for Pharma & Food",
+          h1: "IP69K Stainless Steel LED Lighting for Pharmaceutical and Food Environments",
+          metaTitle: "IP69K Stainless Lighting | Pharmaceutical Inspection Optics & Food",
           metaDescription:
-            "Why standard aluminum lighting fails in food and beverage washdown environments, and what an IP69K rating actually certifies — full guide inside.",
+            "Why standard aluminum lighting fails in corrosive pharmaceutical and food washdown environments, and what IP69K, CIP/SIP resistance and 316L actually certify.",
         },
         fr: {
-          name: "Éclairage Inox IP69K Agroalimentaire",
-          h1: "Éclairage Inox IP69K pour l'Industrie Agroalimentaire",
-          metaTitle: "Éclairage Inox IP69K | Vision Industrielle Agroalimentaire",
+          name: "Éclairage Inox IP69K Pharma & Agroalimentaire",
+          h1: "Éclairage LED Inox IP69K pour Milieux Pharmaceutiques et Agroalimentaires",
+          metaTitle: "Éclairage Pharmaceutique Inox IP69K | Environnements Corrosifs",
           metaDescription:
-            "Pourquoi un éclairage aluminium standard échoue en environnement de lavage agroalimentaire, et ce que certifie réellement un indice IP69K — le guide.",
+            "Pourquoi un éclairage aluminium standard échoue en environnement corrosif pharmaceutique ou agroalimentaire, et ce que certifient IP69K, CIP/SIP et l'inox 316L.",
         },
         de: {
           name: "IP69K-Edelstahlbeleuchtung für die Lebensmittelindustrie",
@@ -913,10 +913,10 @@ export const catalog: Catalog = {
         },
         fr: {
           name: "Brightfield vs Darkfield",
-          h1: "Éclairage Brightfield vs Darkfield : Lequel Choisir ?",
-          metaTitle: "Brightfield vs Darkfield | Comparatif Éclairage Vision",
+          h1: "Fond Clair vs Fond Noir (Brightfield vs Darkfield) en Vision Industrielle",
+          metaTitle: "Brightfield vs Darkfield | Éclairage Fond Clair Fond Noir Vision",
           metaDescription:
-            "Pourquoi une même rayure apparaît claire ou sombre selon l'angle d'éclairage, et comment choisir entre brightfield et darkfield en inspection.",
+            "Pourquoi une même rayure apparaît claire ou sombre selon l'angle d'éclairage, et comment choisir entre fond clair et fond noir pour la détection de rayures surface.",
         },
         de: {
           name: "Hellfeld vs Dunkelfeld",

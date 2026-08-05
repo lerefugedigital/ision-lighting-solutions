@@ -9,6 +9,8 @@ import { buildTechArticleWithHowToJsonLd, buildFaqPageJsonLd, type HowToStepInpu
 import { ContactForm } from "@/components/ContactForm";
 import { WiringFastTracks } from "@/components/WiringFastTracks";
 import { StrobeOverdriveSimulator, type StrobeOverdriveLabels } from "@/components/StrobeOverdriveSimulator";
+import { M12Interactive, type M12PinInfo, type M12InteractiveLabels } from "@/components/M12Interactive";
+import { SampleTestCTA } from "@/components/SampleTestCTA";
 
 const ROUTE_KEY = "/cablage-integration/eclairage-stroboscopique-overdrive";
 const PUBLISHED_DATE = "2026-07-20";
@@ -68,6 +70,214 @@ const LABELS: Record<Locale, StrobeOverdriveLabels> = {
   },
 };
 
+/** Same standard M12 5-pin A-coded connector as the dedicated pinout guide, reused here with the
+ *  focus on Pin 4 (Trigger/Strobe) so overdrive wiring can be checked without leaving this page. */
+const M12_PINS: Record<Locale, M12PinInfo[]> = {
+  en: [
+    {
+      number: 1,
+      wireColorName: "Brown",
+      wireColorHex: "#7c4a1e",
+      signal: "+24 VDC",
+      role: "+24VDC power supply. Size it for the overdrive peak current, not the average continuous current.",
+      pitfall: "An undersized 24V controller/PSU sags under overdrive peak current draw, corrupting the strobe pulse shape.",
+    },
+    {
+      number: 2,
+      wireColorName: "White",
+      wireColorHex: "#e2e8f0",
+      signal: "Dimming (0-10V / PWM)",
+      role: "Analog dimming or PWM intensity control — not used to set overdrive current, only continuous-mode brightness.",
+      pitfall: "A floating Pin 2 leaves brightness undefined; it plays no role in the overdrive duty cycle itself.",
+    },
+    {
+      number: 3,
+      wireColorName: "Blue",
+      wireColorHex: "#2563eb",
+      signal: "0V / GND",
+      role: "Ground / 0V reference shared between the LED controller and the camera's trigger output.",
+      pitfall: "Never substitute Pin 3 for the shield ground on Pin 5 — it injects noise into the trigger edge timing.",
+    },
+    {
+      number: 4,
+      wireColorName: "Black",
+      wireColorHex: "#0f172a",
+      signal: "Trigger / Strobe",
+      role: "The overdrive strobe input: a pulsed PNP (active-high) or NPN (active-low) signal whose pulse width and frequency set the duty cycle.",
+      pitfall: "Holding Pin 4 permanently high (or low) in overdrive mode is a 100% duty cycle — it burns out the LEDs within seconds.",
+    },
+    {
+      number: 5,
+      wireColorName: "Gray",
+      wireColorHex: "#9ca3af",
+      signal: "FE (Functional Earth)",
+      role: "Cable shield connection for EMC protection of the trigger line running to the flash LED controller.",
+      pitfall: "Leaving Pin 5 unconnected exposes the fast trigger edge to noise from nearby VFD or servo cabling, causing jitter.",
+    },
+  ],
+  fr: [
+    {
+      number: 1,
+      wireColorName: "Marron",
+      wireColorHex: "#7c4a1e",
+      signal: "+24 VDC",
+      role: "Alimentation +24VDC du contrôleur flash LED 24V. Dimensionnez-la sur le courant de crête overdrive, pas sur le courant continu moyen.",
+      pitfall: "Un contrôleur/alimentation 24V sous-dimensionné s'affaisse sous l'appel de courant de crête overdrive, ce qui déforme l'impulsion strobe.",
+    },
+    {
+      number: 2,
+      wireColorName: "Blanc",
+      wireColorHex: "#e2e8f0",
+      signal: "Gradation (0-10V / PWM)",
+      role: "Gradation analogique ou PWM en mode continu — ne sert pas à régler le courant overdrive, seulement la luminosité hors strobe.",
+      pitfall: "Un Pin 2 laissé flottant rend la luminosité indéfinie ; il n'intervient pas dans le rapport cyclique overdrive lui-même.",
+    },
+    {
+      number: 3,
+      wireColorName: "Bleu",
+      wireColorHex: "#2563eb",
+      signal: "0V / Masse",
+      role: "Référence 0V commune entre le contrôleur LED et la sortie trigger de la caméra.",
+      pitfall: "Ne jamais substituer le Pin 3 à la masse de blindage du Pin 5 : cela injecte du bruit dans le timing du front de trigger.",
+    },
+    {
+      number: 4,
+      wireColorName: "Noir",
+      wireColorHex: "#0f172a",
+      signal: "Trigger / Strobe",
+      role: "L'entrée strobe overdrive : un signal pulsé PNP (actif à l'état haut) ou NPN (actif à l'état bas) dont la largeur d'impulsion et la fréquence fixent le rapport cyclique.",
+      pitfall: "Maintenir le Pin 4 en continu à l'état haut (ou bas) en mode overdrive équivaut à un rapport cyclique de 100 % — cela grille les LED en quelques secondes.",
+    },
+    {
+      number: 5,
+      wireColorName: "Gris",
+      wireColorHex: "#9ca3af",
+      signal: "FE (Terre fonctionnelle)",
+      role: "Connexion au blindage du câble pour la protection CEM de la ligne trigger reliant le contrôleur flash LED 24V.",
+      pitfall: "Un Pin 5 non connecté expose le front de trigger rapide au bruit électrique des variateurs ou servomoteurs voisins, provoquant de la gigue.",
+    },
+  ],
+  de: [
+    {
+      number: 1,
+      wireColorName: "Braun",
+      wireColorHex: "#7c4a1e",
+      signal: "+24 VDC",
+      role: "+24VDC-Versorgung des Blitz-LED-Controllers. Dimensionieren Sie sie auf den Overdrive-Spitzenstrom, nicht auf den durchschnittlichen Dauerstrom.",
+      pitfall: "Ein unterdimensionierter 24V-Controller/Netzteil bricht unter der Overdrive-Spitzenstromlast ein und verformt den Strobe-Impuls.",
+    },
+    {
+      number: 2,
+      wireColorName: "Weiß",
+      wireColorHex: "#e2e8f0",
+      signal: "Dimmen (0-10V / PWM)",
+      role: "Analoge Dimmung oder PWM im Dauerlichtmodus — steuert nicht den Overdrive-Strom, nur die Helligkeit außerhalb des Strobes.",
+      pitfall: "Ein offener Pin 2 lässt die Helligkeit undefiniert; er spielt beim Overdrive-Tastverhältnis selbst keine Rolle.",
+    },
+    {
+      number: 3,
+      wireColorName: "Blau",
+      wireColorHex: "#2563eb",
+      signal: "0V / Masse",
+      role: "Gemeinsame 0V-Referenz zwischen LED-Controller und Kamera-Triggerausgang.",
+      pitfall: "Ersetzen Sie Pin 3 niemals durch die Schirmmasse von Pin 5 — das koppelt Störungen in das Timing der Triggerflanke ein.",
+    },
+    {
+      number: 4,
+      wireColorName: "Schwarz",
+      wireColorHex: "#0f172a",
+      signal: "Trigger / Blitz",
+      role: "Der Overdrive-Strobe-Eingang: ein gepulstes PNP- (active-high) oder NPN-Signal (active-low), dessen Impulsbreite und Frequenz das Tastverhältnis festlegen.",
+      pitfall: "Pin 4 im Overdrive-Modus dauerhaft auf High (oder Low) zu halten entspricht 100% Tastverhältnis — das brennt die LEDs innerhalb von Sekunden durch.",
+    },
+    {
+      number: 5,
+      wireColorName: "Grau",
+      wireColorHex: "#9ca3af",
+      signal: "FE (Funktionserde)",
+      role: "Kabelschirmanschluss zum EMV-Schutz der Triggerleitung zum 24V-Blitz-LED-Controller.",
+      pitfall: "Ein nicht angeschlossener Pin 5 setzt die schnelle Triggerflanke Störungen von nahegelegenen Frequenzumrichtern oder Servoantrieben aus und verursacht Jitter.",
+    },
+  ],
+  it: [
+    {
+      number: 1,
+      wireColorName: "Marrone",
+      wireColorHex: "#7c4a1e",
+      signal: "+24 VDC",
+      role: "Alimentazione +24VDC del controller flash LED 24V. Dimensionala sulla corrente di picco overdrive, non su quella continua media.",
+      pitfall: "Un controller/alimentatore 24V sottodimensionato cede sotto l'assorbimento di picco overdrive, deformando l'impulso strobo.",
+    },
+    {
+      number: 2,
+      wireColorName: "Bianco",
+      wireColorHex: "#e2e8f0",
+      signal: "Dimmerazione (0-10V / PWM)",
+      role: "Dimmerazione analogica o PWM in modalità continua — non imposta la corrente overdrive, solo la luminosità fuori strobo.",
+      pitfall: "Un Pin 2 lasciato flottante rende la luminosità indefinita; non interviene nel duty cycle overdrive stesso.",
+    },
+    {
+      number: 3,
+      wireColorName: "Blu",
+      wireColorHex: "#2563eb",
+      signal: "0V / Massa",
+      role: "Riferimento 0V comune tra il controller LED e l'uscita trigger della camera.",
+      pitfall: "Non sostituire mai il Pin 3 con la massa di schermatura del Pin 5: inietta disturbi nel timing del fronte di trigger.",
+    },
+    {
+      number: 4,
+      wireColorName: "Nero",
+      wireColorHex: "#0f172a",
+      signal: "Trigger / Strobo",
+      role: "L'ingresso strobo overdrive: un segnale pulsato PNP (attivo alto) o NPN (attivo basso) la cui larghezza di impulso e frequenza fissano il duty cycle.",
+      pitfall: "Mantenere il Pin 4 costantemente alto (o basso) in modalità overdrive equivale a un duty cycle del 100% — brucia i LED in pochi secondi.",
+    },
+    {
+      number: 5,
+      wireColorName: "Grigio",
+      wireColorHex: "#9ca3af",
+      signal: "FE (Terra funzionale)",
+      role: "Connessione alla schermatura del cavo per la protezione EMC della linea trigger verso il controller flash LED 24V.",
+      pitfall: "Un Pin 5 non collegato espone il fronte di trigger veloce ai disturbi elettrici di inverter o servoazionamenti vicini, causando jitter.",
+    },
+  ],
+};
+
+const M12_LABELS: Record<Locale, M12InteractiveLabels> = {
+  en: {
+    ariaLabel: "Interactive M12 5-pin A-coded connector focused on the Trigger/Strobe wiring for overdrive mode",
+    columnPin: "Pin",
+    columnWire: "Wire",
+    columnSignal: "Signal",
+    pitfallLabel: "Common pitfall:",
+    emptyStatePrompt: "Hover or click a pin — or a table row — to see its role in an overdrive strobe wiring setup.",
+  },
+  fr: {
+    ariaLabel: "Connecteur M12 5 broches (codage A) interactif centré sur le câblage Trigger/Strobe en mode overdrive",
+    columnPin: "Pin",
+    columnWire: "Fil",
+    columnSignal: "Signal",
+    pitfallLabel: "Piège fréquent :",
+    emptyStatePrompt: "Survolez ou cliquez sur un pin — ou une ligne du tableau — pour voir son rôle dans un câblage strobe overdrive.",
+  },
+  de: {
+    ariaLabel: "Interaktiver M12-5-polig-A-kodierter Steckverbinder mit Fokus auf die Trigger-/Strobe-Verdrahtung im Overdrive-Modus",
+    columnPin: "Pin",
+    columnWire: "Ader",
+    columnSignal: "Signal",
+    pitfallLabel: "Häufiger Fehler:",
+    emptyStatePrompt: "Bewegen Sie die Maus über einen Pin oder eine Tabellenzeile, um dessen Rolle bei der Overdrive-Strobe-Verdrahtung zu sehen.",
+  },
+  it: {
+    ariaLabel: "Connettore M12 a 5 pin (codifica A) interattivo focalizzato sul cablaggio Trigger/Strobo in modalità overdrive",
+    columnPin: "Pin",
+    columnWire: "Filo",
+    columnSignal: "Segnale",
+    pitfallLabel: "Errore comune:",
+    emptyStatePrompt: "Passa il mouse o clicca su un pin — o su una riga della tabella — per vedere il suo ruolo nel cablaggio strobo overdrive.",
+  },
+};
+
 export const ARTICLE = {
   en: {
     h1: "Strobe & Overdrive Lighting Setup for High-Speed Inspection",
@@ -81,20 +291,26 @@ export const ARTICLE = {
     overdriveTitle: "Why exceeding the duty cycle destroys LEDs",
     overdriveParagraph:
       "The duty cycle limit exists because LED junction heat only has the \"off\" portion of each cycle to dissipate. Push the duty cycle too high at overdrive current and the junction temperature climbs cycle after cycle instead of resetting — the LED doesn't fail instantly, but its phosphor degrades and its junction overheats until it fails open, typically within seconds to minutes of continuous over-limit operation, not gradually over months. Never leave Pin 4 held permanently high in overdrive mode — that's a 100% duty cycle, and it is the single fastest way to destroy an overdriven light.",
+    wiringTitle: "M12 Wiring for the Trigger Signal",
+    wiringParagraph:
+      "The overdrive duty cycle is set in software, but it starts with the physical wiring: on the standard M12 5-pin connector, Pin 4 carries the Trigger/Strobe signal that drives the 24V flash LED controller, while Pin 1 (+24VDC) must be sized for the overdrive peak current, not the average continuous current. Click a pin below to see its exact role in an overdrive strobe wiring setup.",
     relatedTitle: "Related wiring guides",
   },
   fr: {
-    h1: "Configurer un Éclairage Stroboscopique et Overdrive pour l'Inspection Rapide",
-    lead: "Ajustez la largeur d'impulsion et la fréquence de trigger ci-dessous pour voir le rapport cyclique résultant en temps réel — le chiffre unique qui détermine si un montage overdrive est sûr ou promis à la défaillance des LED.",
+    h1: "Éclairage Stroboscopique & Mode Overdrive pour la Vision Industrielle",
+    lead: "Ajustez la largeur d'impulsion et la fréquence de trigger ci-dessous pour voir le rapport cyclique résultant en temps réel — le chiffre unique qui détermine si un montage overdrive strobe est sûr ou promis à la défaillance des LED.",
     whatTitle: "Ce Qu'est Réellement l'Éclairage Overdrive",
     whatParagraph:
-      "Une LED peut supporter en toute sécurité un courant de crête bien supérieur à son maximum continu (DC), tant que ce courant ne circule que pendant une brève impulsion et que la puissance moyenne dissipée dans le temps reste dans les limites thermiques de la LED. L'éclairage overdrive exploite exactement cela : le driver pousse plusieurs fois le courant nominal continu dans les LED, mais seulement pendant la brève impulsion stroboscopique synchronisée à l'exposition de la caméra — échangeant une luminosité continue contre un flash bien plus intense et bien plus court, capable de figer un mouvement qu'un éclairage en mode continu ne pourrait jamais capturer.",
+      "Une LED peut supporter en toute sécurité un courant de crête bien supérieur à son maximum continu (DC), tant que ce courant ne circule que pendant une brève impulsion (temps de flash, ou pulse width) et que la puissance moyenne dissipée dans le temps reste dans les limites thermiques de la LED. L'éclairage stroboscopique vision en mode overdrive exploite exactement cela : le contrôleur flash LED 24V pousse plusieurs fois le courant nominal continu dans les LED, mais seulement pendant la brève impulsion stroboscopique synchronisée à l'exposition de la caméra — échangeant une luminosité continue contre un flash bien plus intense et bien plus court, capable de figer un mouvement qu'un éclairage en mode continu ne pourrait jamais capturer.",
     syncTitle: "Synchroniser l'Impulsion avec l'Exposition de la Caméra",
     syncParagraph:
-      "L'impulsion stroboscopique doit tomber à l'intérieur de la fenêtre d'exposition de la caméra, pas simplement à proximité. Ajoutez le délai trigger-vers-exposition de la caméra (vérifiez sa datasheet) au moment de synchroniser le front montant du Pin 4, et gardez une largeur d'impulsion plus courte que le temps d'exposition lui-même — une impulsion qui démarre avant l'ouverture de l'obturateur ou se termine avant sa fermeture ne fait que gaspiller de la lumière et produit une image inégalement éclairée et partiellement sombre, au lieu de l'image nette et figée que l'overdrive est censé fournir.",
+      "L'impulsion stroboscopique doit tomber à l'intérieur de la fenêtre d'exposition de la caméra, pas simplement à proximité. Ajoutez le délai trigger-vers-exposition de la caméra (vérifiez sa datasheet) au moment de synchroniser le front montant du Pin 4, et gardez un temps de flash (pulse width) plus court que le temps d'exposition lui-même — une impulsion qui démarre avant l'ouverture de l'obturateur ou se termine avant sa fermeture ne fait que gaspiller de la lumière et produit une image inégalement éclairée et partiellement sombre, au lieu de l'image nette et figée que l'overdrive est censé fournir.",
     overdriveTitle: "Pourquoi Dépasser le Rapport Cyclique Détruit les LED",
     overdriveParagraph:
-      "La limite de rapport cyclique existe parce que la chaleur de jonction de la LED ne dispose que de la portion « off » de chaque cycle pour se dissiper. Poussez le rapport cyclique trop haut au courant overdrive et la température de jonction grimpe cycle après cycle au lieu de se réinitialiser — la LED ne tombe pas en panne instantanément, mais son phosphore se dégrade et sa jonction surchauffe jusqu'à une défaillance en circuit ouvert, typiquement en quelques secondes à quelques minutes de fonctionnement continu au-delà de la limite, pas progressivement sur des mois. Ne laissez jamais le Pin 4 à l'état haut en continu en mode overdrive : c'est un rapport cyclique de 100 %, et c'est le moyen le plus rapide de détruire un éclairage overdrive.",
+      "La limite de rapport cyclique (duty cycle) existe parce que la chaleur de jonction de la LED ne dispose que de la portion « off » de chaque cycle pour se dissiper. Poussez le rapport cyclique trop haut au courant overdrive et la température de jonction grimpe cycle après cycle au lieu de se réinitialiser — la LED ne tombe pas en panne instantanément, mais son phosphore se dégrade et sa jonction surchauffe jusqu'à une défaillance en circuit ouvert, typiquement en quelques secondes à quelques minutes de fonctionnement continu au-delà de la limite, pas progressivement sur des mois. Ne laissez jamais le Pin 4 à l'état haut en continu en mode overdrive : c'est un rapport cyclique de 100 %, et c'est le moyen le plus rapide de détruire un éclairage overdrive.",
+    wiringTitle: "Câblage M12 du Signal Trigger",
+    wiringParagraph:
+      "Le rapport cyclique overdrive se règle en logiciel, mais il se joue en premier lieu sur le câblage physique : sur le connecteur M12 5 broches standard, le Pin 4 porte le signal Trigger/Strobe qui pilote le contrôleur flash LED 24V, tandis que le Pin 1 (+24VDC) doit être dimensionné pour le courant de crête overdrive et non pour le courant continu moyen. Cliquez sur un pin ci-dessous pour voir son rôle exact dans un montage stroboscopique overdrive.",
     relatedTitle: "Guides de câblage associés",
   },
   de: {
@@ -109,6 +325,9 @@ export const ARTICLE = {
     overdriveTitle: "Warum das Überschreiten des Tastverhältnisses LEDs Zerstört",
     overdriveParagraph:
       "Die Tastverhältnisgrenze existiert, weil die Sperrschichtwärme der LED nur den „Aus\"-Anteil jedes Zyklus zur Abfuhr hat. Treiben Sie das Tastverhältnis bei Overdrive-Strom zu hoch, steigt die Sperrschichttemperatur Zyklus für Zyklus, statt sich zurückzusetzen — die LED fällt nicht sofort aus, aber ihr Phosphor degradiert und ihre Sperrschicht überhitzt, bis sie als offener Stromkreis ausfällt, typischerweise innerhalb von Sekunden bis Minuten dauerhaften Über-Limit-Betriebs, nicht allmählich über Monate. Lassen Sie Pin 4 im Overdrive-Modus niemals dauerhaft auf High — das ist ein Tastverhältnis von 100 % und der schnellste Weg, eine übersteuerte Beleuchtung zu zerstören.",
+    wiringTitle: "M12-Verdrahtung für das Triggersignal",
+    wiringParagraph:
+      "Das Overdrive-Tastverhältnis wird per Software eingestellt, entscheidet sich aber zuerst bei der physischen Verdrahtung: Am Standard-M12-5-Pin-Steckverbinder führt Pin 4 das Trigger-/Blitzsignal, das den 24V-Blitz-LED-Controller ansteuert, während Pin 1 (+24VDC) auf den Overdrive-Spitzenstrom ausgelegt sein muss, nicht auf den durchschnittlichen Dauerstrom. Klicken Sie unten auf einen Pin, um seine genaue Rolle bei der Overdrive-Strobe-Verdrahtung zu sehen.",
     relatedTitle: "Verwandte Verkabelungsleitfäden",
   },
   it: {
@@ -123,6 +342,9 @@ export const ARTICLE = {
     overdriveTitle: "Perché Superare il Duty Cycle Distrugge i LED",
     overdriveParagraph:
       "Il limite di duty cycle esiste perché il calore di giunzione del LED ha a disposizione solo la porzione \"off\" di ogni ciclo per dissiparsi. Spingi il duty cycle troppo in alto a corrente overdrive e la temperatura di giunzione sale ciclo dopo ciclo invece di resettarsi — il LED non si guasta istantaneamente, ma il suo fosforo si degrada e la sua giunzione si surriscalda fino al guasto in circuito aperto, tipicamente entro secondi o minuti di funzionamento continuo oltre il limite, non gradualmente nell'arco di mesi. Non lasciare mai il Pin 4 costantemente alto in modalità overdrive: è un duty cycle del 100%, ed è il modo più rapido per distruggere un'illuminazione in overdrive.",
+    wiringTitle: "Cablaggio M12 del Segnale Trigger",
+    wiringParagraph:
+      "Il duty cycle overdrive si imposta via software, ma dipende innanzitutto dal cablaggio fisico: sul connettore M12 a 5 pin standard, il Pin 4 porta il segnale Trigger/Strobo che pilota il controller flash LED 24V, mentre il Pin 1 (+24VDC) deve essere dimensionato sulla corrente di picco overdrive, non su quella continua media. Clicca su un pin qui sotto per vedere il suo ruolo esatto in un cablaggio strobo overdrive.",
     relatedTitle: "Guide di cablaggio correlate",
   },
 } satisfies Record<
@@ -136,6 +358,8 @@ export const ARTICLE = {
     syncParagraph: string;
     overdriveTitle: string;
     overdriveParagraph: string;
+    wiringTitle: string;
+    wiringParagraph: string;
     relatedTitle: string;
   }
 >;
@@ -265,10 +489,24 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
           <h3 className="font-semibold text-red-900 dark:text-red-300">{t.overdriveTitle}</h3>
           <p className="mt-2 text-sm leading-relaxed text-red-800 dark:text-red-300/90">{t.overdriveParagraph}</p>
         </div>
+
+        <h2 className="mt-10 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+          {t.wiringTitle}
+        </h2>
+        <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">{t.wiringParagraph}</p>
+        <div className="mt-6">
+          <M12Interactive pins={M12_PINS[locale]} labels={M12_LABELS[locale]} />
+        </div>
       </section>
 
       {(locale === "en" || locale === "fr") && (
-        <div id="contact-form" className="mt-14 scroll-mt-8">
+        <div className="mt-14">
+          <SampleTestCTA locale={locale} />
+        </div>
+      )}
+
+      {(locale === "en" || locale === "fr") && (
+        <div id="contact-form" className="mt-8 scroll-mt-8">
           <ContactForm locale={locale} contextType="wiring" subjectContext={t.h1} />
         </div>
       )}
