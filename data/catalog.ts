@@ -969,6 +969,111 @@ export const catalog: Catalog = {
         },
       },
     },
+    {
+      slug: "retroeclairages-collimates",
+      siloSlug: "eclairages",
+      routeKey: "/eclairages/retroeclairages-collimates",
+      content: {
+        en: {
+          name: "Collimated Backlights",
+          h1: "Collimated Backlights for High-Precision Machine Vision Measurement",
+          metaTitle: "Collimated Backlight for High-Precision Machine Vision",
+          metaDescription:
+            "Collimated LED backlights give near-parallel light for sharp, distortion-free edges in precision gauging. Compare collimation angle, wavelength and size.",
+        },
+        fr: {
+          name: "Rétroéclairages Collimatés",
+          h1: "Rétroéclairages Collimatés Haute Précision pour la Vision Industrielle",
+          metaTitle: "Rétroéclairage Collimaté Haute Précision pour Vision",
+          metaDescription:
+            "Le rétroéclairage collimaté produit une lumière quasi parallèle pour des bords nets et sans distorsion en métrologie. Comparez angle, longueur d'onde et encombrement.",
+        },
+        de: {
+          name: "Kollimierte Hintergrundbeleuchtung",
+          h1: "Kollimierte Hintergrundbeleuchtung für Hochpräzise Bildverarbeitung",
+          metaTitle: "Kollimierte Hintergrundbeleuchtung | Präzise Maßprüfung",
+          metaDescription:
+            "Kollimierte LED-Hintergrundbeleuchtung liefert nahezu paralleles Licht für scharfe, verzerrungsfreie Kanten bei der Präzisionsvermessung.",
+        },
+        it: {
+          name: "Retroilluminazioni Collimate",
+          h1: "Retroilluminazioni Collimate ad Alta Precisione per la Visione Industriale",
+          metaTitle: "Retroilluminazione Collimata | Misura ad Alta Precisione",
+          metaDescription:
+            "La retroilluminazione collimata fornisce luce quasi parallela per bordi nitidi e privi di distorsione nella misurazione di precisione.",
+        },
+      },
+    },
+    {
+      slug: "supports-orientables-swivel",
+      siloSlug: "cablage-integration",
+      routeKey: "/cablage-integration/supports-orientables-swivel",
+      content: {
+        en: {
+          name: "Swivel Mounts & Brackets",
+          h1: "Swivel Mounts & Orientable Brackets for Machine Vision Lighting",
+          metaTitle: "Swivel Mounts & Brackets for Machine Vision Lighting",
+          metaDescription:
+            "Swivel brackets and orientable mounts set the exact lighting angle for brightfield or darkfield without moving the camera. Compare swivel, ball-joint and arm types.",
+        },
+        fr: {
+          name: "Supports Orientables (Swivel)",
+          h1: "Supports Orientables et Fixations Swivel pour l'Éclairage de Vision Industrielle",
+          metaTitle: "Supports Orientables & Fixations Swivel pour Éclairage Vision",
+          metaDescription:
+            "Supports orientables et brackets swivel : réglez l'angle d'éclairage exact sans bouger la caméra. Comparez rotule, swivel et bras articulé.",
+        },
+        de: {
+          name: "Schwenkhalterungen (Swivel)",
+          h1: "Schwenkhalterungen und Orientierbare Halter für die Vision-Beleuchtung",
+          metaTitle: "Schwenkhalterungen & Halter für Vision-Beleuchtung",
+          metaDescription:
+            "Schwenkbare Halter stellen den genauen Beleuchtungswinkel für Hellfeld oder Dunkelfeld ein, ohne die Kamera zu bewegen. Swivel, Kugelgelenk und Arm im Vergleich.",
+        },
+        it: {
+          name: "Supporti Orientabili (Swivel)",
+          h1: "Supporti Orientabili e Staffe Swivel per l'Illuminazione di Visione Industriale",
+          metaTitle: "Supporti Orientabili & Staffe Swivel per Illuminazione Vision",
+          metaDescription:
+            "Staffe orientabili e supporti swivel impostano l'angolo di illuminazione esatto senza spostare la camera. Confronto tra snodo sferico, swivel e braccio.",
+        },
+      },
+    },
+    {
+      slug: "eclairage-camera-matricielle",
+      siloSlug: "guides-optiques",
+      routeKey: "/guides-optiques/eclairage-camera-matricielle",
+      content: {
+        en: {
+          name: "Lighting for Area Scan Cameras",
+          h1: "Lighting for Area Scan Cameras: How to Choose the Right Illumination",
+          metaTitle: "Lighting for Area Scan Cameras | Machine Vision Guide",
+          metaDescription:
+            "Choosing lighting for an area scan camera: match field of view, exposure and geometry to the sensor. Continuous vs strobe, area-scan vs line-scan compared.",
+        },
+        fr: {
+          name: "Éclairage pour Caméras Matricielles",
+          h1: "Éclairage pour Caméras Matricielles (Area Scan) : Comment Bien Choisir",
+          metaTitle: "Éclairage pour Caméra Matricielle | Guide Vision",
+          metaDescription:
+            "Choisir l'éclairage d'une caméra matricielle (area scan) : accorder champ, temps de pose et géométrie au capteur. Continu vs strobe, matriciel vs linéaire.",
+        },
+        de: {
+          name: "Beleuchtung für Flächenkameras",
+          h1: "Beleuchtung für Flächenkameras (Area Scan): Die Richtige Wahl Treffen",
+          metaTitle: "Beleuchtung für Flächenkameras | Machine-Vision-Leitfaden",
+          metaDescription:
+            "Beleuchtung für eine Flächenkamera wählen: Sichtfeld, Belichtung und Geometrie auf den Sensor abstimmen. Dauerlicht vs. Blitz, Flächen- vs. Zeilenkamera.",
+        },
+        it: {
+          name: "Illuminazione per Camere Matriciali",
+          h1: "Illuminazione per Camere Matriciali (Area Scan): Come Scegliere",
+          metaTitle: "Illuminazione per Camere Matriciali | Guida Visione Industriale",
+          metaDescription:
+            "Scegliere l'illuminazione per una camera matriciale (area scan): sensore, campo visivo, esposizione e geometria. Continua vs strobo, matriciale vs lineare.",
+        },
+      },
+    },
   ],
 
   pages: [

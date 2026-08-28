@@ -45,7 +45,16 @@ interface OpticalChallenge {
   href: string;
 }
 
+interface ServiceStep {
+  title: string;
+  body: string;
+}
+
 interface RichHomeContent {
+  serviceTitle: string;
+  serviceIntro: string;
+  serviceSteps: ServiceStep[];
+  serviceCtaLabel: string;
   methodologyTitle: string;
   methodologyIntro: string;
   methodologySteps: MethodologyStep[];
@@ -55,8 +64,29 @@ interface RichHomeContent {
   siloSectionTitle: string;
 }
 
+/** Anchor the home CTA lands on — the lighting-diagnostic lead form lives on this page. */
+const DIAGNOSTIC_HREF = "/guides-optiques/eclairage-camera-matricielle#contact-form";
+
 const RICH_HOME: Record<RichLocale, RichHomeContent> = {
   en: {
+    serviceTitle: "An Evaluation & Matchmaking Service, Not a Shop",
+    serviceIntro:
+      "We hold no stock and sell no hardware. We qualify your lighting need and connect you with the manufacturers best placed to fill it.",
+    serviceSteps: [
+      {
+        title: "1. Free Optical Diagnostic",
+        body: "Send us the part, the defect and a photo. A vision engineer analyses the case and specifies the lighting geometry, wavelength and mode that will actually work.",
+      },
+      {
+        title: "2. Matched to Manufacturers",
+        body: "We put that specification in front of the manufacturers and integrators whose catalogue fits it — not a single reseller's stock.",
+      },
+      {
+        title: "3. Three Comparable Quotes",
+        body: "You receive up to three quotes on the same specification, so you can compare on price, lead time and support instead of guessing.",
+      },
+    ],
+    serviceCtaLabel: "Get a Free Lighting Diagnostic & 3 Quotes",
     methodologyTitle: "Our Optical Analysis Methodology",
     methodologyIntro:
       "Before recommending a product, we work through the same three-step analysis on every application — the order matters, because each step constrains the next.",
@@ -104,6 +134,24 @@ const RICH_HOME: Record<RichLocale, RichHomeContent> = {
     siloSectionTitle: "Explore by Silo",
   },
   fr: {
+    serviceTitle: "Un Service d'Évaluation et de Mise en Relation, Pas un Revendeur",
+    serviceIntro:
+      "Nous ne détenons aucun stock et ne vendons aucun matériel. Nous qualifions votre besoin d'éclairage et vous mettons en relation avec les fabricants les mieux placés pour y répondre.",
+    serviceSteps: [
+      {
+        title: "1. Diagnostic Optique Gratuit",
+        body: "Envoyez-nous la pièce, le défaut et une photo. Un ingénieur vision analyse le cas et spécifie la géométrie d'éclairage, la longueur d'onde et le mode qui fonctionneront réellement.",
+      },
+      {
+        title: "2. Mise en Relation avec les Fabricants",
+        body: "Nous transmettons cette spécification aux fabricants et intégrateurs dont le catalogue y correspond — et non au stock d'un seul revendeur.",
+      },
+      {
+        title: "3. Trois Devis Comparables",
+        body: "Vous recevez jusqu'à trois devis sur la même spécification, pour comparer prix, délai et support au lieu d'avancer à l'aveugle.",
+      },
+    ],
+    serviceCtaLabel: "Obtenir un Diagnostic Gratuit & 3 Devis",
     methodologyTitle: "Notre Méthodologie d'Analyse Optique",
     methodologyIntro:
       "Avant de recommander un produit, nous appliquons la même analyse en trois étapes à chaque application — l'ordre compte, car chaque étape contraint la suivante.",
@@ -188,6 +236,30 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
           <div className="mt-10">
             <ReassuranceBar locale={locale as "en" | "fr"} variant="full" />
           </div>
+
+          <section className="mt-20">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
+              {rich.serviceTitle}
+            </h2>
+            <p className="mt-3 max-w-2xl text-slate-600 dark:text-slate-300">{rich.serviceIntro}</p>
+            <div className="mt-8 grid gap-6 sm:grid-cols-3">
+              {rich.serviceSteps.map((step) => (
+                <div
+                  key={step.title}
+                  className="rounded-xl border border-slate-200 p-6 dark:border-slate-800"
+                >
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100">{step.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{step.body}</p>
+                </div>
+              ))}
+            </div>
+            <Link
+              href={DIAGNOSTIC_HREF as never}
+              className="mt-8 inline-flex rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-amber-400"
+            >
+              {rich.serviceCtaLabel}
+            </Link>
+          </section>
 
           <section className="mt-20">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">

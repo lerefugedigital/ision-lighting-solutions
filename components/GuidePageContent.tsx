@@ -35,6 +35,8 @@ interface GuidePageContentProps {
   productSegments: Segment[];
   toolSegments: Segment[];
   locale: Locale;
+  /** Overrides the default optical_guide ContactForm rendered in the #contact-form slot. */
+  contactSlot?: ReactNode;
 }
 
 function SegmentLinkGrid({ segments, locale }: { segments: Segment[]; locale: Locale }) {
@@ -61,6 +63,7 @@ export function GuidePageContent({
   productSegments,
   toolSegments,
   locale,
+  contactSlot,
 }: GuidePageContentProps) {
   if (!rich) {
     return (
@@ -141,7 +144,9 @@ export function GuidePageContent({
       </div>
 
       <div id="contact-form" className="mt-8 scroll-mt-8">
-        <ContactForm locale={locale as "en" | "fr"} contextType="optical_guide" subjectContext={rich.h1} />
+        {contactSlot ?? (
+          <ContactForm locale={locale as "en" | "fr"} contextType="optical_guide" subjectContext={rich.h1} />
+        )}
       </div>
 
       {productSegments.length > 0 && (
