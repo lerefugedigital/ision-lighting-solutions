@@ -562,7 +562,7 @@ export const catalog: Catalog = {
         fr: {
           name: "Éclairage Stroboscopique & Overdrive",
           h1: "Éclairage Stroboscopique & Mode Overdrive pour la Vision Industrielle",
-          metaTitle: "Éclairage Stroboscopique & Overdrive | Vision Lighting",
+          metaTitle: "Éclairage Stroboscopique & Mode Overdrive Vision Industrielle",
           metaDescription:
             "Comment configurer les modes stroboscopique et overdrive pour augmenter la luminosité crête LED et figer le mouvement sur des lignes rapides.",
         },
@@ -809,7 +809,7 @@ export const catalog: Catalog = {
         fr: {
           name: "Éclairage Inox IP69K Pharma & Agroalimentaire",
           h1: "Éclairage LED Inox IP69K pour Milieux Pharmaceutiques et Agroalimentaires",
-          metaTitle: "Éclairage Pharmaceutique Inox IP69K | Environnements Corrosifs",
+          metaTitle: "Éclairage LED Inox IP69K Agroalimentaire & Pharmaceutique",
           metaDescription:
             "Pourquoi un éclairage aluminium standard échoue en environnement corrosif pharmaceutique ou agroalimentaire, et ce que certifient IP69K, CIP/SIP et l'inox 316L.",
         },
@@ -914,7 +914,7 @@ export const catalog: Catalog = {
         fr: {
           name: "Brightfield vs Darkfield",
           h1: "Fond Clair vs Fond Noir (Brightfield vs Darkfield) en Vision Industrielle",
-          metaTitle: "Brightfield vs Darkfield | Éclairage Fond Clair Fond Noir Vision",
+          metaTitle: "Fond Clair vs Fond Noir (Brightfield vs Darkfield) | Guide Optique",
           metaDescription:
             "Pourquoi une même rayure apparaît claire ou sombre selon l'angle d'éclairage, et comment choisir entre fond clair et fond noir pour la détection de rayures surface.",
         },
