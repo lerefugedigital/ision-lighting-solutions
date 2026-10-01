@@ -43,7 +43,7 @@ interface FormState {
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const CONTACT_EMAIL = "sourcing@vision-lighting-solutions.com";
+const CONTACT_EMAIL = "contact@vision-lighting-solutions.com";
 
 const INITIAL_STATE: FormState = {
   name: "",

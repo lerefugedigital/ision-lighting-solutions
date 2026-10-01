@@ -28,7 +28,7 @@ async function logSubmissionLocally(entry: Record<string, unknown>) {
   }
 }
 
-const CONTACT_EMAIL = process.env.CONTACT_EMAIL ?? "sourcing@vision-lighting-solutions.com";
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL ?? "contact@vision-lighting-solutions.com";
 // Sends from the Resend account's verified domain (vision-lighting-solutions.com itself isn't
 // verified on this account's free tier) — override via FROM_EMAIL once a dedicated domain/account
 // is set up. The display name still reads "Vision Lighting Solutions" regardless of the address.
