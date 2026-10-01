@@ -3,7 +3,13 @@
 import { useId, useState, type FormEvent } from "react";
 import { trackLeadGenerated } from "@/lib/gtag";
 
-export type ContactFormContextType = "product" | "equivalence" | "wiring" | "optical_guide" | "general";
+export type ContactFormContextType =
+  | "product"
+  | "equivalence"
+  | "wiring"
+  | "optical_guide"
+  | "general"
+  | "lighting_diagnostic";
 
 /** Maps each form context to its silo, so the GA4 event tells apart submissions coming
  *  from Silo 1 (product), Silo 2 (equivalence), Silo 3 (wiring) and Silo 4 (optical_guide). */
@@ -13,6 +19,7 @@ const CONTEXT_TO_SILO: Record<ContactFormContextType, string> = {
   wiring: "cablage-integration",
   optical_guide: "guides-optiques",
   general: "general",
+  lighting_diagnostic: "lighting_diagnostic",
 };
 
 export interface ContactFormProps {
@@ -26,6 +33,7 @@ export interface ContactFormProps {
 
 type OperatingMode = "continuous" | "strobe_overdrive" | "undetermined";
 type MaterialType = "metal" | "plastic" | "glass" | "film_packaging" | "other";
+type DefectType = "scratches" | "edges" | "presence_absence" | "barcode" | "other";
 type SubmitStatus = "idle" | "submitting" | "success" | "error";
 
 interface FormState {
@@ -38,12 +46,18 @@ interface FormState {
   operatingMode: OperatingMode | "";
   cameraModel: string;
   materialType: MaterialType | "";
+  /** Only used by the "lighting_diagnostic" context — the application / defect to inspect. */
+  defectType: DefectType | "";
+  /** Optional part photo, only offered on the "lighting_diagnostic" context. Sent as multipart. */
+  partPhoto: File | null;
   /** Honeypot — real users never fill this; bots that do get silently discarded server-side. */
   website: string;
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const CONTACT_EMAIL = "sourcing@vision-lighting-solutions.com";
+const CONTACT_EMAIL = "contact@vision-lighting-solutions.com";
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+const ACCEPTED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 const INITIAL_STATE: FormState = {
   name: "",
@@ -55,6 +69,8 @@ const INITIAL_STATE: FormState = {
   operatingMode: "",
   cameraModel: "",
   materialType: "",
+  defectType: "",
+  partPhoto: null,
   website: "",
 };
 
@@ -70,6 +86,8 @@ const TEXT = {
       operatingMode: "Operating Mode",
       cameraModel: "Camera or Controller Model Used",
       materialType: "Material / Part Type to Inspect",
+      defectType: "Application / Defect to Inspect",
+      partPhoto: "Photo of the part (optional)",
     },
     placeholders: {
       name: "Jane Smith",
@@ -92,6 +110,14 @@ const TEXT = {
       plastic: "Plastic",
       glass: "Glass",
       film_packaging: "Film / Packaging",
+      other: "Other",
+    },
+    defectTypeOptions: {
+      placeholder: "Select…",
+      scratches: "Scratches / marks",
+      edges: "Edges / contours",
+      presence_absence: "Presence / absence",
+      barcode: "Barcode / code reading",
       other: "Other",
     },
     context: {
@@ -118,8 +144,17 @@ const TEXT = {
         title: "Contact Our Team",
         description: "Tell us about your project and one of our engineers will get back to you within 24 business hours.",
       },
+      lighting_diagnostic: {
+        title: "Get a Free Lighting Diagnostic + 3 Manufacturer Quotes",
+        description:
+          "Tell us the part and the defect to inspect. One of our vision engineers returns a lighting recommendation and puts 3 manufacturers in competition for your quote — free, within 24 business hours.",
+      },
     },
     submit: "Send My Request",
+    submitDiagnostic: "Get My Free Diagnostic & 3 Quotes",
+    partPhotoHint: "JPG, PNG or WebP — 5 MB max.",
+    fileTooLarge: "Image must be 5 MB or smaller.",
+    fileWrongType: "Please upload a JPG, PNG or WebP image.",
     submitting: "Sending…",
     success:
       "Your study/quote request has been sent to our application lab. An engineer will get back to you within 2 business hours.",
@@ -141,6 +176,8 @@ const TEXT = {
       operatingMode: "Mode de Fonctionnement",
       cameraModel: "Modèle de Caméra ou Contrôleur Utilisé",
       materialType: "Type de Matériau / Pièce à Contrôler",
+      defectType: "Application / Défaut à Inspecter",
+      partPhoto: "Photo de la pièce (optionnel)",
     },
     placeholders: {
       name: "Jean Dupont",
@@ -163,6 +200,14 @@ const TEXT = {
       plastic: "Plastique",
       glass: "Verre",
       film_packaging: "Film / Emballage",
+      other: "Autre",
+    },
+    defectTypeOptions: {
+      placeholder: "Sélectionner…",
+      scratches: "Rayures / marques",
+      edges: "Contours / arêtes",
+      presence_absence: "Présence / absence",
+      barcode: "Code-barres / lecture de code",
       other: "Autre",
     },
     context: {
@@ -189,8 +234,17 @@ const TEXT = {
         title: "Contacter Notre Équipe",
         description: "Parlez-nous de votre projet : un de nos ingénieurs vous répond sous 24h ouvrées.",
       },
+      lighting_diagnostic: {
+        title: "Obtenir un Diagnostic d'Éclairage Gratuit & 3 Devis de Fabricants",
+        description:
+          "Indiquez-nous la pièce et le défaut à inspecter. Un de nos ingénieurs vision vous renvoie une préconisation d'éclairage et met 3 fabricants en concurrence pour votre devis — gratuitement, sous 24h ouvrées.",
+      },
     },
     submit: "Envoyer Ma Demande",
+    submitDiagnostic: "Obtenir Mon Diagnostic Gratuit & 3 Devis",
+    partPhotoHint: "JPG, PNG ou WebP — 5 Mo max.",
+    fileTooLarge: "L'image doit faire 5 Mo ou moins.",
+    fileWrongType: "Merci d'importer une image JPG, PNG ou WebP.",
     submitting: "Envoi en cours…",
     success:
       "Votre demande d'étude/devis a bien été transmise à notre laboratoire d'application. Un ingénieur vous recontacte sous 2h ouvrées.",
@@ -226,6 +280,12 @@ function buildMailtoHref(params: {
     contextType === "optical_guide" && state.materialType
       ? `${t.fields.materialType}: ${t.materialTypeOptions[state.materialType]}`
       : null,
+    contextType === "lighting_diagnostic" && state.defectType
+      ? `${t.fields.defectType}: ${t.defectTypeOptions[state.defectType]}`
+      : null,
+    contextType === "lighting_diagnostic" && state.materialType
+      ? `${t.fields.materialType}: ${t.materialTypeOptions[state.materialType]}`
+      : null,
     "",
     `${t.fields.message}:`,
     state.message,
@@ -251,7 +311,15 @@ export function ContactForm({ locale, contextType, subjectContext, titleOverride
     if (!state.email.trim()) errors.email = t.requiredField;
     else if (!EMAIL_REGEX.test(state.email.trim())) errors.email = t.invalidEmail;
     if (!state.company.trim()) errors.company = t.requiredField;
-    if (!state.message.trim()) errors.message = t.requiredField;
+    if (contextType === "lighting_diagnostic") {
+      if (!state.defectType) errors.defectType = t.requiredField;
+      if (state.partPhoto) {
+        if (state.partPhoto.size > MAX_PHOTO_BYTES) errors.partPhoto = t.fileTooLarge;
+        else if (!ACCEPTED_PHOTO_TYPES.includes(state.partPhoto.type)) errors.partPhoto = t.fileWrongType;
+      }
+    } else if (!state.message.trim()) {
+      errors.message = t.requiredField;
+    }
     return errors;
   }
 
@@ -265,17 +333,24 @@ export function ContactForm({ locale, contextType, subjectContext, titleOverride
     const resolvedSubject = subjectContext ?? t.context[contextType].title;
     const sourceUrl = window.location.href;
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...state,
-          contextType,
-          subjectContext: resolvedSubject,
-          locale,
-          source_url: sourceUrl,
-        }),
-      });
+      const { partPhoto, ...fields } = state;
+      const meta = { contextType, subjectContext: resolvedSubject, locale, source_url: sourceUrl };
+      let res: Response;
+      if (partPhoto) {
+        // A part photo forces multipart/form-data so the file rides along with the fields.
+        const fd = new FormData();
+        for (const [key, value] of Object.entries({ ...fields, ...meta })) {
+          if (typeof value === "string") fd.append(key, value);
+        }
+        fd.append("partPhoto", partPhoto);
+        res = await fetch("/api/contact", { method: "POST", body: fd });
+      } else {
+        res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...fields, ...meta }),
+        });
+      }
       if (!res.ok) throw new Error("Request failed");
       setStatus("success");
       trackLeadGenerated({
@@ -463,7 +538,35 @@ export function ContactForm({ locale, contextType, subjectContext, titleOverride
             </div>
           )}
 
-          {contextType === "optical_guide" && (
+          {contextType === "lighting_diagnostic" && (
+            <div className="sm:col-span-2">
+              <label htmlFor={`${idPrefix}-defectType`} className={labelClasses}>
+                {t.fields.defectType} <span className="text-red-500">*</span>
+              </label>
+              <select
+                id={`${idPrefix}-defectType`}
+                value={state.defectType}
+                onChange={(e) => setField("defectType", e.target.value as DefectType | "")}
+                className={inputClasses}
+                aria-invalid={Boolean(fieldErrors.defectType)}
+                aria-describedby={fieldErrors.defectType ? `${idPrefix}-defectType-error` : undefined}
+              >
+                <option value="">{t.defectTypeOptions.placeholder}</option>
+                <option value="scratches">{t.defectTypeOptions.scratches}</option>
+                <option value="edges">{t.defectTypeOptions.edges}</option>
+                <option value="presence_absence">{t.defectTypeOptions.presence_absence}</option>
+                <option value="barcode">{t.defectTypeOptions.barcode}</option>
+                <option value="other">{t.defectTypeOptions.other}</option>
+              </select>
+              {fieldErrors.defectType && (
+                <p id={`${idPrefix}-defectType-error`} className={errorClasses}>
+                  {fieldErrors.defectType}
+                </p>
+              )}
+            </div>
+          )}
+
+          {(contextType === "optical_guide" || contextType === "lighting_diagnostic") && (
             <div className="sm:col-span-2">
               <label htmlFor={`${idPrefix}-materialType`} className={labelClasses}>
                 {t.fields.materialType}
@@ -484,9 +587,37 @@ export function ContactForm({ locale, contextType, subjectContext, titleOverride
             </div>
           )}
 
+          {contextType === "lighting_diagnostic" && (
+            <div className="sm:col-span-2">
+              <label htmlFor={`${idPrefix}-partPhoto`} className={labelClasses}>
+                {t.fields.partPhoto}
+              </label>
+              <input
+                id={`${idPrefix}-partPhoto`}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => setField("partPhoto", e.target.files?.[0] ?? null)}
+                className="mt-1 w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-800 hover:file:bg-slate-300 dark:text-slate-300 dark:file:bg-slate-800 dark:file:text-slate-100"
+                aria-invalid={Boolean(fieldErrors.partPhoto)}
+                aria-describedby={
+                  fieldErrors.partPhoto ? `${idPrefix}-partPhoto-error` : `${idPrefix}-partPhoto-hint`
+                }
+              />
+              <p id={`${idPrefix}-partPhoto-hint`} className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                {t.partPhotoHint}
+              </p>
+              {fieldErrors.partPhoto && (
+                <p id={`${idPrefix}-partPhoto-error`} className={errorClasses}>
+                  {fieldErrors.partPhoto}
+                </p>
+              )}
+            </div>
+          )}
+
           <div className="sm:col-span-2">
             <label htmlFor={`${idPrefix}-message`} className={labelClasses}>
-              {t.fields.message} <span className="text-red-500">*</span>
+              {t.fields.message}{" "}
+              {contextType !== "lighting_diagnostic" && <span className="text-red-500">*</span>}
             </label>
             <textarea
               id={`${idPrefix}-message`}
@@ -517,7 +648,11 @@ export function ContactForm({ locale, contextType, subjectContext, titleOverride
           disabled={status === "submitting"}
           className="mt-6 inline-flex rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {status === "submitting" ? t.submitting : t.submit}
+          {status === "submitting"
+            ? t.submitting
+            : contextType === "lighting_diagnostic"
+              ? t.submitDiagnostic
+              : t.submit}
         </button>
 
         <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">{t.gdpr}</p>

@@ -147,7 +147,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   },
   fr: {
     h1: "Éclairage LED Inox IP69K pour Milieux Pharmaceutiques et Agroalimentaires",
-    lead: "Un lavage au jet ou un cycle de stérilisation vapeur est un test bien plus sévère que la moindre éclaboussure ou poussière que verra jamais une caméra de bureau ou d'entrepôt — et la plupart des éclairages industriels, y compris beaucoup d'éclairages pharmaceutiques, n'ont jamais été conçus pour y survivre.",
+    lead: "Un lavage au jet ou un cycle de stérilisation vapeur est un test bien plus sévère que la moindre éclaboussure ou poussière que verra jamais une caméra de bureau ou d'entrepôt — et la plupart des éclairages industriels, y compris beaucoup d'éclairages pharmaceutiques, n'ont jamais été conçus pour y survivre. Cette page aborde l'inspection optique pharmaceutique, le nettoyage CIP SIP, l'inox 316L et les exigences d'un environnement corrosif lavable.",
     principlesTitle: "Éclairage Inox IP69K : Comprendre le Problème et la Solution",
     problemTitle: "Le Problème Physique",
     problemParagraph:
@@ -207,7 +207,20 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         datePublished: PUBLISHED_DATE,
         dateModified: MODIFIED_DATE,
-        keywords: ["IP69K", "stainless steel lighting", "washdown", "hygienic design", "316L", "pharmaceutical inspection optics", "CIP/SIP", "corrosive environment lighting"],
+        keywords: [
+          "IP69K",
+          "stainless steel lighting",
+          "washdown",
+          "hygienic design",
+          "316L",
+          "pharmaceutical inspection optics",
+          "CIP/SIP",
+          "corrosive environment lighting",
+          "inspection optique pharmaceutique",
+          "nettoyage CIP SIP",
+          "inox 316L",
+          "environnement corrosif lavable",
+        ],
       })
     : null;
 
