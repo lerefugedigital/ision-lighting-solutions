@@ -55,7 +55,7 @@ interface FormState {
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const CONTACT_EMAIL = "sourcing@vision-lighting-solutions.com";
+const CONTACT_EMAIL = "contact@vision-lighting-solutions.com";
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const ACCEPTED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
