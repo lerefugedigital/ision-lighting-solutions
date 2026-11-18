@@ -25,9 +25,9 @@ const CONTEXT_TO_SILO: Record<ContactFormContextType, string> = {
 export interface ContactFormProps {
   locale: "en" | "fr";
   contextType: ContactFormContextType;
-  /** Short label for what this form is about, e.g. "LED Bar Lights" or "M12 5-Pin Wiring" — used in the email subject and the mailto fallback. */
+  /** Short label for what this form is about, e.g. "LED Bar Lights" or "M12 5-Pin Wiring" — used in the lead email subject. */
   subjectContext?: string;
-  /** Overrides the displayed H2 only; the mailto/email subject default still uses the context's own title. */
+  /** Overrides the displayed H2 only; the email subject default still uses the context's own title. */
   titleOverride?: string;
 }
 
@@ -55,7 +55,6 @@ interface FormState {
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const CONTACT_EMAIL = "contact@vision-lighting-solutions.com";
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const ACCEPTED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
@@ -159,9 +158,8 @@ const TEXT = {
     success:
       "Your study/quote request has been sent to our application lab. An engineer will get back to you within 2 business hours.",
     sendAnother: "Send another request",
-    error: "Something went wrong sending your request. Please try again, or use the direct email option below.",
+    error: "Something went wrong sending your request. Please try again in a few moments.",
     gdpr: "By submitting this form, you agree that your data will be processed to respond to your industrial inquiry.",
-    mailtoLabel: "Send by direct email instead",
     requiredField: "This field is required.",
     invalidEmail: "Please enter a valid professional email address.",
   },
@@ -249,50 +247,13 @@ const TEXT = {
     success:
       "Votre demande d'étude/devis a bien été transmise à notre laboratoire d'application. Un ingénieur vous recontacte sous 2h ouvrées.",
     sendAnother: "Envoyer une nouvelle demande",
-    error: "Une erreur est survenue lors de l'envoi. Réessayez, ou utilisez l'option d'e-mail direct ci-dessous.",
+    error: "Une erreur est survenue lors de l'envoi. Merci de réessayer dans quelques instants.",
     gdpr:
       "En soumettant ce formulaire, vous acceptez que vos données soient traitées pour répondre à votre demande industrielle.",
-    mailtoLabel: "Envoyer par e-mail direct",
     requiredField: "Ce champ est requis.",
     invalidEmail: "Merci de saisir une adresse email professionnelle valide.",
   },
 } as const;
-
-function buildMailtoHref(params: {
-  state: FormState;
-  contextType: ContactFormContextType;
-  subjectContext?: string;
-  t: (typeof TEXT)[keyof typeof TEXT];
-}): string {
-  const { state, contextType, subjectContext, t } = params;
-  const subject = `[Vision Lighting Solutions] ${subjectContext ?? t.context[contextType].title}`;
-
-  const lines = [
-    `${t.fields.name}: ${state.name}`,
-    `${t.fields.email}: ${state.email}`,
-    `${t.fields.company}: ${state.company}`,
-    state.phone ? `${t.fields.phone}: ${state.phone}` : null,
-    contextType === "equivalence" && state.competitorRef ? `${t.fields.competitorRef}: ${state.competitorRef}` : null,
-    contextType === "product" && state.operatingMode
-      ? `${t.fields.operatingMode}: ${t.operatingModeOptions[state.operatingMode]}`
-      : null,
-    contextType === "wiring" && state.cameraModel ? `${t.fields.cameraModel}: ${state.cameraModel}` : null,
-    contextType === "optical_guide" && state.materialType
-      ? `${t.fields.materialType}: ${t.materialTypeOptions[state.materialType]}`
-      : null,
-    contextType === "lighting_diagnostic" && state.defectType
-      ? `${t.fields.defectType}: ${t.defectTypeOptions[state.defectType]}`
-      : null,
-    contextType === "lighting_diagnostic" && state.materialType
-      ? `${t.fields.materialType}: ${t.materialTypeOptions[state.materialType]}`
-      : null,
-    "",
-    `${t.fields.message}:`,
-    state.message,
-  ].filter((line): line is string => line !== null);
-
-  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
-}
 
 export function ContactForm({ locale, contextType, subjectContext, titleOverride }: ContactFormProps) {
   const t = TEXT[locale];
@@ -365,7 +326,6 @@ export function ContactForm({ locale, contextType, subjectContext, titleOverride
     }
   }
 
-  const mailtoHref = buildMailtoHref({ state, contextType, subjectContext, t });
   const contextCopy = t.context[contextType];
 
   const inputClasses =
@@ -656,13 +616,6 @@ export function ContactForm({ locale, contextType, subjectContext, titleOverride
         </button>
 
         <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">{t.gdpr}</p>
-
-        <a
-          href={mailtoHref}
-          className="mt-4 inline-block text-sm font-medium text-amber-700 underline hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300"
-        >
-          {t.mailtoLabel}
-        </a>
       </form>
     </div>
   );

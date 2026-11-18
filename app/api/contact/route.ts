@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { SITE_URL } from "@/lib/site-config";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -28,7 +29,8 @@ async function logSubmissionLocally(entry: Record<string, unknown>) {
   }
 }
 
-const CONTACT_EMAIL = process.env.CONTACT_EMAIL ?? "contact@vision-lighting-solutions.com";
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL ?? "gaetan@lerefugedigital.com";
+const SITE_HOST = new URL(SITE_URL).host;
 // Sends from the Resend account's verified domain (vision-lighting-solutions.com itself isn't
 // verified on this account's free tier) — override via FROM_EMAIL once a dedicated domain/account
 // is set up. The display name still reads "Vision Lighting Solutions" regardless of the address.
@@ -61,13 +63,21 @@ function buildEmailHtml(params: {
       label
     )}</td><td style="padding:4px 0;color:#0f172a;font-size:14px;">${escapeHtml(value)}</td></tr>`;
 
+  const linkRow = (label: string, url: string) =>
+    `<tr><td style="padding:4px 12px 4px 0;color:#64748b;font-size:13px;white-space:nowrap;vertical-align:top;">${escapeHtml(
+      label
+    )}</td><td style="padding:4px 0;font-size:14px;"><a href="${escapeHtml(url)}" style="color:#b45309;">${escapeHtml(
+      url
+    )}</a></td></tr>`;
+
   const contactRows = [
+    linkRow("Site", SITE_URL),
     row("Nom", params.name || "—"),
     row("Email", params.email),
     row("Société", params.company || "—"),
     row("Téléphone", params.phone || "—"),
     row("Langue", params.localeLabel),
-    row("Page source", params.sourceUrl || "—"),
+    params.sourceUrl ? linkRow("Page source", params.sourceUrl) : row("Page source", "—"),
   ].join("");
 
   const needRows = params.contextLines.map((line) => {
@@ -84,7 +94,8 @@ function buildEmailHtml(params: {
           <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;">
             <tr>
               <td style="background:#0b1220;padding:20px 28px;">
-                <span style="color:#f8fafc;font-size:16px;font-weight:600;">Vision Lighting Solutions</span>
+                <a href="${escapeHtml(SITE_URL)}" style="color:#f8fafc;font-size:16px;font-weight:600;text-decoration:none;">Vision Lighting Solutions</a>
+                <div style="color:#94a3b8;font-size:12px;margin-top:2px;">${escapeHtml(SITE_HOST)}</div>
                 <div style="color:#d97706;font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;margin-top:4px;">Nouveau Lead B2B</div>
               </td>
             </tr>
@@ -362,6 +373,7 @@ export async function POST(request: Request) {
 
   const textBody = [
     `New B2B contact form submission — ${subjectContext}`,
+    `Site: ${SITE_URL}`,
     "",
     name ? `Name: ${name}` : null,
     `Email: ${email}`,
@@ -377,7 +389,7 @@ export async function POST(request: Request) {
     .filter((line): line is string => line !== null)
     .join("\n");
 
-  const emailSubject = `[Lead B2B] ${subjectContext}${name ? ` - ${name}` : ""}`;
+  const emailSubject = `[Lead B2B ${SITE_HOST}] ${subjectContext}${name ? ` - ${name}` : ""}`;
   const emailHtml = buildEmailHtml({
     subjectContext,
     name,
