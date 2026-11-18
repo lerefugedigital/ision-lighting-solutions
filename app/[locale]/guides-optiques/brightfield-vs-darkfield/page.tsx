@@ -183,7 +183,7 @@ const RICH_CONTENT: Record<RichLocale, GuideRichContent> = {
   },
   fr: {
     h1: "Fond Clair vs Fond Noir (Brightfield vs Darkfield) en Vision Industrielle",
-    lead: "Exactement la même rayure peut apparaître comme une ligne claire sur fond noir, ou une ligne sombre sur fond clair — la différence tient entièrement à l'angle d'éclairage fond clair fond noir choisi, pas au défaut lui-même.",
+    lead: "Exactement la même rayure peut apparaître comme une ligne claire sur fond noir, ou une ligne sombre sur fond clair — la différence tient entièrement à l'angle d'éclairage fond clair fond noir choisi, pas au défaut lui-même. Ce guide détaille le rôle de l'angle d'incidence de la lumière, de l'éclairage rasant pour la détection de rayures, et du contrôle de surface brillante en fond clair.",
     principlesTitle: "Éclairage Brightfield vs Darkfield : Comprendre le Problème et la Solution",
     problemTitle: "Le Problème Physique",
     problemParagraph:
@@ -257,7 +257,17 @@ export default async function Page({ params }: { params: Promise<{ locale: Local
         image: `${SITE_URL}/${locale}${ROUTE_KEY}/opengraph-image`,
         datePublished: PUBLISHED_DATE,
         dateModified: MODIFIED_DATE,
-        keywords: ["brightfield", "darkfield", "grazing angle lighting", "specular reflection", "scratch detection"],
+        keywords: [
+          "brightfield",
+          "darkfield",
+          "grazing angle lighting",
+          "specular reflection",
+          "scratch detection",
+          "éclairage rasant",
+          "détection de rayures",
+          "angle d'incidence de la lumière",
+          "contrôle de surface brillante",
+        ],
       })
     : null;
 

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { SITE_URL } from "@/lib/site-config";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -28,7 +29,8 @@ async function logSubmissionLocally(entry: Record<string, unknown>) {
   }
 }
 
-const CONTACT_EMAIL = process.env.CONTACT_EMAIL ?? "contact@vision-lighting-solutions.com";
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL ?? "gaetan@lerefugedigital.com";
+const SITE_HOST = new URL(SITE_URL).host;
 // Sends from the Resend account's verified domain (vision-lighting-solutions.com itself isn't
 // verified on this account's free tier) — override via FROM_EMAIL once a dedicated domain/account
 // is set up. The display name still reads "Vision Lighting Solutions" regardless of the address.
@@ -61,13 +63,21 @@ function buildEmailHtml(params: {
       label
     )}</td><td style="padding:4px 0;color:#0f172a;font-size:14px;">${escapeHtml(value)}</td></tr>`;
 
+  const linkRow = (label: string, url: string) =>
+    `<tr><td style="padding:4px 12px 4px 0;color:#64748b;font-size:13px;white-space:nowrap;vertical-align:top;">${escapeHtml(
+      label
+    )}</td><td style="padding:4px 0;font-size:14px;"><a href="${escapeHtml(url)}" style="color:#b45309;">${escapeHtml(
+      url
+    )}</a></td></tr>`;
+
   const contactRows = [
+    linkRow("Site", SITE_URL),
     row("Nom", params.name || "—"),
     row("Email", params.email),
     row("Société", params.company || "—"),
     row("Téléphone", params.phone || "—"),
     row("Langue", params.localeLabel),
-    row("Page source", params.sourceUrl || "—"),
+    params.sourceUrl ? linkRow("Page source", params.sourceUrl) : row("Page source", "—"),
   ].join("");
 
   const needRows = params.contextLines.map((line) => {
@@ -84,7 +94,8 @@ function buildEmailHtml(params: {
           <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;">
             <tr>
               <td style="background:#0b1220;padding:20px 28px;">
-                <span style="color:#f8fafc;font-size:16px;font-weight:600;">Vision Lighting Solutions</span>
+                <a href="${escapeHtml(SITE_URL)}" style="color:#f8fafc;font-size:16px;font-weight:600;text-decoration:none;">Vision Lighting Solutions</a>
+                <div style="color:#94a3b8;font-size:12px;margin-top:2px;">${escapeHtml(SITE_HOST)}</div>
                 <div style="color:#d97706;font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;margin-top:4px;">Nouveau Lead B2B</div>
               </td>
             </tr>
@@ -114,6 +125,22 @@ function buildEmailHtml(params: {
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+const ACCEPTED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+interface EmailAttachment {
+  filename: string;
+  /** base64-encoded file content — the shape Resend expects for `attachments`. */
+  content: string;
+}
+
+const DEFECT_TYPE_LABEL: Record<string, string> = {
+  scratches: "Scratches / marks",
+  edges: "Edges / contours",
+  presence_absence: "Presence / absence",
+  barcode: "Barcode / code reading",
+  other: "Other",
+};
 
 const OPERATING_MODE_LABEL: Record<string, string> = {
   continuous: "Continuous",
@@ -162,6 +189,7 @@ interface ContactPayload {
   operatingMode?: unknown;
   cameraModel?: unknown;
   materialType?: unknown;
+  defectType?: unknown;
   cadFormat?: unknown;
   dimensionsOrReference?: unknown;
   product?: unknown;
@@ -183,10 +211,38 @@ function asString(value: unknown): string {
 
 export async function POST(request: Request) {
   let body: ContactPayload;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ ok: false, error: "invalid_json" }, { status: 400 });
+  let attachment: EmailAttachment | null = null;
+  const reqContentType = request.headers.get("content-type") ?? "";
+
+  if (reqContentType.includes("multipart/form-data")) {
+    // Only the "lighting_diagnostic" form sends multipart, so it can attach a part photo.
+    let form: FormData;
+    try {
+      form = await request.formData();
+    } catch {
+      return NextResponse.json({ ok: false, error: "invalid_form_data" }, { status: 400 });
+    }
+    body = Object.fromEntries(
+      Array.from(form.entries()).filter(([, value]) => typeof value === "string")
+    ) as ContactPayload;
+
+    const file = form.get("partPhoto");
+    if (file && typeof file !== "string") {
+      if (file.size > MAX_PHOTO_BYTES) {
+        return NextResponse.json({ ok: false, error: "file_too_large" }, { status: 400 });
+      }
+      if (!ACCEPTED_PHOTO_TYPES.includes(file.type)) {
+        return NextResponse.json({ ok: false, error: "invalid_file_type" }, { status: 400 });
+      }
+      const buffer = Buffer.from(await file.arrayBuffer());
+      attachment = { filename: file.name || "part-photo.jpg", content: buffer.toString("base64") };
+    }
+  } else {
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ ok: false, error: "invalid_json" }, { status: 400 });
+    }
   }
 
   // Honeypot: bots that fill hidden fields get a fake success, humans never see this.
@@ -207,6 +263,7 @@ export async function POST(request: Request) {
   const operatingMode = asString(body.operatingMode);
   const cameraModel = asString(body.cameraModel);
   const materialType = asString(body.materialType);
+  const defectType = asString(body.defectType);
   const cadFormat = asString(body.cadFormat);
   const dimensionsOrReference = asString(body.dimensionsOrReference);
   const product = asString(body.product);
@@ -226,6 +283,7 @@ export async function POST(request: Request) {
   const isDemoLoan = contextType === "demo_loan";
   const isLabAnalysis = contextType === "lab_analysis";
   const isDatasheetDownload = contextType === "datasheet_download";
+  const isLightingDiagnostic = contextType === "lighting_diagnostic";
 
   // Server-side validation — never trust the client alone.
   if (isCadRequest) {
@@ -242,6 +300,10 @@ export async function POST(request: Request) {
     }
   } else if (isLabAnalysis) {
     if (!name || !email || !company || !opticalProblem || !materialType || !operatingMode) {
+      return NextResponse.json({ ok: false, error: "missing_required_field" }, { status: 400 });
+    }
+  } else if (isLightingDiagnostic) {
+    if (!name || !email || !company || !defectType) {
       return NextResponse.json({ ok: false, error: "missing_required_field" }, { status: 400 });
     }
   } else if (!name || !email || !company || !message) {
@@ -282,6 +344,15 @@ export async function POST(request: Request) {
   if (isDatasheetDownload && datasheetProductName) {
     contextLines.push(`Product viewed: ${datasheetProductName}`);
   }
+  if (isLightingDiagnostic && defectType) {
+    contextLines.push(`Defect to inspect: ${DEFECT_TYPE_LABEL[defectType] ?? defectType}`);
+  }
+  if (isLightingDiagnostic && materialType) {
+    contextLines.push(`Material / part type: ${MATERIAL_TYPE_LABEL[materialType] ?? materialType}`);
+  }
+  if (isLightingDiagnostic) {
+    contextLines.push(`Part photo attached: ${attachment ? "yes" : "no"}`);
+  }
 
   const effectiveMessage = isCadRequest
     ? `3D CAD file request — desired format: ${CAD_FORMAT_LABEL[cadFormat] ?? cadFormat}.${
@@ -293,10 +364,16 @@ export async function POST(request: Request) {
         ? `Lab sample analysis request — optical problem: ${opticalProblem}`
         : isDatasheetDownload
           ? `Datasheet PDF download request — product: ${datasheetProductName}.`
-          : message;
+          : isLightingDiagnostic
+            ? message ||
+              `Free lighting diagnostic request — defect: ${
+                (DEFECT_TYPE_LABEL[defectType] ?? defectType) || "n/a"
+              }${materialType ? `, material: ${MATERIAL_TYPE_LABEL[materialType] ?? materialType}` : ""}.`
+            : message;
 
   const textBody = [
     `New B2B contact form submission — ${subjectContext}`,
+    `Site: ${SITE_URL}`,
     "",
     name ? `Name: ${name}` : null,
     `Email: ${email}`,
@@ -312,7 +389,7 @@ export async function POST(request: Request) {
     .filter((line): line is string => line !== null)
     .join("\n");
 
-  const emailSubject = `[Lead B2B] ${subjectContext}${name ? ` - ${name}` : ""}`;
+  const emailSubject = `[Lead B2B ${SITE_HOST}] ${subjectContext}${name ? ` - ${name}` : ""}`;
   const emailHtml = buildEmailHtml({
     subjectContext,
     name,
@@ -334,6 +411,7 @@ export async function POST(request: Request) {
       timestamp: new Date().toISOString(),
       contextType,
       subjectContext,
+      hasAttachment: Boolean(attachment),
       ...body,
       website: undefined, // honeypot — already verified empty, no need to persist it
     });
@@ -349,6 +427,7 @@ export async function POST(request: Request) {
       subject: emailSubject,
       text: textBody,
       html: emailHtml,
+      ...(attachment ? { attachments: [attachment] } : {}),
     });
     if (error) {
       console.error("[contact] Resend error:", error);

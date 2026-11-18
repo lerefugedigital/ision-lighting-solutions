@@ -298,7 +298,7 @@ export const ARTICLE = {
   },
   fr: {
     h1: "Éclairage Stroboscopique & Mode Overdrive pour la Vision Industrielle",
-    lead: "Ajustez la largeur d'impulsion et la fréquence de trigger ci-dessous pour voir le rapport cyclique résultant en temps réel — le chiffre unique qui détermine si un montage overdrive strobe est sûr ou promis à la défaillance des LED.",
+    lead: "Ajustez la largeur d'impulsion et la fréquence de trigger ci-dessous pour voir le rapport cyclique résultant en temps réel — le chiffre unique qui détermine si un montage overdrive strobe est sûr ou promis à la défaillance des LED. Ce guide couvre le temps de flash (pulse width), le rapport cyclique (duty cycle), le contrôleur flash LED 24V et le câblage du signal trigger M12.",
     whatTitle: "Ce Qu'est Réellement l'Éclairage Overdrive",
     whatParagraph:
       "Une LED peut supporter en toute sécurité un courant de crête bien supérieur à son maximum continu (DC), tant que ce courant ne circule que pendant une brève impulsion (temps de flash, ou pulse width) et que la puissance moyenne dissipée dans le temps reste dans les limites thermiques de la LED. L'éclairage stroboscopique vision en mode overdrive exploite exactement cela : le contrôleur flash LED 24V pousse plusieurs fois le courant nominal continu dans les LED, mais seulement pendant la brève impulsion stroboscopique synchronisée à l'exposition de la caméra — échangeant une luminosité continue contre un flash bien plus intense et bien plus court, capable de figer un mouvement qu'un éclairage en mode continu ne pourrait jamais capturer.",

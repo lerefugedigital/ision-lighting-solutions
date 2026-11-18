@@ -4,7 +4,7 @@ import type { Segment } from "@/data/catalog";
 import { ProductConfigTable, type ProductConfigRow, type ProductConfigTableLabels } from "./ProductConfigTable";
 import { BeamPatternViewer } from "./BeamPatternViewer";
 import { TechnicalDownloads } from "./TechnicalDownloads";
-import { ContactForm } from "./ContactForm";
+import { ContactForm, type ContactFormContextType } from "./ContactForm";
 import { SampleTestCTA } from "./SampleTestCTA";
 import { ReassuranceBar } from "./ReassuranceBar";
 
@@ -38,6 +38,8 @@ export interface ProductRichContent {
   technicalDownloadsTitle?: string;
   contactFormTitle?: string;
   sampleTestTitle?: string;
+  /** Defaults to "product". Set to "lighting_diagnostic" to show the free-diagnostic / 3-quotes lead form. */
+  contactFormContextType?: ContactFormContextType;
 }
 
 interface ProductPageContentProps {
@@ -170,7 +172,7 @@ export function ProductPageContent({
         />
         <ContactForm
           locale={locale as "en" | "fr"}
-          contextType="product"
+          contextType={rich.contactFormContextType ?? "product"}
           subjectContext={rich.h1}
           titleOverride={rich.contactFormTitle}
         />
